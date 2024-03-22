@@ -90,6 +90,8 @@ function App() {
             callWinners(bets.filter((bet) => bet.bet === number));
             messageLosers(bets.filter((bet) => bet.bet !== number));
 
+            // TODO Show number or names of winners
+
             doc.update({
               bets: {},
               blocked: false,

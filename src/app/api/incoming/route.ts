@@ -97,9 +97,7 @@ export async function POST(req: NextRequest) {
       });
 
       twimlRes.message(
-        `Hi ${formData.get(
-          "ProfileName"
-        )}\nWe received your bet on ${messageContent}`
+        `Hi ${senderName}\nWe received your bet on ${messageContent}`
       );
     }
   }
