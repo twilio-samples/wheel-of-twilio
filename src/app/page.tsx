@@ -87,12 +87,13 @@ function App() {
           fields={fields}
           afterStart={() => {}}
           onStop={(number: string) => {
-            doc.update({
-              bets: doc.data.bets,
-              blocked: false,
-            });
             callWinners(bets.filter((bet) => bet.bet === number));
             messageLosers(bets.filter((bet) => bet.bet !== number));
+
+            doc.update({
+              bets: {},
+              blocked: false,
+            });
           }}
         />
       </div>
