@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { Client, SyncClient } from "twilio-sync";
-import Wheel from "./Wheel";
+import dynamic from "next/dynamic";
 import { fetchToken, callWinners, messageLosers } from "./twilio";
 import QRCode from "react-qr-code";
+const NoSSRWheel = dynamic(() => import("./Wheel"), { ssr: false });
 
 function App() {
   const [bets, setBets] = useState<any[]>([]);
@@ -70,7 +71,7 @@ function App() {
           value={`https://wa.me/${process.env.NEXT_PUBLIC_TWILIO_PHONE_NUMBER}?text=1`}
         />
         <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full"
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-b w-full"
           onClick={() => {
             doc.update({
               bets: {},
@@ -82,7 +83,7 @@ function App() {
         </button>
       </div>
       <div className="absolute w-full h-2/3 flex flex-col items-center justify-center">
-        <Wheel
+        <NoSSRWheel
           fields={fields}
           afterStart={() => {}}
           onStop={(number: string) => {

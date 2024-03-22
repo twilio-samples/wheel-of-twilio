@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
 import React, { useState, useEffect } from "react";
 import { Wheel } from "react-custom-roulette";
 
-export default clientOnlyRender(({
+export default ({
   fields,
   onStop,
-  afterStart
+  afterStart,
 }: {
   fields: any[];
   onStop: (number: string) => void;
@@ -43,20 +43,4 @@ export default clientOnlyRender(({
       <button onClick={handleSpinClick}>Click to spin</button>
     </>
   );
-});
-
-
- function clientOnlyRender(Component: any) {
-  return function (props: any) {
-    const [isMounted, setIsMounted] = useState(false);
-    useEffect(() => {
-      setIsMounted(true);
-    }, []);
- 
-    if (!isMounted) {
-      return null;
-    }
- 
-    return <Component {...props} />;
-  };
- }
+};
