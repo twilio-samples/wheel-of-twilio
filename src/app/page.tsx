@@ -68,7 +68,7 @@ function App() {
     <div className="App">
       <div className="fixed z-10">
         <QRCode
-          value={`https://wa.me/${process.env.NEXT_PUBLIC_TWILIO_PHONE_NUMBER}?text=1`}
+          value={`https://wa.me/${process.env.NEXT_PUBLIC_TWILIO_PHONE_NUMBER}?text=Hit send to start!`}
         />
         <button
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-b w-full"

@@ -3,9 +3,9 @@
 import AccessToken, { SyncGrant } from "twilio/lib/jwt/AccessToken";
 
 const {
-  ACCOUNT_SID = "",
-  API_KEY = "",
-  API_SECRET = "",
+  TWILIO_ACCOUNT_SID = "",
+  TWILIO_API_KEY = "",
+  TWILIO_API_SECRET = "",
   NEXT_PUBLIC_TWILIO_PHONE_NUMBER = "",
   PROMO_CODE = "",
 } = process.env;
@@ -15,9 +15,14 @@ export async function fetchToken() {
     serviceSid: "default",
   });
 
-  const token = new AccessToken(ACCOUNT_SID, API_KEY, API_SECRET, {
-    identity: "example",
-  });
+  const token = new AccessToken(
+    TWILIO_ACCOUNT_SID,
+    TWILIO_API_KEY,
+    TWILIO_API_SECRET,
+    {
+      identity: "example",
+    }
+  );
 
   token.addGrant(syncGrant);
 
@@ -25,8 +30,8 @@ export async function fetchToken() {
 }
 
 export async function callWinners(winners: any[]) {
-  const client = require("twilio")(API_KEY, API_SECRET, {
-    accountSid: ACCOUNT_SID,
+  const client = require("twilio")(TWILIO_API_KEY, TWILIO_API_SECRET, {
+    accountSid: TWILIO_ACCOUNT_SID,
   });
 
   winners.forEach((winner) => {
@@ -39,8 +44,8 @@ export async function callWinners(winners: any[]) {
 }
 
 export async function messageLosers(losers: any[]) {
-  const client = require("twilio")(API_KEY, API_SECRET, {
-    accountSid: ACCOUNT_SID,
+  const client = require("twilio")(TWILIO_API_KEY, TWILIO_API_SECRET, {
+    accountSid: TWILIO_ACCOUNT_SID,
   });
 
   losers.forEach((loser) => {
