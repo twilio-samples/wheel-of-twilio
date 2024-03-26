@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Client, SyncClient } from "twilio-sync";
 import dynamic from "next/dynamic";
-import { fetchToken, callWinners, messageLosers } from "./twilio";
+import { fetchToken, callWinners, messageOthers } from "./twilio";
 import QRCode from "react-qr-code";
 const NoSSRWheel = dynamic(() => import("./Wheel"), { ssr: false });
 
@@ -88,7 +88,7 @@ function App() {
           afterStart={() => {}}
           onStop={(number: string) => {
             callWinners(bets.filter((bet) => bet.bet === number));
-            messageLosers(bets.filter((bet) => bet.bet !== number));
+            messageOthers(bets.filter((bet) => bet.bet !== number), number);
 
             // TODO Show number or names of winners
 

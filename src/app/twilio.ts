@@ -43,16 +43,16 @@ export async function callWinners(winners: any[]) {
   });
 }
 
-export async function messageLosers(losers: any[]) {
+export async function messageOthers(unluckyOnes: any[], winningNumber: string) {
   const client = require("twilio")(TWILIO_API_KEY, TWILIO_API_SECRET, {
     accountSid: TWILIO_ACCOUNT_SID,
   });
 
-  losers.forEach((loser) => {
+  unluckyOnes.forEach((participant) => {
     client.messages.create({
-      body: `Better luck next time ${loser.name}!`,
+      body: `Sorry ${participant.name}, you lost! The winning number was ${winningNumber}. Better luck next time!`,
       from: `whatsapp:${NEXT_PUBLIC_TWILIO_PHONE_NUMBER}`,
-      to: loser.sender,
+      to: participant.sender,
     });
   });
 }
