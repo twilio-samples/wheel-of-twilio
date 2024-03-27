@@ -73,11 +73,26 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
 })();
 
 (async () => {
-  const verifyService = await client.verify.v2
-    .services(VERIFY_SERVICE_SID)
-    .fetch();
-  console.log(`Verify service ${verifyService.sid} has been fetched`);
-  // TODO add check for email channel here later
+  // use axios because the twilio sdk doesn't support expose the mailer_sid property
+  const { data } = await axios.get(
+    `https://verify.twilio.com/v2/Services/${VERIFY_SERVICE_SID}`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      auth: {
+        username: TWILIO_API_KEY,
+        password: TWILIO_API_SECRET,
+      },
+    }
+  );
+  if (!data.mailer_sid) {
+    console.error(`Verify service ${data.sid} does not have a mailer active`);
+    process.exit(1);
+  }
+  console.log(
+    `Verify service ${data.sid} has been fetched and mailer is active ${data.mailer_sid}`
+  );
 })();
 
 (async () => {
