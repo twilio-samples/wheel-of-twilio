@@ -3,16 +3,21 @@
 import AccessToken, { SyncGrant } from "twilio/lib/jwt/AccessToken";
 
 const {
-  TWILIO_ACCOUNT_SID = "",
   TWILIO_API_KEY = "",
   TWILIO_API_SECRET = "",
+  TWILIO_ACCOUNT_SID = "",
   NEXT_PUBLIC_TWILIO_PHONE_NUMBER = "",
-  PROMO_CODE = "",
+  MESSAGE_SERVICE_SID = "",
 } = process.env;
+
+enum Privilege {
+  FRONTEND = "FRONTEND",
+}
+
 
 export async function fetchToken() {
   const syncGrant = new SyncGrant({
-    serviceSid: "default",
+    serviceSid:  MESSAGE_SERVICE_SID
   });
 
   const token = new AccessToken(
@@ -20,7 +25,7 @@ export async function fetchToken() {
     TWILIO_API_KEY,
     TWILIO_API_SECRET,
     {
-      identity: "example",
+      identity: Privilege.FRONTEND,
     }
   );
 

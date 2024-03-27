@@ -87,10 +87,11 @@ function App() {
           fields={fields}
           afterStart={() => {}}
           onStop={(number: string) => {
-            callWinners(bets.filter((bet) => bet.bet === number));
+            const winners = bets.filter((bet) => bet.bet === number);
+            callWinners(winners);
             messageOthers(bets.filter((bet) => bet.bet !== number), number);
 
-            // TODO Show number or names of winners
+            alert(`Winning number is ${number} and we got ${winners.length} winners. \nCongrats ${winners.map((winner) => winner.name).join(", ")}!`);
 
             doc.update({
               bets: {},
