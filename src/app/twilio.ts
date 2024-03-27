@@ -7,7 +7,7 @@ const {
   TWILIO_API_SECRET = "",
   TWILIO_ACCOUNT_SID = "",
   NEXT_PUBLIC_TWILIO_PHONE_NUMBER = "",
-  MESSAGE_SERVICE_SID = "",
+  SYNC_SERVICE_SID = "",
 } = process.env;
 
 enum Privilege {
@@ -17,7 +17,7 @@ enum Privilege {
 
 export async function fetchToken() {
   const syncGrant = new SyncGrant({
-    serviceSid:  MESSAGE_SERVICE_SID
+    serviceSid: SYNC_SERVICE_SID
   });
 
   const token = new AccessToken(
@@ -55,7 +55,7 @@ export async function messageOthers(unluckyOnes: any[], winningNumber: string) {
 
   unluckyOnes.forEach((participant) => {
     client.messages.create({
-      body: `Sorry ${participant.name}, you lost! The winning number was ${winningNumber}. Better luck next time!`,
+      body: `Sorry ${participant.name}, you lost! The winning number was ${winningNumber}. \nBetter luck next time!`,
       from: `whatsapp:${NEXT_PUBLIC_TWILIO_PHONE_NUMBER}`,
       to: participant.sender,
     });

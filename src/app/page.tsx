@@ -46,9 +46,12 @@ function App() {
         const token = await fetchToken();
         syncClient.updateToken(token);
       });
+      syncClient.on("connectionError", (error: any) => {
+        console.error(error);
+      });
       syncClient.on("connectionStateChanged", async (state: string) => {
         if (state === "connected") {
-          const doc = await syncClient.document("wheel_entries");
+          const doc = await syncClient.document("bets");
           setDoc(doc);
           doc.on("updated", (event: any) => {
             setBets(Object.values(event.data.bets));
@@ -89,9 +92,18 @@ function App() {
           onStop={(number: string) => {
             const winners = bets.filter((bet) => bet.bet === number);
             callWinners(winners);
-            messageOthers(bets.filter((bet) => bet.bet !== number), number);
+            messageOthers(
+              bets.filter((bet) => bet.bet !== number),
+              number
+            );
 
-            alert(`Winning number is ${number} and we got ${winners.length} winners. \nCongrats ${winners.map((winner) => winner.name).join(", ")}!`);
+            alert(
+              `Winning number is ${number} and we got ${
+                winners.length
+              } winners. \nCongrats ${winners
+                .map((winner) => winner.name)
+                .join(", ")}!`
+            );
 
             doc.update({
               bets: {},
