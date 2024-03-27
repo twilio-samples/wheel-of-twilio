@@ -7,6 +7,7 @@ const {
   TWILIO_ACCOUNT_SID = "",
   VERIFY_SERVICE_SID = "",
   SYNC_SERVICE_SID = "",
+  EVENT_NAME = "",
   MESSAGE_SERVICE_SID = "",
   COUNTRY_TEMPLATE_SID = "",
   OPTIONS_TEMPLATE_SID = "",
@@ -143,6 +144,12 @@ export async function POST(req: NextRequest) {
         sender: senderID,
         bet: messageContent,
       };
+      attendeesMap.syncMapItems(senderID).update({
+        data: {
+          ...currentUser.data,
+          event: EVENT_NAME,
+        },
+      });
       betsDoc.update({
         data: {
           bets,

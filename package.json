@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "download": "tsx -r dotenv/config src/scripts/download dotenv_config_path=.env.local",
+    "clear-attendee-map": "tsx -r dotenv/config src/scripts/clear dotenv_config_path=.env.local",
     "setup": "tsx -r dotenv/config src/scripts/setup dotenv_config_path=.env.local"
   },
   "dependencies": {
