@@ -84,14 +84,14 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
         username: TWILIO_API_KEY,
         password: TWILIO_API_SECRET,
       },
-    }
+    },
   );
   if (!data.mailer_sid) {
     console.error(`Verify service ${data.sid} does not have a mailer active`);
     process.exit(1);
   }
   console.log(
-    `Verify service ${data.sid} has been fetched and mailer is active ${data.mailer_sid}`
+    `Verify service ${data.sid} has been fetched and mailer is active ${data.mailer_sid}`,
   );
 })();
 
@@ -106,19 +106,23 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
   neededTemplates.forEach(async (template) => {
     let existingTemplate = existingTemplates.find(
       (existingTemplate) =>
-        existingTemplate.friendly_name === template.friendly_name
+        existingTemplate.friendly_name === template.friendly_name,
     );
     if (existingTemplate) {
-      console.log(`Template ${template.friendly_name} with SID ${existingTemplate.sid} already exists`);
+      console.log(
+        `Template ${template.friendly_name} with SID ${existingTemplate.sid} already exists`,
+      );
     } else {
-      try{
+      try {
         existingTemplate = await createWhatsAppTemplate(template);
       } catch (e) {
         console.error(`Failed to create template ${template.friendly_name}`);
         console.error(e);
         return;
       }
-      console.log(`Template ${template.friendly_name} with SID ${existingTemplate.sid} has been created`);
+      console.log(
+        `Template ${template.friendly_name} with SID ${existingTemplate.sid} has been created`,
+      );
     }
   });
 
@@ -137,7 +141,7 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
   }
 
   async function deleteWhatsAppTemplate(
-    sid: string
+    sid: string,
   ): Promise<WhatsAppTemplate> {
     const { data } = await axios.delete(
       `https://content.twilio.com/v1/Content/${sid}`,
@@ -149,13 +153,13 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
           username: TWILIO_API_KEY,
           password: TWILIO_API_SECRET,
         },
-      }
+      },
     );
     return data;
   }
 
   async function createWhatsAppTemplate(
-    template: WhatsAppTemplateConfig
+    template: WhatsAppTemplateConfig,
   ): Promise<WhatsAppTemplate> {
     const { data } = await axios.post(
       "https://content.twilio.com/v1/Content",
@@ -168,7 +172,7 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
           username: TWILIO_API_KEY,
           password: TWILIO_API_SECRET,
         },
-      }
+      },
     );
 
     return data;

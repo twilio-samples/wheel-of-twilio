@@ -179,7 +179,7 @@ export async function POST(req: NextRequest) {
         i18next.t("betPlaced", {
           senderName,
           messageContent: capitalizeString(messageContent),
-        })
+        }),
       );
     }
   }

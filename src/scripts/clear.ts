@@ -25,7 +25,7 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
         .syncMaps("attendees")
         .syncMapItems(item.key)
         .remove();
-    })
+    }),
   );
 
   console.log(`All ${mapItems.length} attendees removed`);

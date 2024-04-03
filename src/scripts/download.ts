@@ -22,6 +22,8 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
   const csv = attendees.map((attendee) => {
     return `${attendee.name},${attendee.country},${attendee.email},${attendee.event},${attendee.stage}`;
   });
-  writeFileSync("attendees.csv", `Name,Country,Email,Event,Stage\n${csv.join("\n")}`);
-
+  writeFileSync(
+    "attendees.csv",
+    `Name,Country,Email,Event,Stage\n${csv.join("\n")}`,
+  );
 })();

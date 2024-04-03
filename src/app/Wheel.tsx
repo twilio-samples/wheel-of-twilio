@@ -40,8 +40,12 @@ export default ({
           onStop(data[prizeNumber].option);
         }}
       />
-      <button className="bg-gray-500 hover:bg-gray-700 text-white px-4 py-2 rounded w-28"
-       onClick={handleSpinClick}>Spin</button>
+      <button
+        className="bg-gray-500 hover:bg-gray-700 text-white px-4 py-2 rounded w-28"
+        onClick={handleSpinClick}
+      >
+        Spin
+      </button>
     </>
   );
 };

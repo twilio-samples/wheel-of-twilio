@@ -76,7 +76,7 @@ function App() {
             callWinners(winners);
             messageOthers(
               bets.filter((bet) => bet.bet !== field),
-              field
+              field,
             );
 
             alert(
@@ -84,7 +84,7 @@ function App() {
                 winners.length
               } winners. \nCongrats ${winners
                 .map((winner) => winner.name)
-                .join(", ")}!`
+                .join(", ")}!`,
             );
 
             doc.update({

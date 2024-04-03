@@ -24,7 +24,7 @@ async function localizeStringForPhoneNumber(
   str: string,
   phone: string,
   name: string,
-  winningField?: string
+  winningField?: string,
 ) {
   await i18next.init({
     lng: getCountry(phone)?.languages[0],
@@ -49,7 +49,7 @@ export async function fetchToken() {
     TWILIO_API_SECRET,
     {
       identity: Privilege.FRONTEND,
-    }
+    },
   );
 
   token.addGrant(syncGrant);
@@ -82,7 +82,7 @@ export async function messageOthers(unluckyOnes: any[], winningNumber: string) {
       "loser",
       participant.sender,
       participant.name,
-      winningNumber
+      winningNumber,
     );
     client.messages.create({
       body,

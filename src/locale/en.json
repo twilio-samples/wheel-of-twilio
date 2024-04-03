@@ -12,6 +12,5 @@
     "betTemplateSID": "HXa0bbaff5da43093743aae9696cf4c87d",
     "winner": "<Response><Say>Congratulations {{name}}! You won!</Say></Response>",
     "loser": "Sorry {{name}}, you lost! The winning field was {{winningField}}. \nBetter luck next time!"
-
   }
 }
