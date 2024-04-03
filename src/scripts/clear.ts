@@ -1,5 +1,4 @@
 import twilio from "twilio";
-import { writeFileSync } from "fs";
 
 const {
   TWILIO_API_KEY = "",

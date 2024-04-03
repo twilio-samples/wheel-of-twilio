@@ -25,6 +25,10 @@ export function getCountyTemplate(): WhatsAppTemplateConfig {
   };
 }
 
+import "dotenv/config";
+const { NEXT_PUBLIC_FIELD_NAMES = "" } = process.env;
+const fields = NEXT_PUBLIC_FIELD_NAMES.split(",");
+
 export function getOptionsTemplate(): WhatsAppTemplateConfig {
   return {
     friendly_name: "Ask For Options",
@@ -34,42 +38,16 @@ export function getOptionsTemplate(): WhatsAppTemplateConfig {
       "twilio/list-picker": {
         body: "Please select one of the following fields:",
         button: "Select",
-        items: [
-          {
-            id: "1",
-            item: "Field 1",
-            description: "",
-          },
-          {
-            id: "2",
-            item: "Field 2",
-            description: "",
-          },
-          {
-            id: "3",
-            item: "Field 3",
-            description: "",
-          },
-          {
-            id: "4",
-            item: "Field 4",
-            description: "",
-          },
-          {
-            id: "5",
-            item: "Field 5",
-            description: "",
-          },
-          {
-            id: "6",
-            item: "Field 6",
-            description: "",
-          },
-        ],
+        items: fields.map((field) => ({
+          item: field,
+          id: field,
+          description: `Select ${field}`,
+        })),
       },
     },
   };
 }
+
 export interface WhatsAppTemplateConfig {
   friendly_name: string;
   language: string;

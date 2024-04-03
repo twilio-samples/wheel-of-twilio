@@ -11,7 +11,10 @@ const {
   MESSAGE_SERVICE_SID = "",
   COUNTRY_TEMPLATE_SID = "",
   OPTIONS_TEMPLATE_SID = "",
+  NEXT_PUBLIC_FIELD_NAMES = "",
 } = process.env;
+
+const fields = NEXT_PUBLIC_FIELD_NAMES.split(",");
 
 const regexForEmail = /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/;
 const regexFor6ConsecutiveDigits = /\d{6}/;
@@ -21,6 +24,10 @@ const enum Stages {
   VERIFYING = 2,
   VERIFIED_USER = 3,
   ASKING_FOR_COUNTRY = 4,
+}
+
+function capitalizeString(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
 export async function POST(req: NextRequest) {
@@ -135,9 +142,11 @@ export async function POST(req: NextRequest) {
   } else if (userStage === Stages.VERIFIED_USER) {
     if (betsDoc.data.blocked) {
       twimlRes.message(`Sorry, the game is blocked.`);
-    } else if (!["1", "2", "3", "4", "5", "6"].includes(messageContent)) {
+    } else if (!fields.includes(capitalizeString(messageContent))) {
       twimlRes.message(
-        `Sorry, this is not a valid bet. Please bet on 1, 2, 3, 4, 5 or 6.`
+        `Sorry, this is not a valid bet. Please bet on one of the following fields ${fields.join(
+          ", "
+        )}.`
       );
     } else {
       const bets = betsDoc.data.bets || {};
@@ -145,7 +154,7 @@ export async function POST(req: NextRequest) {
       bets[senderID] = {
         name: senderName,
         sender: senderID,
-        bet: messageContent,
+        bet: capitalizeString(messageContent),
       };
       attendeesMap.syncMapItems(senderID).update({
         data: {

@@ -11,32 +11,13 @@ function App() {
   const [bets, setBets] = useState<any[]>([]);
   const [doc, setDoc] = useState<any>({});
 
-  const fields = [
-    {
-      number: "1",
-      color: "green",
-    },
-    {
-      number: "2",
-      color: "red",
-    },
-    {
-      number: "3",
-      color: "green",
-    },
-    {
-      number: "4",
-      color: "red",
-    },
-    {
-      number: "5",
-      color: "green",
-    },
-    {
-      number: "6",
-      color: "red",
-    },
-  ];
+  const  fields= (process.env.NEXT_PUBLIC_FIELD_NAMES || "").split(",").map((field, idx) => {
+    return {
+      number: field,
+      color: idx % 2 === 0 ? "red" : "green",
+    };
+  });
+
 
   useEffect(() => {
     let syncClient: SyncClient;
@@ -89,16 +70,16 @@ function App() {
         <NoSSRWheel
           fields={fields}
           afterStart={() => {}}
-          onStop={(number: string) => {
-            const winners = bets.filter((bet) => bet.bet === number);
+          onStop={(field: string) => {
+            const winners = bets.filter((bet) => bet.bet === field);
             callWinners(winners);
             messageOthers(
-              bets.filter((bet) => bet.bet !== number),
-              number
+              bets.filter((bet) => bet.bet !== field),
+              field
             );
 
             alert(
-              `Winning number is ${number} and we got ${
+              `Winning number is ${field} and we got ${
                 winners.length
               } winners. \nCongrats ${winners
                 .map((winner) => winner.name)
