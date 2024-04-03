@@ -48,6 +48,7 @@ export async function POST(req: NextRequest) {
       throw e;
     }
   }
+  const matchedEmail = regexForEmail.exec(messageContent);
 
   if (!currentUser) {
     attendeesMap.syncMapItems.create({
@@ -60,10 +61,12 @@ export async function POST(req: NextRequest) {
     });
 
     twimlRes.message(
-      `Welcome to the game, ${senderName}! Please reply with your business email address to verify.`
+      `Welcome to the game, ${senderName}! Please reply with your business email address to verify. By replying, you agree to the terms and conditions that are linked in the WhatsApp profile.`
     );
-  } else if (userStage === Stages.NEW_USER) {
-    const matchedEmail = regexForEmail.exec(messageContent);
+  } else if (
+    userStage === Stages.NEW_USER ||
+    (userStage === Stages.VERIFYING && matchedEmail !== null)
+  ) {
     if (matchedEmail === null) {
       twimlRes.message(`Sorry, this is not a valid email address.`);
     } else {
@@ -113,7 +116,7 @@ export async function POST(req: NextRequest) {
       }
     } catch (e) {
       twimlRes.message(
-        `Sorry, the verification code is incorrect. Please try again.`
+        `Sorry, the verification code is incorrect. Please try again or enter a new email address.`
       );
     }
   } else if (userStage === Stages.ASKING_FOR_COUNTRY) {
