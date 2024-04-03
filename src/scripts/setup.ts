@@ -5,8 +5,8 @@ import twilio from "twilio";
 import {
   WhatsAppTemplate,
   WhatsAppTemplateConfig,
-  getCountyTemplate,
-  getOptionsTemplate,
+  getCountyTemplates,
+  getOptionsTemplates,
 } from "./contentTemplates";
 import axios from "axios";
 
@@ -101,27 +101,26 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
     .fetch();
   console.log(`Messaging service ${messagingService.sid} has been fetched`);
 
-  const templates: WhatsAppTemplate[] = await getAllWhatsAppTemplates();
-  const countyTemplate = getCountyTemplate();
-  const optionsTemplate = getOptionsTemplate();
-  let template = templates.find(
-    (template) => template.friendly_name === countyTemplate.friendly_name
-  );
-  if (template) {
-    console.log(`County template with SID ${template.sid} already exists`);
-  } else {
-    template = await createWhatsAppTemplate(countyTemplate);
-    console.log(`County template with SID ${template.sid} has been created`);
-  }
-  template = templates.find(
-    (template) => template.friendly_name === optionsTemplate.friendly_name
-  );
-  if (template) {
-    console.log(`Options template with SID ${template.sid} already exists`);
-  } else {
-    template = await createWhatsAppTemplate(optionsTemplate);
-    console.log(`Options template with SID ${template.sid} has been created`);
-  }
+  const existingTemplates: WhatsAppTemplate[] = await getAllWhatsAppTemplates();
+  const neededTemplates = [...getCountyTemplates(), ...getOptionsTemplates()];
+  neededTemplates.forEach(async (template) => {
+    let existingTemplate = existingTemplates.find(
+      (existingTemplate) =>
+        existingTemplate.friendly_name === template.friendly_name
+    );
+    if (existingTemplate) {
+      console.log(`Template ${template.friendly_name} with SID ${existingTemplate.sid} already exists`);
+    } else {
+      try{
+        existingTemplate = await createWhatsAppTemplate(template);
+      } catch (e) {
+        console.error(`Failed to create template ${template.friendly_name}`);
+        console.error(e);
+        return;
+      }
+      console.log(`Template ${template.friendly_name} with SID ${existingTemplate.sid} has been created`);
+    }
+  });
 
   async function getAllWhatsAppTemplates(): Promise<WhatsAppTemplate[]> {
     const { data } = await axios.get("https://content.twilio.com/v1/Content", {

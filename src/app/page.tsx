@@ -11,13 +11,14 @@ function App() {
   const [bets, setBets] = useState<any[]>([]);
   const [doc, setDoc] = useState<any>({});
 
-  const  fields= (process.env.NEXT_PUBLIC_FIELD_NAMES || "").split(",").map((field, idx) => {
-    return {
-      number: field,
-      color: idx % 2 === 0 ? "red" : "green",
-    };
-  });
-
+  const fields = (process.env.NEXT_PUBLIC_FIELD_NAMES || "")
+    .split(",")
+    .map((field, idx) => {
+      return {
+        number: field,
+        color: idx % 2 === 0 ? "red" : "green",
+      };
+    });
 
   useEffect(() => {
     let syncClient: SyncClient;
@@ -99,9 +100,7 @@ function App() {
             key={field.number}
             className={`bg-${field.color}-500 h-full flex-1 m-0.5 rounded-lg p-8`}
           >
-            <h1 className="text-2xl text-black text-center">
-              Bet on {field.number}
-            </h1>
+            <h1 className="text-2xl text-black text-center">{field.number}</h1>
             <div className="mt-4 grid grid-cols-5">
               {bets
                 .filter((bet) => bet.bet === field.number)

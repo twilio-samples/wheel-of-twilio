@@ -14,8 +14,6 @@ const {
   SYNC_SERVICE_SID = "",
   EVENT_NAME = "",
   MESSAGE_SERVICE_SID = "",
-  COUNTRY_TEMPLATE_SID = "",
-  OPTIONS_TEMPLATE_SID = "",
   NEXT_PUBLIC_FIELD_NAMES = "",
 } = process.env;
 
@@ -85,7 +83,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    twimlRes.message(i18next.t("welcome", senderName));
+    twimlRes.message(i18next.t("welcome", { senderName }));
   } else if (
     userStage === Stages.NEW_USER ||
     (userStage === Stages.VERIFYING && matchedEmail !== null)
@@ -130,7 +128,7 @@ export async function POST(req: NextRequest) {
           },
         });
         client.messages.create({
-          contentSid: COUNTRY_TEMPLATE_SID,
+          contentSid: i18next.t("countryTemplateSID"),
           from: MESSAGE_SERVICE_SID,
           to: senderID,
         });
@@ -147,7 +145,7 @@ export async function POST(req: NextRequest) {
       },
     });
     client.messages.create({
-      contentSid: OPTIONS_TEMPLATE_SID,
+      contentSid: i18next.t("betTemplateSID"),
       from: MESSAGE_SERVICE_SID,
       to: senderID,
     });
@@ -177,7 +175,12 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      twimlRes.message(i18next.t("betPlaced", { senderName, messageContent: capitalizeString(messageContent) }));
+      twimlRes.message(
+        i18next.t("betPlaced", {
+          senderName,
+          messageContent: capitalizeString(messageContent),
+        })
+      );
     }
   }
 
