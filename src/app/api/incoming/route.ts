@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import twilio, { twiml } from "twilio";
+import i18next from "i18next";
+import { getCountry } from "./helper";
+
+const en = require("../../../locale/en.json");
+const de = require("../../../locale/de.json");
 
 const {
   TWILIO_API_KEY = "",
@@ -45,6 +50,19 @@ export async function POST(req: NextRequest) {
   const senderID = formData.get("From") as string; //TODO maybe hash this before saving
   const senderName = formData.get("ProfileName") as string;
   const messageContent = formData.get("Body") as string;
+  let lng;
+  if (senderID) {
+    lng = getCountry(senderID)?.languages[0];
+  }
+
+  await i18next.init({
+    lng,
+    fallbackLng: "en",
+    resources: {
+      en,
+      de,
+    },
+  });
 
   let currentUser, userStage;
   try {
@@ -67,15 +85,13 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    twimlRes.message(
-      `Welcome to the game, ${senderName}! Please reply with your business email address to verify. By replying, you agree to the terms and conditions that are linked in the WhatsApp profile.`
-    );
+    twimlRes.message(i18next.t("welcome", senderName));
   } else if (
     userStage === Stages.NEW_USER ||
     (userStage === Stages.VERIFYING && matchedEmail !== null)
   ) {
     if (matchedEmail === null) {
-      twimlRes.message(`Sorry, this is not a valid email address.`);
+      twimlRes.message(i18next.t("invalidEmail"));
     } else {
       const verification = await client.verify.v2
         .services(VERIFY_SERVICE_SID)
@@ -91,9 +107,7 @@ export async function POST(req: NextRequest) {
           verificationSid: verification.sid,
         },
       });
-      twimlRes.message(
-        `We sent a verification code to your email address. Please reply with the code when you receive it.`
-      );
+      twimlRes.message(i18next.t("sentEmail"));
     }
   } else if (userStage === Stages.VERIFYING) {
     try {
@@ -122,9 +136,7 @@ export async function POST(req: NextRequest) {
         });
       }
     } catch (e) {
-      twimlRes.message(
-        `Sorry, the verification code is incorrect. Please try again or enter a new email address.`
-      );
+      twimlRes.message(i18next.t("verificationFailed"));
     }
   } else if (userStage === Stages.ASKING_FOR_COUNTRY) {
     attendeesMap.syncMapItems(senderID).update({
@@ -141,13 +153,9 @@ export async function POST(req: NextRequest) {
     });
   } else if (userStage === Stages.VERIFIED_USER) {
     if (betsDoc.data.blocked) {
-      twimlRes.message(`Sorry, the game is blocked.`);
+      twimlRes.message(i18next.t("betsClosed"));
     } else if (!fields.includes(capitalizeString(messageContent))) {
-      twimlRes.message(
-        `Sorry, this is not a valid bet. Please bet on one of the following fields ${fields.join(
-          ", "
-        )}.`
-      );
+      twimlRes.message(i18next.t("invalidBet", fields.join(", ")));
     } else {
       const bets = betsDoc.data.bets || {};
 
@@ -169,9 +177,7 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      twimlRes.message(
-        `Hi ${senderName}\nWe received your bet on ${messageContent}`
-      );
+      twimlRes.message(i18next.t("betPlaced", { senderName, messageContent: capitalizeString(messageContent) }));
     }
   }
 

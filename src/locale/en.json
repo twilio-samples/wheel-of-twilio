@@ -1,0 +1,12 @@
+{
+  "translation": {
+    "welcome": "Welcome to the game, {{senderName}}! Please reply with your business email address to verify. By replying, you agree to the terms and conditions that are linked in the WhatsApp profile.",
+    "invalidEmail": "Sorry, this is not a valid email address.",
+    "emailVerified": "Thank you! Your email address has been verified. You can now play the game.",
+    "sentEmail": "We have sent you an email with a verification code. Please reply with the code to verify your email address.",
+    "verificationFailed": "Sorry, the verification code is incorrect. Please try again or enter a new email address.",
+    "betsClosed": "Sorry, the game is blocked.",
+    "invalidBet": "Sorry, this is not a valid bet. Please bet on one of the following fields {{fields}}.",
+    "betPlaced": "Hi {{senderName}}\nWe received your bet on {{messageContent}}"
+  }
+}
