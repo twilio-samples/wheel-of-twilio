@@ -16,10 +16,10 @@ const {
   SYNC_SERVICE_SID = "",
   EVENT_NAME = "",
   MESSAGE_SERVICE_SID = "",
-  NEXT_PUBLIC_FIELD_NAMES = "",
+  NEXT_PUBLIC_WEDGES = "",
 } = process.env;
 
-const fields = NEXT_PUBLIC_FIELD_NAMES.split(",");
+const wedges = NEXT_PUBLIC_WEDGES.split(",");
 
 const regexForEmail = /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/;
 const regexFor6ConsecutiveDigits = /\d{6}/;
@@ -163,7 +163,7 @@ export async function POST(req: NextRequest) {
   } else if (userStage === Stages.VERIFIED_USER) {
     if (betsDoc.data.blocked) {
       twimlRes.message(i18next.t("betsClosed"));
-    } else if (!fields.includes(capitalizeString(messageContent))) {
+    } else if (!wedges.includes(capitalizeString(messageContent))) {
       client.messages.create({
         contentSid: i18next.t("invalidBet"),
         from: MESSAGE_SERVICE_SID,

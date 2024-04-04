@@ -52,8 +52,8 @@ function getCountyTemplates(): WhatsAppTemplateConfig[] {
 }
 
 import "dotenv/config";
-const { NEXT_PUBLIC_FIELD_NAMES = "" } = process.env;
-const fields = NEXT_PUBLIC_FIELD_NAMES.split(",");
+const { NEXT_PUBLIC_WEDGES = "" } = process.env;
+const wedges = NEXT_PUBLIC_WEDGES.split(",");
 
 function getOptionsTemplates(): WhatsAppTemplateConfig[] {
   return [
@@ -63,12 +63,12 @@ function getOptionsTemplates(): WhatsAppTemplateConfig[] {
       variables: {},
       types: {
         "twilio/list-picker": {
-          body: `Please select one of the following fields: \n -${fields.join("\n- ")}.`,
+          body: `Please select one of the following wedges: \n -${wedges.join("\n- ")}.`,
           button: "Select",
-          items: fields.map((field) => ({
-            item: field,
-            id: field,
-            description: `Select ${field}`,
+          items: wedges.map((wedge) => ({
+            item: wedge,
+            id: wedge,
+            description: `Select ${wedge}`,
           })),
         },
       },
@@ -79,12 +79,12 @@ function getOptionsTemplates(): WhatsAppTemplateConfig[] {
       variables: {},
       types: {
         "twilio/list-picker": {
-          body: `Auf welches Feld möchten Sie setzen?\n -${fields.join("\n- ")}.`,
+          body: `Auf welches Feld möchten Sie setzen?\n -${wedges.join("\n- ")}.`,
           button: "Wählen",
-          items: fields.map((field) => ({
-            item: field,
-            id: field,
-            description: `Wähle ${field}`,
+          items: wedges.map((wedge) => ({
+            item: wedge,
+            id: wedge,
+            description: `Wähle ${wedge}`,
           })),
         },
       },
@@ -100,12 +100,12 @@ function getInvalidBetsTemplates(): WhatsAppTemplateConfig[] {
       variables: {},
       types: {
         "twilio/list-picker": {
-          body: `Sorry, this is not a valid bet. Please bet on one of the following fields \n -${fields.join("\n- ")}.`,
+          body: `Sorry, this is not a valid bet. Please bet on one of the following wedges \n -${wedges.join("\n- ")}.`,
           button: "Bet",
-          items: fields.map((field) => ({
-            item: field,
-            id: field,
-            description: `Select ${field}`,
+          items: wedges.map((wedge) => ({
+            item: wedge,
+            id: wedge,
+            description: `Select ${wedge}`,
           })),
         },
       },
@@ -116,12 +116,12 @@ function getInvalidBetsTemplates(): WhatsAppTemplateConfig[] {
       variables: {},
       types: {
         "twilio/list-picker": {
-          body: `Entschuldigung, dies ist keine gültige Wette. Bitte setzen Sie auf eines der folgenden Felder  \n -${fields.join("\n- ")}.`,
+          body: `Entschuldigung, dies ist keine gültige Wette. Bitte setzen Sie auf eines der folgenden Felder  \n -${wedges.join("\n- ")}.`,
           button: "Wählen",
-          items: fields.map((field) => ({
-            item: field,
-            id: field,
-            description: `Wähle ${field}`,
+          items: wedges.map((wedge) => ({
+            item: wedge,
+            id: wedge,
+            description: `Wähle ${wedge}`,
           })),
         },
       },

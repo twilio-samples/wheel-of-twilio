@@ -8,9 +8,9 @@
     "betsClosed": "Sorry, the game is blocked.",
     "betPlaced": "Hi {{senderName}}\nWe received your bet on {{messageContent}}",
     "winner": "<Response><Say>Congratulations {{name}}! You won!</Say></Response>",
-    "loser": "Sorry {{name}}, you lost! The winning field was {{winningField}}. \nBetter luck next time!",
-    "countryTemplateSID": "HX7a8760430a2e779879911f2e2f6ae344",
-    "invalidBet": "HX2bfd0a8ce338ce65cbaecd6b8e244197",
-    "betTemplateSID": "HX1304587b2965db48b831d74b2cfdc7e6"
+    "loser": "Sorry {{name}}, you lost! The winning wedge was {{winningWedge}}. \nBetter luck next time!",
+    "countryTemplateSID": "HX1b6048edf9407fec4ad49458798f9d94",
+    "betTemplateSID": "HX5beee0f6a446aa6c367796f91a00dc2c",
+    "invalidBet": "HX29978e68f579e3b9ee347ba39f694ecb"
   }
 }

@@ -17,11 +17,11 @@ function App() {
   const [bets, setBets] = useState<any[]>([]);
   const [doc, setDoc] = useState<any>({});
 
-  const fields = (process.env.NEXT_PUBLIC_FIELD_NAMES || "")
+  const wedges = (process.env.NEXT_PUBLIC_WEDGES || "")
     .split(",")
-    .map((field, idx) => {
+    .map((wedge, idx) => {
       return {
-        number: field,
+        name: wedge,
         color: idx % 2 === 0 ? "red" : "green",
       };
     });
@@ -72,19 +72,19 @@ function App() {
       </div>
       <div className="absolute w-full h-2/3 flex flex-col items-center justify-center">
         <NoSSRWheel
-          fields={fields}
+          wedges={wedges}
           afterStart={() => {
             blockBets();
           }}
-          onStop={(field: string) => {
-            const winners = bets.filter((bet) => bet.bet === field);
+          onStop={(wedge: string) => {
+            const winners = bets.filter((bet) => bet.bet === wedge);
             callWinners(winners);
             messageOthers(
-              bets.filter((bet) => bet.bet !== field),
-              field
+              bets.filter((bet) => bet.bet !== wedge),
+              wedge
             );
 
-            let annoucement = `Winning number is ${field} and we got ${winners.length} winners.`;
+            let annoucement = `Winning wedge is ${wedge} and we got ${winners.length} winners.`;
             if (winners.length > 0) {
               annoucement += "The winners are: ";
               winners.forEach((winner) => {
@@ -99,15 +99,15 @@ function App() {
         />
       </div>
       <div className="absolute w-full h-1/3 bottom-0 flex items-center justify-center">
-        {fields.map((field) => (
+        {wedges.map((wedge) => (
           <div
-            key={field.number}
-            className={`bg-${field.color}-500 h-full flex-1 m-0.5 rounded-lg py-8`}
+            key={wedge.name}
+            className={`bg-${wedge.color}-500 h-full flex-1 m-0.5 rounded-lg py-8`}
           >
-            <h1 className="text-2xl text-black text-center">{field.number}</h1>
+            <h1 className="text-2xl text-black text-center">{wedge.name}</h1>
             <div className="mt-4 grid grid-cols-5">
               {bets
-                .filter((bet) => bet.bet === field.number)
+                .filter((bet) => bet.bet === wedge.name)
                 .map((bet) => (
                   <div
                     key={bet.hashedSender}

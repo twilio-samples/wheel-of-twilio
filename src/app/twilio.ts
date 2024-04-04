@@ -27,7 +27,7 @@ async function localizeStringForPhoneNumber(
   str: string,
   phone: string,
   name: string,
-  winningField?: string
+  winningWedge?: string
 ) {
   await i18next.init({
     lng: getCountry(phone)?.languages[0],
@@ -38,7 +38,7 @@ async function localizeStringForPhoneNumber(
     },
   });
 
-  return i18next.t(str, { name, winningField });
+  return i18next.t(str, { name, winningWedge });
 }
 
 export async function fetchToken() {
@@ -98,7 +98,7 @@ export async function callWinners(winners: any[]) {
   });
 }
 
-export async function messageOthers(unluckyBets: any[], winningField: string) {
+export async function messageOthers(unluckyBets: any[], winningWedge: string) {
   const syncService = await client.sync.v1.services(SYNC_SERVICE_SID).fetch();
   const attendeesMap = syncService.syncMaps()("attendees");
   unluckyBets.forEach(async (unluckyBet) => {
@@ -109,7 +109,7 @@ export async function messageOthers(unluckyBets: any[], winningField: string) {
       "loser",
       unluckyPlayer.data.sender,
       unluckyPlayer.data.name,
-      winningField
+      winningWedge
     );
     client.messages.create({
       body,

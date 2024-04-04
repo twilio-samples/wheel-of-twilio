@@ -4,20 +4,20 @@ import React, { useState, useEffect } from "react";
 import { Wheel } from "react-custom-roulette";
 
 export default ({
-  fields,
+  wedges,
   onStop,
   afterStart,
 }: {
-  fields: any[];
-  onStop: (number: string) => void;
+  wedges: any[];
+  onStop: (wedge: string) => void;
   afterStart: () => void;
 }) => {
   const [mustSpin, setMustSpin] = useState(false);
   const [prizeNumber, setPrizeNumber] = useState(0);
 
-  const data = fields.map((field) => ({
-    option: field.number,
-    style: { backgroundColor: field.color, textColor: "white" },
+  const data = wedges.map((wedge) => ({
+    option: wedge.name,
+    style: { backgroundColor: wedge.color, textColor: "white" },
   }));
 
   const handleSpinClick = () => {

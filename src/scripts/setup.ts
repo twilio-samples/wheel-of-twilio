@@ -13,6 +13,8 @@ enum Privilege {
   FRONTEND = "FRONTEND",
 }
 
+const OVERRIDE_TEMPLATES = false; // flip manually to override existing templates
+
 const {
   TWILIO_API_KEY = "",
   TWILIO_API_SECRET = "",
@@ -112,7 +114,23 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
       (existingTemplate) =>
         existingTemplate.friendly_name === template.friendly_name,
     );
-    if (existingTemplate) {
+    if ( OVERRIDE_TEMPLATES) {
+      if (existingTemplate) {
+        try {
+          await deleteWhatsAppTemplate(existingTemplate.sid);
+          console.log(
+            `Template ${template.friendly_name} with SID ${existingTemplate.sid} has been deleted`,
+          );
+        } catch (e) {
+          console.error(
+            `Failed to delete template ${template.friendly_name} with SID ${existingTemplate.sid}`,
+          );
+          console.error(e);
+          return;
+        }
+      }
+    }
+    if (existingTemplate && !OVERRIDE_TEMPLATES) {
       console.log(
         `Template ${template.friendly_name} with SID ${existingTemplate.sid} already exists`,
       );
