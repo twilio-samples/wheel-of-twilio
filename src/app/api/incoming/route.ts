@@ -31,8 +31,11 @@ const enum Stages {
   ASKING_FOR_COUNTRY = 4,
 }
 
-function capitalizeString(str: string) {
-  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+function capitalizeEachWord(str: string) {
+  return str
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
 }
 
 export async function POST(req: NextRequest) {
@@ -163,19 +166,18 @@ export async function POST(req: NextRequest) {
   } else if (userStage === Stages.VERIFIED_USER) {
     if (betsDoc.data.blocked) {
       twimlRes.message(i18next.t("betsClosed"));
-    } else if (!wedges.includes(capitalizeString(messageContent))) {
-      client.messages.create({
-        contentSid: i18next.t("invalidBet"),
-        from: MESSAGE_SERVICE_SID,
-        to: senderID,
-      });
-    } else {
+      // check if one of the wedges is a subsrting of the capitalized messageContent
+    } else if (
+      wedges.some((wedge) => capitalizeEachWord(messageContent).includes(wedge))
+    ) {
       const bets = betsDoc.data.bets || {};
 
       bets[hashedSender] = {
         name: senderName,
         hashedSender,
-        bet: capitalizeString(messageContent),
+        bet: wedges.find((wedge) =>
+          capitalizeEachWord(messageContent).includes(wedge)
+        ),
       };
       attendeesMap.syncMapItems(hashedSender).update({
         data: {
@@ -193,9 +195,16 @@ export async function POST(req: NextRequest) {
       twimlRes.message(
         i18next.t("betPlaced", {
           senderName,
-          messageContent: capitalizeString(messageContent),
+          messageContent: capitalizeEachWord(messageContent),
         })
       );
+    } else {
+      debugger;
+      client.messages.create({
+        contentSid: i18next.t("invalidBet"),
+        from: MESSAGE_SERVICE_SID,
+        to: senderID,
+      });
     }
   }
 
