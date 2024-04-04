@@ -76,7 +76,7 @@ function App() {
             callWinners(winners);
             messageOthers(
               bets.filter((bet) => bet.bet !== field),
-              field
+              field,
             );
 
             let annoucement = `Winning number is ${field} and we got ${winners.length} winners.`;
