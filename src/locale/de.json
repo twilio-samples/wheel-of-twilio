@@ -9,8 +9,8 @@
     "betPlaced": "Hallo {{senderName}}\nWir haben Ihre Wette erhalten {{messageContent}}",
     "winner": "<Response><Say language='DE-de'>Herzlichen Glückwunsch {{name}}! Du hast gewonnen!</Say></Response>",
     "loser": "Tut mir leid, {{name}}, du hast verloren! Das Gewinnerfeld war {{winningField}}. \nViel Glück beim nächsten Mal!",
-    "invalidBet": "HX12c499e454837bb8e8be790b1978b239",
+    "invalidBet": "HX73eeaf501a00b4c1b4c830fefd8312f1",
     "countryTemplateSID": "HX345579a6fe286247350b7f4c77bbab93",
-    "betTemplateSID": "HX7d2e2926f4761bf9c614bf23e4cdbf17"
+    "betTemplateSID": "HX7e8801654f8b4a8afa519ee934a6533a"
   }
 }

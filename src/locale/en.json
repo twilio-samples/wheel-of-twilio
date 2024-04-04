@@ -10,7 +10,7 @@
     "winner": "<Response><Say>Congratulations {{name}}! You won!</Say></Response>",
     "loser": "Sorry {{name}}, you lost! The winning field was {{winningField}}. \nBetter luck next time!",
     "countryTemplateSID": "HX7a8760430a2e779879911f2e2f6ae344",
-    "invalidBet": "HXb84dd1fce379fe58ab80eafe67113328",
-    "betTemplateSID": "HXa0bbaff5da43093743aae9696cf4c87d"
+    "invalidBet": "HX2bfd0a8ce338ce65cbaecd6b8e244197",
+    "betTemplateSID": "HX1304587b2965db48b831d74b2cfdc7e6"
   }
 }

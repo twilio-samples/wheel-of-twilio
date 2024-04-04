@@ -58,12 +58,12 @@ const fields = NEXT_PUBLIC_FIELD_NAMES.split(",");
 function getOptionsTemplates(): WhatsAppTemplateConfig[] {
   return [
     {
-      friendly_name: "Ask For Options",
+      friendly_name: "Ask For Bets",
       language: "en",
       variables: {},
       types: {
         "twilio/list-picker": {
-          body: "Please select one of the following fields:",
+          body: `Please select one of the following fields: \n -${fields.join("\n- ")}.`,
           button: "Select",
           items: fields.map((field) => ({
             item: field,
@@ -79,7 +79,7 @@ function getOptionsTemplates(): WhatsAppTemplateConfig[] {
       variables: {},
       types: {
         "twilio/list-picker": {
-          body: "Auf welches der folgenden Felder möchten Sie setzen?",
+          body: `Auf welches Feld möchten Sie setzen?\n -${fields.join("\n- ")}.`,
           button: "Wählen",
           items: fields.map((field) => ({
             item: field,
@@ -100,7 +100,7 @@ function getInvalidBetsTemplates(): WhatsAppTemplateConfig[] {
       variables: {},
       types: {
         "twilio/list-picker": {
-          body: `Sorry, this is not a valid bet. Please bet on one of the following fields ${fields.join(", ")}.`,
+          body: `Sorry, this is not a valid bet. Please bet on one of the following fields \n -${fields.join("\n- ")}.`,
           button: "Bet",
           items: fields.map((field) => ({
             item: field,
@@ -116,7 +116,7 @@ function getInvalidBetsTemplates(): WhatsAppTemplateConfig[] {
       variables: {},
       types: {
         "twilio/list-picker": {
-          body: `Entschuldigung, dies ist keine gültige Wette. Bitte setzen Sie auf eines der folgenden Felder ${fields.join(", ")}.`,
+          body: `Entschuldigung, dies ist keine gültige Wette. Bitte setzen Sie auf eines der folgenden Felder  \n -${fields.join("\n- ")}.`,
           button: "Wählen",
           items: fields.map((field) => ({
             item: field,
