@@ -98,6 +98,7 @@ export async function POST(req: NextRequest) {
           .verifications.create({
             to: matchedEmail[0],
             channel: "email",
+            locale: lng,
           });
         attendeesMap.syncMapItems(senderID).update({
           data: {
@@ -190,7 +191,7 @@ export async function POST(req: NextRequest) {
         i18next.t("betPlaced", {
           senderName,
           messageContent: capitalizeString(messageContent),
-        }),
+        })
       );
     }
   }
