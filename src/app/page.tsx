@@ -3,7 +3,13 @@
 import { useState, useEffect } from "react";
 import { Client, SyncClient } from "twilio-sync";
 import dynamic from "next/dynamic";
-import { fetchToken, callWinners, messageOthers } from "./twilio";
+import {
+  fetchToken,
+  callWinners,
+  messageOthers,
+  clearBets,
+  blockBets,
+} from "./twilio";
 import QRCode from "react-qr-code";
 const NoSSRWheel = dynamic(() => import("./Wheel"), { ssr: false });
 
@@ -36,10 +42,10 @@ function App() {
           const doc = await syncClient.document("bets");
           setDoc(doc);
           doc.on("updated", (event: any) => {
-            setBets(Object.values(event.data.bets));
+            if (event.data.bets) setBets(Object.values(event.data.bets));
           });
           // @ts-ignore
-          setBets(Object.values(doc.data.bets));
+          if (doc.data.bets) setBets(Object.values(doc.data.bets));
         }
       });
     });
@@ -53,15 +59,12 @@ function App() {
     <div className="App">
       <div className="fixed z-10">
         <QRCode
-          value={`https://wa.me/${process.env.NEXT_PUBLIC_TWILIO_PHONE_NUMBER}?text=Hit send to start!`}
+          value={`https://wa.me/${process.env.NEXT_PUBLIC_TWILIO_PHONE_NUMBER}?text=Hit%20send%20to%20start!`}
         />
         <button
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-b w-full"
           onClick={() => {
-            doc.update({
-              bets: {},
-              blocked: false,
-            });
+            clearBets();
           }}
         >
           Reset Bets
@@ -70,13 +73,15 @@ function App() {
       <div className="absolute w-full h-2/3 flex flex-col items-center justify-center">
         <NoSSRWheel
           fields={fields}
-          afterStart={() => {}}
+          afterStart={() => {
+            blockBets();
+          }}
           onStop={(field: string) => {
             const winners = bets.filter((bet) => bet.bet === field);
             callWinners(winners);
             messageOthers(
               bets.filter((bet) => bet.bet !== field),
-              field,
+              field
             );
 
             let annoucement = `Winning number is ${field} and we got ${winners.length} winners.`;
@@ -89,10 +94,7 @@ function App() {
 
             alert(annoucement);
 
-            doc.update({
-              bets: {},
-              blocked: false,
-            });
+            clearBets();
           }}
         />
       </div>
@@ -100,7 +102,7 @@ function App() {
         {fields.map((field) => (
           <div
             key={field.number}
-            className={`bg-${field.color}-500 h-full flex-1 m-0.5 rounded-lg p-8`}
+            className={`bg-${field.color}-500 h-full flex-1 m-0.5 rounded-lg py-8`}
           >
             <h1 className="text-2xl text-black text-center">{field.number}</h1>
             <div className="mt-4 grid grid-cols-5">
@@ -108,9 +110,9 @@ function App() {
                 .filter((bet) => bet.bet === field.number)
                 .map((bet) => (
                   <div
-                    key={bet.sender}
+                    key={bet.hashedSender}
                     title={bet.name}
-                    className="bg-black rounded-full w-8 h-8 animate-pulse m-2"
+                    className="bg-black rounded-full w-6 h-6 animate-pulse m-2"
                   />
                 ))}
               {}

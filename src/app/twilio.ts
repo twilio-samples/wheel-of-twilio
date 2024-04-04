@@ -19,12 +19,15 @@ const {
 enum Privilege {
   FRONTEND = "FRONTEND",
 }
+const client = require("twilio")(TWILIO_API_KEY, TWILIO_API_SECRET, {
+  accountSid: TWILIO_ACCOUNT_SID,
+});
 
 async function localizeStringForPhoneNumber(
   str: string,
   phone: string,
   name: string,
-  winningField?: string,
+  winningField?: string
 ) {
   await i18next.init({
     lng: getCountry(phone)?.languages[0],
@@ -49,7 +52,7 @@ export async function fetchToken() {
     TWILIO_API_SECRET,
     {
       identity: Privilege.FRONTEND,
-    },
+    }
   );
 
   token.addGrant(syncGrant);
@@ -57,37 +60,61 @@ export async function fetchToken() {
   return token.toJwt();
 }
 
-export async function callWinners(winners: any[]) {
-  const client = require("twilio")(TWILIO_API_KEY, TWILIO_API_SECRET, {
-    accountSid: TWILIO_ACCOUNT_SID,
+export async function clearBets() {
+  const syncService = await client.sync.v1.services(SYNC_SERVICE_SID).fetch();
+  const betsDoc = syncService.documents()("bets");
+  await betsDoc.update({
+    data: {
+      bets: {},
+      blocked: false,
+    },
   });
+}
 
-  winners.forEach(async (winner) => {
-    const to = winner.sender.replace("whatsapp:", "");
+
+export async function blockBets() {
+  const syncService = await client.sync.v1.services(SYNC_SERVICE_SID).fetch();
+  const betsDoc = syncService.documents()("bets");
+  await betsDoc.update({
+    data: {
+      ...betsDoc.data,
+      blocked: true,
+    },
+  });
+}
+
+export async function callWinners(winners: any[]) {
+  const syncService = await client.sync.v1.services(SYNC_SERVICE_SID).fetch();
+  const attendeesMap = syncService.syncMaps()("attendees");
+
+  winners.forEach(async (winningBet) => {
+    const winner = await attendeesMap.syncMapItems(winningBet.hashedSender).fetch();
+    const to = winner.data.sender.replace("whatsapp:", "");
     client.calls.create({
-      twiml: await localizeStringForPhoneNumber("winner", to, winner.name),
+      twiml: await localizeStringForPhoneNumber("winner", to, winner.data.name),
       from: NEXT_PUBLIC_TWILIO_PHONE_NUMBER,
       to,
     });
   });
 }
 
-export async function messageOthers(unluckyOnes: any[], winningNumber: string) {
-  const client = require("twilio")(TWILIO_API_KEY, TWILIO_API_SECRET, {
-    accountSid: TWILIO_ACCOUNT_SID,
-  });
-
-  unluckyOnes.forEach(async (participant) => {
+export async function messageOthers(unluckyBets: any[], winningField: string) {
+  const syncService = await client.sync.v1.services(SYNC_SERVICE_SID).fetch();
+  const attendeesMap = syncService.syncMaps()("attendees");
+  unluckyBets.forEach(async (unluckyBet) => {
+    const unluckyPlayer = await attendeesMap
+      .syncMapItems(unluckyBet.hashedSender)
+      .fetch();
     const body = await localizeStringForPhoneNumber(
       "loser",
-      participant.sender,
-      participant.name,
-      winningNumber,
+      unluckyPlayer.data.sender,
+      unluckyPlayer.data.name,
+      winningField
     );
     client.messages.create({
       body,
       from: `whatsapp:${NEXT_PUBLIC_TWILIO_PHONE_NUMBER}`,
-      to: participant.sender,
+      to: unluckyPlayer.data.sender,
     });
   });
 }

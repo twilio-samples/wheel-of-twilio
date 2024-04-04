@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import twilio, { twiml } from "twilio";
 import i18next from "i18next";
 import { getCountry } from "./helper";
+import { createHash } from "crypto";
 
 const en = require("../../../locale/en.json");
 const de = require("../../../locale/de.json");
@@ -47,6 +48,7 @@ export async function POST(req: NextRequest) {
   const twimlRes = new twiml.MessagingResponse();
 
   const senderID = formData.get("From") as string;
+  const hashedSender = createHash("sha256").update(senderID).digest("hex");
   const senderName = formData.get("ProfileName") as string;
   const messageContent = formData.get("Body") as string;
   let lng;
@@ -65,7 +67,7 @@ export async function POST(req: NextRequest) {
 
   let currentUser, userStage;
   try {
-    currentUser = await attendeesMap.syncMapItems(senderID).fetch();
+    currentUser = await attendeesMap.syncMapItems(hashedSender).fetch();
     userStage = currentUser.data.stage;
   } catch (e: any) {
     if (e.status !== 404) {
@@ -77,9 +79,10 @@ export async function POST(req: NextRequest) {
   if (!currentUser) {
     attendeesMap.syncMapItems.create({
       ttl: ONE_WEEK,
-      key: senderID,
+      key: hashedSender,
       data: {
         name: senderName,
+        sender: senderID,
         stage: Stages.NEW_USER,
       },
     });
@@ -100,7 +103,7 @@ export async function POST(req: NextRequest) {
             channel: "email",
             locale: lng,
           });
-        attendeesMap.syncMapItems(senderID).update({
+        attendeesMap.syncMapItems(hashedSender).update({
           data: {
             ...currentUser.data,
             email: matchedEmail[0],
@@ -129,7 +132,7 @@ export async function POST(req: NextRequest) {
         });
 
       if (verificationCheck.status === "approved") {
-        attendeesMap.syncMapItems(senderID).update({
+        attendeesMap.syncMapItems(hashedSender).update({
           data: {
             ...currentUser.data,
             stage: Stages.ASKING_FOR_COUNTRY,
@@ -145,7 +148,7 @@ export async function POST(req: NextRequest) {
       twimlRes.message(i18next.t("verificationFailed"));
     }
   } else if (userStage === Stages.ASKING_FOR_COUNTRY) {
-    attendeesMap.syncMapItems(senderID).update({
+    attendeesMap.syncMapItems(hashedSender).update({
       data: {
         ...currentUser.data,
         country: messageContent,
@@ -169,12 +172,12 @@ export async function POST(req: NextRequest) {
     } else {
       const bets = betsDoc.data.bets || {};
 
-      bets[senderID] = {
+      bets[hashedSender] = {
         name: senderName,
-        sender: senderID,
+        hashedSender,
         bet: capitalizeString(messageContent),
       };
-      attendeesMap.syncMapItems(senderID).update({
+      attendeesMap.syncMapItems(hashedSender).update({
         data: {
           ...currentUser.data,
           event: EVENT_NAME,
