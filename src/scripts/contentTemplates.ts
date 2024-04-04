@@ -1,4 +1,4 @@
-export function getCountyTemplates(): WhatsAppTemplateConfig[] {
+function getCountyTemplates(): WhatsAppTemplateConfig[] {
   return [
     {
       friendly_name: "Ask For Country",
@@ -55,7 +55,7 @@ import "dotenv/config";
 const { NEXT_PUBLIC_FIELD_NAMES = "" } = process.env;
 const fields = NEXT_PUBLIC_FIELD_NAMES.split(",");
 
-export function getOptionsTemplates(): WhatsAppTemplateConfig[] {
+function getOptionsTemplates(): WhatsAppTemplateConfig[] {
   return [
     {
       friendly_name: "Ask For Options",
@@ -89,6 +89,51 @@ export function getOptionsTemplates(): WhatsAppTemplateConfig[] {
         },
       },
     },
+  ];
+}
+
+function getInvalidBetsTemplates(): WhatsAppTemplateConfig[] {
+  return [
+    {
+      friendly_name: "Invalid Bet",
+      language: "en",
+      variables: {},
+      types: {
+        "twilio/list-picker": {
+          body: `Sorry, this is not a valid bet. Please bet on one of the following fields ${fields.join(", ")}.`,
+          button: "Bet",
+          items: fields.map((field) => ({
+            item: field,
+            id: field,
+            description: `Select ${field}`,
+          })),
+        },
+      },
+    },
+    {
+      friendly_name: "Ungültige Wette",
+      language: "de",
+      variables: {},
+      types: {
+        "twilio/list-picker": {
+          body: `Entschuldigung, dies ist keine gültige Wette. Bitte setzen Sie auf eines der folgenden Felder ${fields.join(", ")}.`,
+          button: "Wählen",
+          items: fields.map((field) => ({
+            item: field,
+            id: field,
+            description: `Wähle ${field}`,
+          })),
+        },
+      },
+    },
+  ];
+}
+
+export function getTemplates(): WhatsAppTemplateConfig[] {
+  return [
+    ...getCountyTemplates(),
+    ...getOptionsTemplates(),
+    ...getInvalidBetsTemplates(),
   ];
 }
 

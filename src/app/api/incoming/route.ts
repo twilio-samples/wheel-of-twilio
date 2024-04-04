@@ -6,6 +6,7 @@ import { getCountry } from "./helper";
 const en = require("../../../locale/en.json");
 const de = require("../../../locale/de.json");
 
+const ONE_WEEK = 60 * 60 * 24 * 7;
 const {
   TWILIO_API_KEY = "",
   TWILIO_API_SECRET = "",
@@ -45,7 +46,7 @@ export async function POST(req: NextRequest) {
 
   const twimlRes = new twiml.MessagingResponse();
 
-  const senderID = formData.get("From") as string; //TODO maybe hash this before saving
+  const senderID = formData.get("From") as string;
   const senderName = formData.get("ProfileName") as string;
   const messageContent = formData.get("Body") as string;
   let lng;
@@ -75,7 +76,7 @@ export async function POST(req: NextRequest) {
 
   if (!currentUser) {
     attendeesMap.syncMapItems.create({
-      //TODO think about adding a TTL here?
+      ttl: ONE_WEEK,
       key: senderID,
       data: {
         name: senderName,
@@ -91,21 +92,27 @@ export async function POST(req: NextRequest) {
     if (matchedEmail === null) {
       twimlRes.message(i18next.t("invalidEmail"));
     } else {
-      const verification = await client.verify.v2
-        .services(VERIFY_SERVICE_SID)
-        .verifications.create({
-          to: matchedEmail[0],
-          channel: "email",
+      try {
+        const verification = await client.verify.v2
+          .services(VERIFY_SERVICE_SID)
+          .verifications.create({
+            to: matchedEmail[0],
+            channel: "email",
+          });
+        attendeesMap.syncMapItems(senderID).update({
+          data: {
+            ...currentUser.data,
+            email: matchedEmail[0],
+            stage: Stages.VERIFYING,
+            verificationSid: verification.sid,
+          },
         });
-      attendeesMap.syncMapItems(senderID).update({
-        data: {
-          ...currentUser.data,
-          email: matchedEmail[0],
-          stage: Stages.VERIFYING,
-          verificationSid: verification.sid,
-        },
-      });
-      twimlRes.message(i18next.t("sentEmail"));
+        twimlRes.message(i18next.t("sentEmail"));
+      } catch (e: any) {
+        if (e?.message?.startsWith("Invalid parameter `To`:")) {
+          twimlRes.message(i18next.t("invalidEmail"));
+        }
+      }
     }
   } else if (userStage === Stages.VERIFYING) {
     try {
@@ -153,7 +160,11 @@ export async function POST(req: NextRequest) {
     if (betsDoc.data.blocked) {
       twimlRes.message(i18next.t("betsClosed"));
     } else if (!fields.includes(capitalizeString(messageContent))) {
-      twimlRes.message(i18next.t("invalidBet", fields.join(", ")));
+      client.messages.create({
+        contentSid: i18next.t("invalidBet"),
+        from: MESSAGE_SERVICE_SID,
+        to: senderID,
+      });
     } else {
       const bets = betsDoc.data.bets || {};
 
@@ -179,7 +190,7 @@ export async function POST(req: NextRequest) {
         i18next.t("betPlaced", {
           senderName,
           messageContent: capitalizeString(messageContent),
-        }),
+        })
       );
     }
   }

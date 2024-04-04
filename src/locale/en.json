@@ -6,11 +6,11 @@
     "sentEmail": "We have sent you an email with a verification code. Please reply with the code to verify your email address.",
     "verificationFailed": "Sorry, the verification code is incorrect. Please try again or enter a new email address.",
     "betsClosed": "Sorry, the game is blocked.",
-    "invalidBet": "Sorry, this is not a valid bet. Please bet on one of the following fields {{fields}}.",
     "betPlaced": "Hi {{senderName}}\nWe received your bet on {{messageContent}}",
-    "countryTemplateSID": "HX7a8760430a2e779879911f2e2f6ae344",
-    "betTemplateSID": "HXa0bbaff5da43093743aae9696cf4c87d",
     "winner": "<Response><Say>Congratulations {{name}}! You won!</Say></Response>",
-    "loser": "Sorry {{name}}, you lost! The winning field was {{winningField}}. \nBetter luck next time!"
+    "loser": "Sorry {{name}}, you lost! The winning field was {{winningField}}. \nBetter luck next time!",
+    "countryTemplateSID": "HX7a8760430a2e779879911f2e2f6ae344",
+    "invalidBet": "HXb84dd1fce379fe58ab80eafe67113328",
+    "betTemplateSID": "HXa0bbaff5da43093743aae9696cf4c87d"
   }
 }

@@ -76,16 +76,18 @@ function App() {
             callWinners(winners);
             messageOthers(
               bets.filter((bet) => bet.bet !== field),
-              field,
+              field
             );
 
-            alert(
-              `Winning number is ${field} and we got ${
-                winners.length
-              } winners. \nCongrats ${winners
-                .map((winner) => winner.name)
-                .join(", ")}!`,
-            );
+            let annoucement = `Winning number is ${field} and we got ${winners.length} winners.`;
+            if (winners.length > 0) {
+              annoucement += "The winners are: ";
+              winners.forEach((winner) => {
+                annoucement += `${winner.name}, `;
+              });
+            }
+
+            alert(annoucement);
 
             doc.update({
               bets: {},
