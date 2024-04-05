@@ -114,7 +114,7 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
       (existingTemplate) =>
         existingTemplate.friendly_name === template.friendly_name,
     );
-    if ( OVERRIDE_TEMPLATES) {
+    if (OVERRIDE_TEMPLATES) {
       if (existingTemplate) {
         try {
           await deleteWhatsAppTemplate(existingTemplate.sid);

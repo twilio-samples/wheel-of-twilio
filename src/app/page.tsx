@@ -44,6 +44,7 @@ function App() {
           doc.on("updated", (event: any) => {
             if (event.data.bets) setBets(Object.values(event.data.bets));
           });
+
           // @ts-ignore
           if (doc.data.bets) setBets(Object.values(doc.data.bets));
         }
@@ -81,7 +82,7 @@ function App() {
             callWinners(winners);
             messageOthers(
               bets.filter((bet) => bet.bet !== wedge),
-              wedge
+              wedge,
             );
 
             let annoucement = `Winning wedge is ${wedge} and we got ${winners.length} winners.`;

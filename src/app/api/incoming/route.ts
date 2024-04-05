@@ -79,6 +79,25 @@ export async function POST(req: NextRequest) {
   }
   const matchedEmail = regexForEmail.exec(messageContent);
 
+  if (process.env.demoBet) {
+    // also allow for testing in CI
+    const bets = betsDoc.data.bets || {};
+
+    bets["test-better"] = {
+      name: "test-better",
+      hashedSender: "test-better",
+      bet: wedges.find((wedge) =>
+        capitalizeEachWord(messageContent).includes(wedge),
+      ),
+    };
+    betsDoc.update({
+      data: {
+        bets,
+        blocked: false,
+      },
+    });
+  }
+
   if (!currentUser) {
     attendeesMap.syncMapItems.create({
       ttl: ONE_WEEK,
@@ -176,7 +195,7 @@ export async function POST(req: NextRequest) {
         name: senderName,
         hashedSender,
         bet: wedges.find((wedge) =>
-          capitalizeEachWord(messageContent).includes(wedge)
+          capitalizeEachWord(messageContent).includes(wedge),
         ),
       };
       attendeesMap.syncMapItems(hashedSender).update({
@@ -196,10 +215,9 @@ export async function POST(req: NextRequest) {
         i18next.t("betPlaced", {
           senderName,
           messageContent: capitalizeEachWord(messageContent),
-        })
+        }),
       );
     } else {
-      debugger;
       client.messages.create({
         contentSid: i18next.t("invalidBet"),
         from: MESSAGE_SERVICE_SID,
