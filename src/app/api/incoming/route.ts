@@ -1,12 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import twilio, { twiml } from "twilio";
 import i18next from "i18next";
-import { getCountry } from "./helper";
+import { getCountry, capitalizeEachWord } from "./helper";
 import { createHash } from "crypto";
-
-interface ResponseError extends Error {
-  status?: number;
-}
 
 const en = require("../../../locale/en.json");
 const de = require("../../../locale/de.json");
@@ -33,23 +29,6 @@ const enum Stages {
   VERIFYING = 2,
   VERIFIED_USER = 3,
   ASKING_FOR_COUNTRY = 4,
-}
-
-interface UserData {
-  name: string;
-  sender: string;
-  stage: Stages;
-  email?: string;
-  verificationSid?: string;
-  country?: string;
-  event?: string;
-}
-
-function capitalizeEachWord(str: string) {
-  return str
-    .split(" ")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(" ");
 }
 
 export async function POST(req: NextRequest) {
