@@ -113,7 +113,7 @@ function App() {
                   <div
                     key={bet.hashedSender}
                     title={bet.name}
-                    className="bg-black rounded-full w-6 h-6 animate-pulse m-2"
+                    className="bg-black rounded-full w-6 h-6 animate-pulse m-2 placed-bet"
                   />
                 ))}
               {}
