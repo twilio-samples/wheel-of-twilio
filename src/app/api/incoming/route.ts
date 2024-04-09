@@ -4,6 +4,10 @@ import i18next from "i18next";
 import { getCountry } from "./helper";
 import { createHash } from "crypto";
 
+interface ResponseError extends Error {
+  status?: number;
+}
+
 const en = require("../../../locale/en.json");
 const de = require("../../../locale/de.json");
 
@@ -29,6 +33,16 @@ const enum Stages {
   VERIFYING = 2,
   VERIFIED_USER = 3,
   ASKING_FOR_COUNTRY = 4,
+}
+
+interface UserData {
+  name: string;
+  sender: string;
+  stage: Stages;
+  email?: string;
+  verificationSid?: string;
+  country?: string;
+  event?: string;
 }
 
 function capitalizeEachWord(str: string) {
@@ -70,8 +84,9 @@ export async function POST(req: NextRequest) {
 
   let currentUser, userStage;
   try {
-    currentUser = await attendeesMap.syncMapItems(hashedSender).fetch();
-    userStage = currentUser.data.stage;
+    const syncItem = await attendeesMap.syncMapItems(hashedSender).fetch();
+    currentUser = syncItem.data as UserData;
+    userStage = currentUser.stage;
   } catch (e: any) {
     if (e.status !== 404) {
       throw e;
@@ -87,7 +102,7 @@ export async function POST(req: NextRequest) {
       name: "test-better",
       hashedSender: "test-better",
       bet: wedges.find((wedge) =>
-        capitalizeEachWord(messageContent).includes(wedge),
+        capitalizeEachWord(messageContent).includes(wedge)
       ),
     };
     betsDoc.update({
@@ -127,7 +142,7 @@ export async function POST(req: NextRequest) {
           });
         attendeesMap.syncMapItems(hashedSender).update({
           data: {
-            ...currentUser.data,
+            ...currentUser,
             email: matchedEmail[0],
             stage: Stages.VERIFYING,
             verificationSid: verification.sid,
@@ -149,14 +164,14 @@ export async function POST(req: NextRequest) {
       const verificationCheck = await client.verify.v2
         .services(VERIFY_SERVICE_SID)
         .verificationChecks.create({
-          verificationSid: currentUser.data.verificationSid,
+          verificationSid: currentUser.verificationSid,
           code: submittedCode[0],
         });
 
       if (verificationCheck.status === "approved") {
         attendeesMap.syncMapItems(hashedSender).update({
           data: {
-            ...currentUser.data,
+            ...currentUser,
             stage: Stages.ASKING_FOR_COUNTRY,
           },
         });
@@ -172,7 +187,7 @@ export async function POST(req: NextRequest) {
   } else if (userStage === Stages.ASKING_FOR_COUNTRY) {
     attendeesMap.syncMapItems(hashedSender).update({
       data: {
-        ...currentUser.data,
+        ...currentUser,
         country: messageContent,
         stage: Stages.VERIFIED_USER,
       },
@@ -195,12 +210,12 @@ export async function POST(req: NextRequest) {
         name: senderName,
         hashedSender,
         bet: wedges.find((wedge) =>
-          capitalizeEachWord(messageContent).includes(wedge),
+          capitalizeEachWord(messageContent).includes(wedge)
         ),
       };
       attendeesMap.syncMapItems(hashedSender).update({
         data: {
-          ...currentUser.data,
+          ...currentUser,
           event: EVENT_NAME,
         },
       });
@@ -215,7 +230,7 @@ export async function POST(req: NextRequest) {
         i18next.t("betPlaced", {
           senderName,
           messageContent: capitalizeEachWord(messageContent),
-        }),
+        })
       );
     } else {
       client.messages.create({
