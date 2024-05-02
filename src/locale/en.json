@@ -1,6 +1,6 @@
 {
   "translation": {
-    "welcome": "Welcome to the game, {{senderName}}! Please reply with your business email address to verify. By replying, you agree to the terms and conditions that are linked in the WhatsApp profile.",
+    "welcome": "Welcome to the game, {{senderName}}! Please reply with your business email address, we will send you an email to verify your address is correct. By replying, you agree to the terms and conditions that are linked in the WhatsApp profile.",
     "invalidEmail": "Sorry, this is not a valid email address.",
     "emailVerified": "Thank you! Your email address has been verified. You can now play the game.",
     "sentEmail": "We have sent you an email with a verification code. Please reply with the code to verify your email address.",
