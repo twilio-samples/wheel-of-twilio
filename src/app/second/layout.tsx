@@ -11,10 +11,30 @@ export default function Layout({
         backgroundImage:
           "linear-gradient(to right, darkgray 1px, transparent 1px), linear-gradient(to bottom, dimgray 1px, transparent 1px)",
       }}
-      className="vh-full h-full text-[#FDF7F4]"
+      className="vh-full h-full "
     >
-      <div className="h-[500px] w-[500px] rounded-full bg-[#F22F46] absolute top-[-350px] left-[calc(50%-250px)] flex flex-col items-center justify-center">
-        <img src="/images/twilio_devs.png" alt="twilio devs" className="w-2/3 mt-[60%]" />
+      <img
+        src="/images/ConfettiLeft.svg"
+        alt="confetti left"
+        className="absolute top-0 left-0"
+      />
+      <img
+        src="/images/TwilioCircle.svg"
+        alt="asteriks"
+        className="absolute top-0 left-0"
+      />
+      <img
+        src="/images/ConfettiRight.svg"
+        alt="confetti right"
+        className="absolute top-0 left-0"
+      />
+      <div className="absolute top-0 left-0 w-full">
+        {/* needed because chrome won't render <image> in SVGs */}
+        <img
+          src="/images/twilio_devs.png"
+          alt="logo"
+          className="w-1/4 mx-auto"
+        />
       </div>
       {children}
     </div>

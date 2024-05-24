@@ -53,9 +53,9 @@ export default function Second({}) {
               return (
                 <div
                   key={wedge}
-                  className={`bg-[${isRed ? "#F22F46" : "#FDF7F4"}] text-[${
-                    isRed ? "#FDF7F4" : "#121C2D"
-                  }] py-5 rounded-t-lg w-full`}
+                  className={`${isRed ? "bg-[#F22F46]" : "bg-[#FDF7F4]"} ${
+                    isRed ? "text-[#FDF7F4]" : "text-[#121C2D]"
+                  } py-5 rounded-t-lg w-full`}
                 >
                   {wedge}
                 </div>
