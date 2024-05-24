@@ -53,10 +53,22 @@ export default function Second({}) {
               return (
                 <div
                   key={wedge}
-                  className={`${isRed ? "bg-[#F22F46]" : "bg-[#FDF7F4]"} ${
+                  className={`relative ${isRed ? "bg-[#F22F46]" : "bg-[#FDF7F4]"} ${
                     isRed ? "text-[#FDF7F4]" : "text-[#121C2D]"
                   } py-5 rounded-t-lg w-full`}
                 >
+
+                  <img
+                    src="/images/Chip.png"
+                    alt="bet chip"
+                    className="absolute scale-[0.25] z-10 translate-x-[70px]  translate-y-[-70px]"
+                  />
+
+                  <img
+                src="/images/Chip.png"
+                alt="bet chip"
+                className="absolute scale-[0.25] z-10 translate-x-[110px]  translate-y-[-110px]"
+                  />
                   {wedge}
                 </div>
               );
