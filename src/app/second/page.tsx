@@ -1,4 +1,5 @@
 import QRCode from "react-qr-code";
+import Wheel from "./Wheel";
 
 export default function Second({}) {
   const wedges = [
@@ -20,17 +21,11 @@ export default function Second({}) {
   ];
 
   return (
-    <div
-      style={{
-        backgroundColor: "#121c2d",
-        backgroundSize: "60px 60px",
-        backgroundImage:
-          "linear-gradient(to right, grey 1px, transparent 1px), linear-gradient(to bottom, grey 1px, transparent 1px)",
-      }}
-      className="vh-full flex h-full"
-    >
+    <div className="vh-full flex h-full">
       <div className="w-1/2 flex items-center justify-center">
-        <img src="/images/second.png" alt="second" />
+        <div className=" h-[400px] w-[400px] rounded-full bg-[#F22F46] flex items-center animate-spin ani justify-center">
+          Hello me
+        </div>
 
         <div className="absolute bottom-3 text-gray-300 font-light  text-xs ml-16">
           <p className="">
@@ -47,12 +42,12 @@ export default function Second({}) {
         </div>
       </div>
       <div className="w-1/2 flex items-center justify-center">
-        <div className="absolute top-16 w-1/2">
+        <div className="absolute top-20 w-1/2">
           <div className="flex flex-col text-3xl font-extrabold pb-8 w-1/2 mx-auto">
             <h1 className="text-white">Better communication</h1>
             <h1 className="text-amber-300">in the blink of an API</h1>
           </div>
-          <div className="w-2/3 mx-auto grid grid-cols-2 pb-8  gap-6 space-around text-center text-xl font-semibold ">
+          <div className="w-2/3 mx-auto grid grid-cols-2 pb-8  gap-4 space-around text-center text-xl font-semibold ">
             {wedges.map((wedge, index) => {
               const isRed = Math.floor((index - 1) / 2) % 2 === 0;
               return (
