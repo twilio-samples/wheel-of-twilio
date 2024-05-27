@@ -12,15 +12,15 @@
       }
 
       .cls-5 {
-        fill: #73b8a8;
+        fill: #6ADDB2; // mint
       }
 
       .cls-6 {
-        fill: #efe6e6;
+        fill: #efe6e6; // light grey
       }
 
       .cls-7 {
-        fill: #5aa8cd;
+        fill: #51A9E3; // sky
       }
 
       .cls-2 {
@@ -28,11 +28,11 @@
       }
 
       .cls-8 {
-        fill: #de7d2f;
+        fill: #F2BE5A; // saffron
       }
 
       .cls-9 {
-        fill: #fdf7f4;
+        fill: #FFFFFF; // white
       }
 
       .cls-10 {
@@ -88,7 +88,7 @@
       }
 
       .cls-32 {
-        fill: #eebf40;
+        fill: #eebf40; // yellow
       }
 
       .cls-33 {
@@ -96,8 +96,8 @@
       }
 
       .cls-34 {
-        fill: #1d1d1b;
-      }
+        fill: #1d1d1b; // black
+      } 
 
       .cls-35 {
         isolation: isolate;
@@ -140,15 +140,15 @@
       }
 
       .cls-45 {
-        fill: #df434c;
+        fill: #F22F46; // red
       }
 
       .cls-46 {
-        fill: #121c2d;
+        fill: #121C2D; // dark blue
       }
 
       .cls-47 {
-        fill: #c8b9b7;
+        fill: #c8b9b7; // light brown
       }
 
       .cls-48 {
@@ -176,7 +176,7 @@
       }
 
       .cls-56 {
-        fill: #f2be59;
+        fill: #F2BE5A; // saffron
       }
 
       .cls-15 {
@@ -212,7 +212,7 @@
       }
 
       .cls-57 {
-        fill: #5abaa7;
+        fill: #5abaa7; // green
       }
 
       .cls-58 {
@@ -220,11 +220,11 @@
       }
 
       .cls-59 {
-        fill: #f22e46;
+        fill: #F22F46; // red
       }
 
       .cls-60 {
-        fill: #6ea6c9;
+        fill: #51A9E3;  // blue
       }
 
       .cls-3 {
