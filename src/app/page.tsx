@@ -11,20 +11,12 @@ import {
   blockBets,
 } from "./twilio";
 import QRCode from "react-qr-code";
-const NoSSRWheel = dynamic(() => import("./Wheel"), { ssr: false });
 
 function App() {
   const [bets, setBets] = useState<any[]>([]);
   const [doc, setDoc] = useState<any>({});
 
-  const wedges = (process.env.NEXT_PUBLIC_WEDGES || "")
-    .split(",")
-    .map((wedge, idx) => {
-      return {
-        name: wedge,
-        color: idx % 2 === 0 ? "red" : "green",
-      };
-    });
+  const wedges = (process.env.NEXT_PUBLIC_WEDGES || "").split(",");
 
   useEffect(() => {
     let syncClient: SyncClient;
@@ -57,69 +49,83 @@ function App() {
   }, []);
 
   return (
-    <div className="App">
-      <div className="fixed z-10">
-        <QRCode
-          value={`https://wa.me/${process.env.NEXT_PUBLIC_TWILIO_PHONE_NUMBER}?text=Hit%20send%20to%20start!`}
-        />
-        <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-b w-full"
-          onClick={() => {
-            clearBets();
-          }}
-        >
-          Reset Bets
-        </button>
+    <div className="vh-full flex h-full">
+      <div className="w-1/2 flex items-center justify-center">
+        <div className=" h-[400px] w-[400px] rounded-full bg-[#F22F46] flex items-center animate-spin ani justify-center">
+          Hello me
+        </div>
+
+        <div className="absolute bottom-3 font-light  text-xs ml-16">
+          <p className="">
+            Please note that by scanning the QR code a WhatsApp conversation
+            will be prompted and your WhatsApp profile and phone number will be
+            accessible by Twilio.
+          </p>
+          <p className="">
+            Your WhatsApp profile and phone number is necessary for you to play
+            the game and will be deleted at the end of the event. Your personal
+            data collected as part of the game is processed in accordance with
+            Twilio Privacy Notice available on Twilio website.
+          </p>
+        </div>
       </div>
-      <div className="absolute w-full h-2/3 flex flex-col items-center justify-center">
-        <NoSSRWheel
-          wedges={wedges}
-          afterStart={() => {
-            blockBets();
-          }}
-          onStop={(wedge: string) => {
-            const winners = bets.filter((bet) => bet.bet === wedge);
-            callWinners(winners);
-            messageOthers(
-              bets.filter((bet) => bet.bet !== wedge),
-              wedge,
-            );
-
-            let annoucement = `Winning wedge is ${wedge} and we got ${winners.length} winners.`;
-            if (winners.length > 0) {
-              annoucement += "The winners are: ";
-              winners.forEach((winner) => {
-                annoucement += `${winner.name}, `;
-              });
-            }
-
-            alert(annoucement);
-
-            clearBets();
-          }}
-        />
-      </div>
-      <div className="absolute w-full h-1/3 bottom-0 flex items-center justify-center">
-        {wedges.map((wedge) => (
-          <div
-            key={wedge.name}
-            className={`bg-${wedge.color}-500 h-full flex-1 m-0.5 rounded-lg py-8`}
-          >
-            <h1 className="text-2xl text-black text-center">{wedge.name}</h1>
-            <div className="mt-4 grid grid-cols-5">
-              {bets
-                .filter((bet) => bet.bet === wedge.name)
-                .map((bet) => (
-                  <div
-                    key={bet.hashedSender}
-                    title={bet.name}
-                    className="bg-black rounded-full w-6 h-6 animate-pulse m-2 placed-bet"
-                  />
-                ))}
-              {}
-            </div>
+      <div className="w-1/2 flex items-center justify-center">
+        <div className="absolute top-20 w-1/2">
+          <div className="flex flex-col text-3xl font-extrabold pb-8 w-1/2 mx-auto">
+            <h1 className="text-[#FDF7F4]">Better communication</h1>
+            <h1 className="text-[#F2BE5A]">in the blink of an API</h1>
           </div>
-        ))}
+          <div className="w-2/3 mx-auto grid grid-cols-2 pb-8  gap-4 space-around text-center text-xl font-semibold ">
+            {wedges.map((wedge, index) => {
+              const isRed = Math.floor((index - 1) / 2) % 2 === 0;
+              return (
+                <div
+                  key={wedge}
+                  className={`relative ${isRed ? "bg-[#F22F46]" : "bg-[#FDF7F4]"} ${
+                    isRed ? "text-[#FDF7F4]" : "text-[#121C2D]"
+                  } py-5 rounded-t-lg w-full`}
+                >
+                  {Object.values(bets)
+                    .filter((bet) => bet.bet === wedge)
+                    .map((bet, index) => {
+                      console.log(bet);
+                      return (
+                        <img
+                          key={`bet-${bet.bet}-${index}`}
+                          src="/images/Chip.png"
+                          alt="bet chip"
+                          className={`absolute scale-[0.25] z-10 translate-x-[${Math.floor(Math.random() * 40 + 70)}px]  translate-y-[-${Math.floor(Math.random() * 40 + 70)}px]`}
+                        />
+                      );
+                    })}
+                  {/* Test Chip, bottom-left */}
+                  {/* <img
+                    src="/images/Chip.png"
+                    alt="bet chip"
+                    className="absolute scale-[0.25] z-10 translate-x-[70px]  translate-y-[-70px]"
+                  />
+                  // Test Chip, top-right 
+                  <img
+                    src="/images/Chip.png"
+                    alt="bet chip"
+                    className="absolute scale-[0.25] z-10 translate-x-[110px]  translate-y-[-110px]"
+                  /> */}
+                  {wedge}
+                </div>
+              );
+            })}
+          </div>
+          <div className="w-2/3 mx-auto grid grid-cols-2 pb-8 gap-6 ">
+            <span className="ml-auto text-right w-1/2 font-extrabold text-xl">
+              Scan the code and win prizes
+            </span>
+            {/* @ts-ignore */}
+            <QRCode
+              className="w-24 h-24 p-1 bg-[#FDF7F4]"
+              value={`https://wa.me/${process.env.NEXT_PUBLIC_TWILIO_PHONE_NUMBER}?text=Hit%20send%20to%20start!`}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
