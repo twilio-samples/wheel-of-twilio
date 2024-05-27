@@ -50,10 +50,21 @@ function App() {
 
   return (
     <div className="vh-full flex h-full">
-      <div className="w-1/2 flex items-center justify-center">
-        <div className=" h-[400px] w-[400px] rounded-full bg-[#F22F46] flex items-center animate-spin ani justify-center">
+      <div className="w-1/2 flex  item justify-center relative">
+        <img
+          src="/images/Wheel.svg"
+          alt="wheel frame"
+          className="w-5/12 mx-auto fixed top-44"
+        />
+        <img
+          src="/images/Stopper.svg"
+          alt="stopper"
+          className="w-14 mx-auto fixed top-48"
+        />
+
+        {/* <div className=" h-[400px] w-[400px] rounded-full bg-[#F22F46] flex items-center animate-spin ani justify-center">
           Hello me
-        </div>
+        </div> */}
 
         <div className="absolute bottom-3 font-light  text-xs ml-16">
           <p className="">
