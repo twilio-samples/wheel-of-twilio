@@ -15,6 +15,7 @@
     "setup": "tsx -r dotenv/config src/scripts/setup dotenv_config_path=.env.local"
   },
   "dependencies": {
+    "bufferutil": "^4.0.8",
     "countries-list": "^3.1.0",
     "google-libphonenumber": "^3.2.34",
     "i18next": "^23.11.5",
