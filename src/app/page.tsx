@@ -81,8 +81,8 @@ function App() {
         </div>
       </div>
       <div className="w-1/2 flex items-center justify-center">
-        <div className="absolute top-20 w-1/2">
-          <div className="flex flex-col text-3xl font-extrabold pb-8 w-1/2 mx-auto">
+        <div className="absolute my-auto w-1/2">
+          <div className="flex flex-col text-3xl font-extrabold pb-8 w-2/3 mx-auto">
             <h1 className="text-[#FDF7F4]">Better communication</h1>
             <h1 className="text-[#F2BE5A]">in the blink of an API</h1>
           </div>
@@ -126,8 +126,8 @@ function App() {
               );
             })}
           </div>
-          <div className="w-2/3 mx-auto grid grid-cols-2 pb-8 gap-6 ">
-            <span className="ml-auto text-right w-1/2 font-extrabold text-xl">
+          <div className="w-2/3 mx-auto grid grid-cols-2 gap-6 ">
+            <span className="ml-auto text-right w-2/3 font-extrabold text-xl">
               Scan the code and win prizes
             </span>
             {/* @ts-ignore */}
