@@ -24,7 +24,8 @@
     "react-dom": "^18.3.1",
     "react-qr-code": "^2.0.13",
     "twilio": "^5.0.4",
-    "twilio-sync": "^3.3.3"
+    "twilio-sync": "^3.3.3",
+    "utf-8-validate": "^6.0.4"
   },
   "devDependencies": {
     "@playwright/test": "^1.44.0",
