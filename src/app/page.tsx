@@ -10,6 +10,7 @@ import {
   clearBets,
   blockBets,
 } from "./twilio";
+import SpinAndWin from "./ReactSpinGame";
 import QRCode from "react-qr-code";
 
 function App() {
@@ -51,21 +52,23 @@ function App() {
   return (
     <div className="vh-full flex h-full">
       <div className="w-1/2 flex  item justify-center relative">
-        <img
-          src="/images/Wheel.svg"
-          alt="wheel frame"
-          className="w-5/12 mx-auto fixed top-44"
+        <SpinAndWin
+          wedges={wedges}
+          time={3}
+          onAfterStarted={() => {
+            blockBets();
+          }}
+          onAfterFinished={(selectedWedge: string) => {
+            callWinners(
+              Object.values(bets).filter((bet) => bet.bet === selectedWedge)
+            );
+            messageOthers(
+              Object.values(bets).filter((bet) => bet.bet !== selectedWedge),
+              selectedWedge
+            );
+            clearBets();
+          }}
         />
-        <img
-          src="/images/Stopper.svg"
-          alt="stopper"
-          className="w-14 mx-auto fixed top-48"
-        />
-
-        {/* <div className=" h-[400px] w-[400px] rounded-full bg-[#F22F46] flex items-center animate-spin ani justify-center">
-          Hello me
-        </div> */}
-
         <div className="absolute bottom-3 font-light  text-xs ml-16">
           <p className="">
             Please note that by scanning the QR code a WhatsApp conversation
@@ -104,7 +107,8 @@ function App() {
                         <img
                           key={`bet-${bet.bet}-${index}`}
                           src="/images/Chip.png"
-                          alt="bet chip"
+                          alt={`${bet.name} bet chip on ${bet.bet}`}
+                          title={`${bet.name} bets on ${bet.bet}`}
                           className={`absolute scale-[0.25] z-10 translate-x-[${Math.floor(Math.random() * 40 + 70)}px]  translate-y-[-${Math.floor(Math.random() * 40 + 70)}px]`}
                         />
                       );
