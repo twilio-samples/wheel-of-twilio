@@ -15,7 +15,7 @@ const {
   VERIFY_SERVICE_SID = "",
   SYNC_SERVICE_SID = "",
   EVENT_NAME = "",
-  MESSAGE_SERVICE_SID = "",
+  MESSAGING_SERVICE_SID = "",
   NEXT_PUBLIC_WEDGES = "",
 } = process.env;
 
@@ -156,7 +156,7 @@ export async function POST(req: NextRequest) {
         });
         client.messages.create({
           contentSid: i18next.t("countryTemplateSID"),
-          from: MESSAGE_SERVICE_SID,
+          from: MESSAGING_SERVICE_SID,
           to: senderID,
         });
       }
@@ -173,7 +173,7 @@ export async function POST(req: NextRequest) {
     });
     client.messages.create({
       contentSid: i18next.t("betTemplateSID"),
-      from: MESSAGE_SERVICE_SID,
+      from: MESSAGING_SERVICE_SID,
       to: senderID,
     });
   } else if (userStage === Stages.VERIFIED_USER) {
@@ -214,7 +214,7 @@ export async function POST(req: NextRequest) {
     } else {
       client.messages.create({
         contentSid: i18next.t("invalidBet"),
-        from: MESSAGE_SERVICE_SID,
+        from: MESSAGING_SERVICE_SID,
         to: senderID,
       });
     }

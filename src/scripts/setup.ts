@@ -21,7 +21,7 @@ const {
   TWILIO_ACCOUNT_SID = "",
   VERIFY_SERVICE_SID = "",
   SYNC_SERVICE_SID = "",
-  MESSAGE_SERVICE_SID = "",
+  MESSAGING_SERVICE_SID = "",
 } = process.env;
 
 const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
@@ -103,7 +103,7 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
 
 (async () => {
   const messagingService = await client.messaging.v1
-    .services(MESSAGE_SERVICE_SID)
+    .services(MESSAGING_SERVICE_SID)
     .fetch();
   console.log(`Messaging service ${messagingService.sid} has been fetched`);
 
