@@ -27,7 +27,7 @@ async function localizeStringForPhoneNumber(
   str: string,
   phone: string,
   name: string,
-  winningWedge?: string,
+  winningWedge?: string
 ) {
   await i18next.init({
     lng: getCountry(phone)?.languages[0],
@@ -52,7 +52,7 @@ export async function fetchToken() {
     TWILIO_API_SECRET,
     {
       identity: Privilege.FRONTEND,
-    },
+    }
   );
 
   token.addGrant(syncGrant);
@@ -92,9 +92,18 @@ export async function callWinners(winners: any[]) {
       .fetch();
     const to = winner.data.sender.replace("whatsapp:", "");
     client.calls.create({
-      twiml: await localizeStringForPhoneNumber("winner", to, winner.data.name),
+      twiml: await localizeStringForPhoneNumber(
+        "winnerCall",
+        to,
+        winner.data.name
+      ),
       from: NEXT_PUBLIC_TWILIO_PHONE_NUMBER,
       to,
+    });
+    client.messages.create({
+      body: await localizeStringForPhoneNumber("winner", to, winner.data.name),
+      from: `whatsapp:${NEXT_PUBLIC_TWILIO_PHONE_NUMBER}`,
+      to: winner.data.sender,
     });
   });
 }
@@ -110,7 +119,7 @@ export async function messageOthers(unluckyBets: any[], winningWedge: string) {
       "loser",
       unluckyPlayer.data.sender,
       unluckyPlayer.data.name,
-      winningWedge,
+      winningWedge
     );
     client.messages.create({
       body,
