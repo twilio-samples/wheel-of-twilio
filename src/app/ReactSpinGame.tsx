@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useLayoutEffect } from "react";
 
 interface SpinGameData {
   wedges: string[];
@@ -19,19 +19,29 @@ export default function SpinAndWin({
 }: SpinGameData) {
   const wheelRef = useRef<any>();
   const [state] = useState({ winnerAngle: 0 });
-  useEffect(() => {
-    var wheelCanvas = document.getElementById("wheel");
-    if (wheelCanvas && isCanvas(wheelCanvas)) {
-      var wheel = wheelCanvas.getContext("2d");
-      var wheelX = wheelCanvas.width / 2;
-      // wheelCanvas.style.width = wheelCanvas.width + "px";
-      var wheelY = wheelCanvas.height / 2;
 
-      // wheelCanvas.style.height = wheelCanvas.height + "px";
-      var wheelRadius = Math.min(wheelX, wheelY);
+  useLayoutEffect(() => {
+    const renderWheel = () => {
+      if (document.visibilityState === "visible") {
+        var wheelCanvas = document.getElementById("wheel");
+        if (wheelCanvas && isCanvas(wheelCanvas)) {
+          var wheel = wheelCanvas.getContext("2d");
+          var wheelX = wheelCanvas.width / 2;
+          // wheelCanvas.style.width = wheelCanvas.width + "px";
+          var wheelY = wheelCanvas.height / 2;
 
-      drawWheel(wedges, wheel, wheelX, wheelY, wheelRadius);
-    }
+          // wheelCanvas.style.height = wheelCanvas.height + "px";
+          var wheelRadius = Math.min(wheelX, wheelY);
+
+          drawWheel(wedges, wheel, wheelX, wheelY, wheelRadius);
+        }
+      }
+    };
+    renderWheel();
+    document.addEventListener("visibilitychange", renderWheel);
+
+    return () =>
+      document.removeEventListener("visibilitychange", renderWheel);
   }, [wedges]);
   function isCanvas(
     obj: HTMLCanvasElement | HTMLElement
@@ -49,7 +59,6 @@ export default function SpinAndWin({
     wheelRadius: number
   ) => {
     var segment = 360 / list.length;
-    console.log("draw with list", list, "segment", segment)
 
     list.map((el: string, i: number) => {
       wheel.save();
