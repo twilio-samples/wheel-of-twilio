@@ -15,7 +15,6 @@ export function getCountry(phone: string): ICountry | undefined {
   });
 }
 
-
 export function capitalizeEachWord(str: string) {
   return str
     .split(" ")

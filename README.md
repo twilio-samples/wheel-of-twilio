@@ -29,29 +29,32 @@ This project is Twilio's innovative booth activation designed to motivate people
      - A [Messaging Service](https://twilio.com/console/messaging) with the correct WhatsApp sender configured.
 
 3. **Configure Environment Variables:**
+
    - Rename `sample.env` to `.env`.
    - Add the required service SIDs and other variables in the `.env` file:
 
-      ```env
-      TWILIO_ACCOUNT_SID="ACxxxxx"
-      TWILIO_API_KEY="SKxxxxx"
-      TWILIO_API_SECRET="xxxxx"
-      EVENT_NAME="DevEvent 2024"
-      NEXT_PUBLIC_WEDGES="San Francisco,London,Paris,Madrid,Berlin,New York,Munich,Barcelona,Amsterdam,Vienna"
-      NEXT_PUBLIC_TWILIO_PHONE_NUMBER="+4918601860"
-      VERIFY_SERVICE_SID="VAxxxxxxx"
-      SYNC_SERVICE_SID="ISxxxxxx"
-      MESSAGING_SERVICE_SID="MGxxxxxxx"
-      BASIC_AUTH_USERNAME="twilio"
-      BASIC_AUTH_PASSWORD="admin!"
-      ```
+     ```env
+     TWILIO_ACCOUNT_SID="ACxxxxx"
+     TWILIO_API_KEY="SKxxxxx"
+     TWILIO_API_SECRET="xxxxx"
+     EVENT_NAME="DevEvent 2024"
+     NEXT_PUBLIC_WEDGES="San Francisco,London,Paris,Madrid,Berlin,New York,Munich,Barcelona,Amsterdam,Vienna"
+     NEXT_PUBLIC_TWILIO_PHONE_NUMBER="+4918601860"
+     VERIFY_SERVICE_SID="VAxxxxxxx"
+     SYNC_SERVICE_SID="ISxxxxxx"
+     MESSAGING_SERVICE_SID="MGxxxxxxx"
+     BASIC_AUTH_USERNAME="twilio"
+     BASIC_AUTH_PASSWORD="admin!"
+     ```
 
 4. **Run the setup script:**
+
    ```bash
    pnpm run setup
    ```
 
 5. **Run ngrok**
+
    ```bash
    ngrok http 3000
    ```

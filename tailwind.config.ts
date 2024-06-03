@@ -48,7 +48,7 @@ const config: Config = {
     "translate-y-[-106px]",
     "translate-y-[-107px]",
     "translate-y-[-108px]",
-    "translate-y-[-109px]",  
+    "translate-y-[-109px]",
     "translate-x-[70px]",
     "translate-x-[71px]",
     "translate-x-[72px]",

@@ -41,7 +41,7 @@ export default function RootLayout({
             alt="confetti right"
             className="absolute top-0 left-0"
           />
-     
+
           <div className="absolute top-0 left-0 w-full">
             {/* needed because chrome won't render <image> in SVGs */}
             <img
