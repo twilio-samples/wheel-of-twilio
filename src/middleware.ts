@@ -39,5 +39,5 @@ function isAuthenticated(req: NextRequest) {
 
 // Step 3. Configure "Matching Paths" below to protect routes with HTTP Basic Auth
 export const config = {
-  matcher: "/:path*",
+  matcher: "/",
 };
