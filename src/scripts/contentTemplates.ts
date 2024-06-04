@@ -46,7 +46,7 @@ function getCountyTemplates(): WhatsAppTemplateConfig[] {
               title: "Großbritannien 🇬🇧",
             },
           ],
-          body: "Deine E-Mail-Adresse wurde verifiziert. In welchem Land sind Sie ansässig? \nSie können auf eine Schaltfläche klicken oder mit freiem Text antworten.",
+          body: "Deine E-Mail-Adresse wurde verifiziert. In welchem Land sind Sie ansässig? \nSie können auf eine Schaltfläche klicken oder mit Freitext antworten.",
         },
       },
     },
