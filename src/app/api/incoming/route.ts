@@ -192,13 +192,13 @@ export async function POST(req: NextRequest) {
           capitalizeEachWord(messageContent).includes(wedge)
         ),
       };
-      attendeesMap.syncMapItems(hashedSender).update({
+      await attendeesMap.syncMapItems(hashedSender).update({
         data: {
           ...currentUser,
           event: EVENT_NAME,
         },
       });
-      betsDoc.update({
+      await betsDoc.update({
         data: {
           bets,
           blocked: false,
