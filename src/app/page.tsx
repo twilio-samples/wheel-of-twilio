@@ -106,7 +106,7 @@ function App() {
                       return (
                         <img
                           key={`bet-${bet.bet}-${index}`}
-                          src="/images/Chip.png"
+                          src="/images/chip.png"
                           alt={`${bet.name} bet chip on ${bet.bet}`}
                           title={`${bet.name} bets on ${bet.bet}`}
                           className={`absolute scale-[0.25] z-10 translate-x-[${Math.floor(Math.random() * 40 + 70)}px]  translate-y-[-${Math.floor(Math.random() * 40 + 70)}px]`}
@@ -115,13 +115,13 @@ function App() {
                     })}
                   {/* Test Chip, bottom-left */}
                   {/* <img
-                    src="/images/Chip.png"
+                    src="/images/chip.png"
                     alt="bet chip"
                     className="absolute scale-[0.25] z-10 translate-x-[70px]  translate-y-[-70px]"
                   />
                   // Test Chip, top-right 
                   <img
-                    src="/images/Chip.png"
+                    src="/images/chip.png"
                     alt="bet chip"
                     className="absolute scale-[0.25] z-10 translate-x-[110px]  translate-y-[-110px]"
                   /> */}
