@@ -22,7 +22,7 @@ export default function RootLayout({
             backgroundColor: "#121C2D",
             backgroundSize: "60px 60px",
             backgroundImage:
-              "linear-gradient(to right, darkgray 1px, transparent 1px), linear-gradient(to bottom, dimgray 1px, transparent 1px)",
+              "linear-gradient(to right, rgb(253, 247, 244, 30%) 0.35px, transparent 1px), linear-gradient(to bottom, rgb(253, 247, 244, 30%) 0.35px, transparent 1px)",
           }}
           className="vh-full h-full "
         >
