@@ -4,6 +4,7 @@ function getCountyTemplates(): WhatsAppTemplateConfig[] {
       friendly_name: "Ask For Country",
       language: "en",
       variables: {},
+      translationKey: "countryTemplateSID",
       types: {
         "twilio/quick-reply": {
           actions: [
@@ -28,6 +29,7 @@ function getCountyTemplates(): WhatsAppTemplateConfig[] {
       friendly_name: "Frage nach Land",
       language: "de",
       variables: {},
+      translationKey: "countryTemplateSID",
       types: {
         "twilio/quick-reply": {
           actions: [
@@ -61,6 +63,7 @@ function getOptionsTemplates(): WhatsAppTemplateConfig[] {
       friendly_name: "Ask For Bets",
       language: "en",
       variables: {},
+      translationKey: "betTemplateSID",
       types: {
         "twilio/list-picker": {
           body: `Please select one of the following wedges:\n`,
@@ -77,6 +80,7 @@ function getOptionsTemplates(): WhatsAppTemplateConfig[] {
       friendly_name: "Frage nach Feld",
       language: "de",
       variables: {},
+      translationKey: "betTemplateSID",
       types: {
         "twilio/list-picker": {
           body: `Auf welches Feld möchten Sie setzen?\n`,
@@ -98,6 +102,7 @@ function getInvalidBetsTemplates(): WhatsAppTemplateConfig[] {
       friendly_name: "Invalid Bet",
       language: "en",
       variables: {},
+      translationKey: "invalidBetTemplateSID",
       types: {
         "twilio/list-picker": {
           body: `Sorry, this is not a valid bet. Please bet on one of the following wedges \n`,
@@ -114,6 +119,7 @@ function getInvalidBetsTemplates(): WhatsAppTemplateConfig[] {
       friendly_name: "Ungültige Wette",
       language: "de",
       variables: {},
+      translationKey: "invalidBetTemplateSID",
       types: {
         "twilio/list-picker": {
           body: `Entschuldigung, dies ist keine gültige Wette. Bitte setzen Sie auf eines der folgenden Felder  \n`,
@@ -140,6 +146,7 @@ export function getTemplates(): WhatsAppTemplateConfig[] {
 export interface WhatsAppTemplateConfig {
   friendly_name: string;
   language: string;
+  translationKey: string;
   variables: Record<string, string>;
   types: {
     "twilio/quick-reply"?: {

@@ -10,8 +10,8 @@
     "winnerCall": "<Response><Say>Congratulations {{name}}! You won!</Say></Response>",
     "winner": "Congratulations {{name}}! You won!",
     "loser": "Sorry {{name}}, you lost! The winning wedge was {{winningWedge}}. \nBetter luck next time!",
-    "countryTemplateSID": "HX1b6048edf9407fec4ad49458798f9d94",
-    "betTemplateSID": "HX5beee0f6a446aa6c367796f91a00dc2c",
-    "invalidBet": "HX29978e68f579e3b9ee347ba39f694ecb"
+    "countryTemplateSID": "HX9132682e60f492128d65b18fad550721",
+    "betTemplateSID": "HX555e81ee8cc60749e9a6ed50c875561c",
+    "invalidBetTemplateSID": "HX7123158f4226bc256660e03cf8b8d051"
   }
 }

@@ -8,10 +8,10 @@
     "betsClosed": "Entschuldigung, das Spiel ist blockiert.",
     "betPlaced": "Hallo {{senderName}}\nWir haben Ihre Wette erhalten {{messageContent}}",
     "winnerCall": "<Response><Say language='DE-de'>Herzlichen Glückwunsch {{name}}! Sie haben gewonnen!</Say></Response>",
-    "winner": "Herzlichen Glückwunsch {{name}}! Sie haben gewonnen!",
+    "winner": "Herzlichen Glückwunsch {{name}}! Sie haben gewonnen!</Say></Response>",
     "loser": "Leider haben Sie verloren. Das Gewinnerfeld war {{winningWedge}}. \nViel Glück beim nächsten Mal!",
-    "invalidBet": "HX87c170e54c740552964485e218aef228",
-    "countryTemplateSID": "HX311e768d2292a27ffbda4bb03e91f34a",
-    "betTemplateSID": "HX1e815d47d6d67b032d7c6605c972431c"
+    "invalidBetTemplateSID": "HXdecbcdeedcd86e6c29f462267f3d9bf4",
+    "countryTemplateSID": "HX832dc050ea253ebe555ae6b3c3212846",
+    "betTemplateSID": "HX7a3d3c17979a3c134f7ebde11fdd30d1"
   }
 }

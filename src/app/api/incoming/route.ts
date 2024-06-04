@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
       name: "test-better",
       hashedSender: "test-better",
       bet: wedges.find((wedge) =>
-        capitalizeEachWord(messageContent).includes(wedge),
+        capitalizeEachWord(messageContent).includes(wedge)
       ),
     };
     betsDoc.update({
@@ -154,7 +154,7 @@ export async function POST(req: NextRequest) {
             stage: Stages.ASKING_FOR_COUNTRY,
           },
         });
-        client.messages.create({
+        await client.messages.create({
           contentSid: i18next.t("countryTemplateSID"),
           from: MESSAGING_SERVICE_SID,
           to: senderID,
@@ -171,7 +171,7 @@ export async function POST(req: NextRequest) {
         stage: Stages.VERIFIED_USER,
       },
     });
-    client.messages.create({
+    await client.messages.create({
       contentSid: i18next.t("betTemplateSID"),
       from: MESSAGING_SERVICE_SID,
       to: senderID,
@@ -179,7 +179,7 @@ export async function POST(req: NextRequest) {
   } else if (userStage === Stages.VERIFIED_USER) {
     if (betsDoc.data.blocked) {
       twimlRes.message(i18next.t("betsClosed"));
-      // check if one of the wedges is a subsrting of the capitalized messageContent
+      // check if one of the wedges is a substring of the capitalized messageContent
     } else if (
       wedges.some((wedge) => capitalizeEachWord(messageContent).includes(wedge))
     ) {
@@ -189,7 +189,7 @@ export async function POST(req: NextRequest) {
         name: senderName,
         hashedSender,
         bet: wedges.find((wedge) =>
-          capitalizeEachWord(messageContent).includes(wedge),
+          capitalizeEachWord(messageContent).includes(wedge)
         ),
       };
       attendeesMap.syncMapItems(hashedSender).update({
@@ -209,17 +209,16 @@ export async function POST(req: NextRequest) {
         i18next.t("betPlaced", {
           senderName,
           messageContent: capitalizeEachWord(messageContent),
-        }),
+        })
       );
     } else {
-      client.messages.create({
-        contentSid: i18next.t("invalidBet"),
+      await client.messages.create({
+        contentSid: i18next.t("invalidBetTemplateSID"),
         from: MESSAGING_SERVICE_SID,
         to: senderID,
       });
     }
   }
-
   const res = new NextResponse(twimlRes.toString());
   res.headers.set("Content-Type", "text/xml");
   return res;
