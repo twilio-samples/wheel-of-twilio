@@ -81,10 +81,10 @@ export async function POST(req: NextRequest) {
       name: "test-better",
       hashedSender: "test-better",
       bet: wedges.find((wedge) =>
-        capitalizeEachWord(messageContent).includes(wedge),
+        capitalizeEachWord(messageContent).includes(wedge)
       ),
     };
-    betsDoc.update({
+    await betsDoc.update({
       data: {
         bets,
         blocked: false,
@@ -93,7 +93,7 @@ export async function POST(req: NextRequest) {
   }
 
   if (!currentUser) {
-    attendeesMap.syncMapItems.create({
+    await attendeesMap.syncMapItems.create({
       ttl: ONE_WEEK,
       key: hashedSender,
       data: {
@@ -119,7 +119,7 @@ export async function POST(req: NextRequest) {
             channel: "email",
             locale: lng,
           });
-        attendeesMap.syncMapItems(hashedSender).update({
+        await attendeesMap.syncMapItems(hashedSender).update({
           data: {
             ...currentUser,
             email: matchedEmail[0],
@@ -148,7 +148,7 @@ export async function POST(req: NextRequest) {
         });
 
       if (verificationCheck.status === "approved") {
-        attendeesMap.syncMapItems(hashedSender).update({
+        await attendeesMap.syncMapItems(hashedSender).update({
           data: {
             ...currentUser,
             stage: Stages.ASKING_FOR_COUNTRY,
@@ -164,7 +164,7 @@ export async function POST(req: NextRequest) {
       twimlRes.message(i18next.t("verificationFailed"));
     }
   } else if (userStage === Stages.ASKING_FOR_COUNTRY) {
-    attendeesMap.syncMapItems(hashedSender).update({
+    await attendeesMap.syncMapItems(hashedSender).update({
       data: {
         ...currentUser,
         country: messageContent,
@@ -189,7 +189,7 @@ export async function POST(req: NextRequest) {
         name: senderName,
         hashedSender,
         bet: wedges.find((wedge) =>
-          capitalizeEachWord(messageContent).includes(wedge),
+          capitalizeEachWord(messageContent).includes(wedge)
         ),
       };
       await attendeesMap.syncMapItems(hashedSender).update({
@@ -209,7 +209,7 @@ export async function POST(req: NextRequest) {
         i18next.t("betPlaced", {
           senderName,
           messageContent: capitalizeEachWord(messageContent),
-        }),
+        })
       );
     } else {
       await client.messages.create({
