@@ -8,7 +8,7 @@
     "betsClosed": "Entschuldigung, das Spiel ist blockiert.",
     "betPlaced": "Hallo {{senderName}}\nWir haben Ihre Wette erhalten {{messageContent}}",
     "winnerCall": "<Response><Say language='DE-de'>Herzlichen Glückwunsch {{name}}! Sie haben gewonnen!</Say></Response>",
-    "winner": "Herzlichen Glückwunsch {{name}}! Sie haben gewonnen!</Say></Response>",
+    "winner": "Herzlichen Glückwunsch {{name}}! Sie haben gewonnen!",
     "loser": "Leider haben Sie verloren. Das Gewinnerfeld war {{winningWedge}}. \nViel Glück beim nächsten Mal!",
     "invalidBetTemplateSID": "HXdecbcdeedcd86e6c29f462267f3d9bf4",
     "countryTemplateSID": "HX832dc050ea253ebe555ae6b3c3212846",
