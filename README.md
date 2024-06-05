@@ -1,4 +1,4 @@
-# Wheel Of Fortune Game
+# Wheel Of Twilio Game
 
 This project is Twilio's innovative booth activation designed to motivate people to engage with Twilio's technology while offering them the opportunity to win exciting prizes.
 
@@ -66,7 +66,7 @@ This project is Twilio's innovative booth activation designed to motivate people
    pnpm dev
    ```
 
-After following these steps, the Wheel Of Fortune game should be up and running on your local machine. Enjoy testing and experimenting with Twilio's tech in a fun, interactive way!
+After following these steps, the Wheel Of Twilio game should be up and running on your local machine. Enjoy testing and experimenting with Twilio's tech in a fun, interactive way!
 
 If you encounter any issues or have questions, please refer to the issues section or open a new issue in the repository for assistance.
 

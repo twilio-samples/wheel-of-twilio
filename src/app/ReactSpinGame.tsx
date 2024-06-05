@@ -126,6 +126,7 @@ export default function SpinAndWin({
             height="420px"
           />
           <span
+            id="spinButton"
             className="absolute flex top-[50%] left-[50%] z-10 bg-white w-[120px] h-[120px] cursor-pointer p-2 border-solid border-4 border-black rounded-full -translate-x-1/2 -translate-y-1/2"
             onClick={handleSpin}
           >

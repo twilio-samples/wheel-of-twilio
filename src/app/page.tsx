@@ -60,11 +60,11 @@ function App() {
           }}
           onAfterFinished={(selectedWedge: string) => {
             callWinners(
-              Object.values(bets).filter((bet) => bet.bet === selectedWedge),
+              Object.values(bets).filter((bet) => bet.bet === selectedWedge)
             );
             messageOthers(
               Object.values(bets).filter((bet) => bet.bet !== selectedWedge),
-              selectedWedge,
+              selectedWedge
             );
             clearBets();
           }}
@@ -137,8 +137,7 @@ function App() {
             <p className="ml-auto my-auto text-right w-2/3 font-extrabold text-xl">
               Scan the code and win prizes
             </p>
-            {/* @ts-ignore */}
-            <div className=" ">
+            <div>
               <QRCode
                 className="mx-auto w-36 h-36 p-1 bg-[#FDF7F4]"
                 value={`https://wa.me/${process.env.NEXT_PUBLIC_TWILIO_PHONE_NUMBER}?text=Hit%20send%20to%20start!`}

@@ -34,7 +34,7 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
   const syncService = await client.sync.v1.services(SYNC_SERVICE_SID).fetch();
 
   await syncService.update({
-    friendlyName: "Wheel of Fortune Sync Service",
+    friendlyName: "Wheel of Twilio Sync Service",
     aclEnabled: true,
   });
 
