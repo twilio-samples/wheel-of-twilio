@@ -5,8 +5,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Wheel of Fortune",
-  description: "Build by Twilio",
+  title: "Wheel of Twilio",
+  description: "Powered by Twilio and Next.js",
 };
 
 export default function RootLayout({
@@ -16,6 +16,9 @@ export default function RootLayout({
 }>) {
   return (
     <html className="h-full" lang="en">
+      <head>
+        <link rel="icon" href="https://www.twilio.com/content/dam/twilio-com/core-assets/social/favicon-32x32.png" sizes="any" />
+      </head>
       <body className={"h-full " + inter.className}>
         <div
           style={{
