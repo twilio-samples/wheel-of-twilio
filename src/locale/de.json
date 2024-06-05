@@ -3,15 +3,15 @@
     "welcome": "Willkommen im Spiel, {{senderName}}! Bitte antworten Sie mit Ihrer geschäftlichen E-Mail-Adresse. Wir senden Ihnen eine E-Mail, um zu überprüfen, ob Ihre Adresse korrekt ist. Mit der Antwort stimmen Sie den Allgemeinen Geschäftsbedingungen zu, die im WhatsApp-Profil verlinkt sind.",
     "invalidEmail": "Leider ist dies keine gültige E-Mail-Adresse.",
     "emailVerified": "Danke schön! Deine E-Mail-Adresse wurde verifiziert. Sie können das Spiel jetzt spielen.",
-    "sentEmail": "Wir haben Ihnen eine E-Mail mit einem Bestätigungscode gesendet. Bitte antworten Sie mit dem Code, um Ihre E-Mail-Adresse zu bestätigen.",
+    "sentEmail": "Wir haben Ihnen eine E-Mail mit einem Bestätigungscode gesendet. Bitte antworten Sie mit dem Code, um Ihre E-Mail-Adresse zu bestätigen.\n Falls Sie die E-Mail nicht erhalten haben, überprüfen Sie bitte Ihren Spam-Ordner oder geben Sie eine neue E-Mail-Adresse ein.",
     "verificationFailed": "Der Bestätigungscode ist leider falsch. Bitte versuchen Sie es erneut oder geben Sie eine neue E-Mail-Adresse ein.",
     "betsClosed": "Entschuldigung, das Spiel ist blockiert.",
     "betPlaced": "Hallo {{senderName}}\nWir haben Ihre Wette erhalten {{messageContent}}",
     "winnerCall": "<Response><Say language='DE-de'>Herzlichen Glückwunsch {{name}}! Sie haben gewonnen!</Say></Response>",
     "winner": "Herzlichen Glückwunsch {{name}}! Sie haben gewonnen!",
     "loser": "Leider haben Sie verloren. Das Gewinnerfeld war {{winningWedge}}. \nViel Glück beim nächsten Mal!",
-    "invalidBetTemplateSID": "HXdecbcdeedcd86e6c29f462267f3d9bf4",
-    "countryTemplateSID": "HX832dc050ea253ebe555ae6b3c3212846",
-    "betTemplateSID": "HX7a3d3c17979a3c134f7ebde11fdd30d1"
+    "invalidBetTemplateSID": "HX0261eba951f0ac1e82b88eabd64c8aa8",
+    "countryTemplateSID": "HX31757760258b5e9f94a2d18c5a3e25f7",
+    "betTemplateSID": "HX861a384bcef90877e8f69d77d26ff147"
   }
 }

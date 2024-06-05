@@ -21,7 +21,7 @@ function getCountyTemplates(): WhatsAppTemplateConfig[] {
               title: "United Kingdom 🇬🇧",
             },
           ],
-          body: "Your email address has been verified. In which country are you based? \nYou can hit a button or reply with free form text.",
+          body: "Your email address has been verified. In which country are you based? \nYou can hit a quick reply or use free form text.",
         },
       },
     },
@@ -46,7 +46,7 @@ function getCountyTemplates(): WhatsAppTemplateConfig[] {
               title: "Großbritannien 🇬🇧",
             },
           ],
-          body: "Deine E-Mail-Adresse wurde verifiziert. In welchem Land sind Sie ansässig? \nSie können auf eine Schaltfläche klicken oder mit Freitext antworten.",
+          body: "Deine E-Mail-Adresse wurde verifiziert. In welchem Land sind Sie ansässig? \nWählen Sie eine der Auswahlmöglichkeiten oder antworten Sie mit Freitext.",
         },
       },
     },
@@ -66,7 +66,7 @@ function getOptionsTemplates(): WhatsAppTemplateConfig[] {
       translationKey: "betTemplateSID",
       types: {
         "twilio/list-picker": {
-          body: `Please select one of the following wedges:\n`,
+          body: `Please select one of the following options:\n`,
           button: "Select",
           items: wedges.map((wedge) => ({
             item: wedge,
@@ -105,7 +105,7 @@ function getInvalidBetsTemplates(): WhatsAppTemplateConfig[] {
       translationKey: "invalidBetTemplateSID",
       types: {
         "twilio/list-picker": {
-          body: `Sorry, this is not a valid bet. Please bet on one of the following wedges \n`,
+          body: `Sorry, this is not a valid bet. Please bet on one of the following options \n`,
           button: "Bet",
           items: wedges.map((wedge) => ({
             item: wedge,

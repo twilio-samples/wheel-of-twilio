@@ -3,15 +3,15 @@
     "welcome": "Welcome to the game, {{senderName}}! Please reply with your business email address, we will send you an email to verify your address is correct. By replying, you agree to the terms and conditions that are linked in the WhatsApp profile.",
     "invalidEmail": "Sorry, this is not a valid email address.",
     "emailVerified": "Thank you! Your email address has been verified. You can now play the game.",
-    "sentEmail": "We have sent you an email with a verification code. Please reply with the code to verify your email address.",
+    "sentEmail": "We have sent you an email with a verification code. Please reply with the code to verify your email address.\n If you did not receive the email, please check your spam folder or enter a new email address.",
     "verificationFailed": "Sorry, the verification code is incorrect. Please try again or enter a new email address.",
     "betsClosed": "Sorry, the game is blocked.",
     "betPlaced": "Hi {{senderName}}\nWe received your bet on {{messageContent}}",
     "winnerCall": "<Response><Say>Congratulations {{name}}! You won!</Say></Response>",
     "winner": "Congratulations {{name}}! You won!",
-    "loser": "Sorry {{name}}, you lost! The winning wedge was {{winningWedge}}. \nBetter luck next time!",
-    "countryTemplateSID": "HX9132682e60f492128d65b18fad550721",
-    "betTemplateSID": "HX555e81ee8cc60749e9a6ed50c875561c",
-    "invalidBetTemplateSID": "HX7123158f4226bc256660e03cf8b8d051"
+    "loser": "Sorry {{name}}, you lost! The winning field was {{winningWedge}}. \nBetter luck next time!",
+    "countryTemplateSID": "HX444e3ad96d17135b41132df6928b2781",
+    "betTemplateSID": "HXda2652a0f96a94093694d7099e2a58bd",
+    "invalidBetTemplateSID": "HXefaf6c92c01321e0fc260dd9b684b6a2"
   }
 }

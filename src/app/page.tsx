@@ -60,16 +60,16 @@ function App() {
           }}
           onAfterFinished={(selectedWedge: string) => {
             callWinners(
-              Object.values(bets).filter((bet) => bet.bet === selectedWedge),
+              Object.values(bets).filter((bet) => bet.bet === selectedWedge)
             );
             messageOthers(
               Object.values(bets).filter((bet) => bet.bet !== selectedWedge),
-              selectedWedge,
+              selectedWedge
             );
             clearBets();
           }}
         />
-        <div className="absolute bottom-3 font-light  text-xs ml-16">
+        <div className="absolute bottom-3  text-gray-500 text-xs ml-16">
           <p className="">
             Please note that by scanning the QR code a WhatsApp conversation
             will be prompted and your WhatsApp profile and phone number will be
@@ -81,10 +81,13 @@ function App() {
             data collected as part of the game is processed in accordance with
             Twilio Privacy Notice available on Twilio website.
           </p>
+          <p className="">
+            Twilio employees and government officials are not eligible to win.
+          </p>
         </div>
       </div>
       <div className="w-1/2 flex items-center justify-center">
-        <div className="absolute my-auto w-1/2">
+        <div className="absolute pt-14 my-auto w-1/2">
           <div className="flex flex-col text-3xl font-extrabold pb-8 w-2/3 mx-auto">
             <h1 className="text-[#FDF7F4]">Better communication</h1>
             <h1 className="text-[#F2BE5A]">in the blink of an API</h1>
@@ -131,14 +134,19 @@ function App() {
             })}
           </div>
           <div className="w-2/3 mx-auto grid grid-cols-2 gap-6 ">
-            <span className="ml-auto text-right w-2/3 font-extrabold text-xl">
+            <p className="ml-auto my-auto text-right w-2/3 font-extrabold text-xl">
               Scan the code and win prizes
-            </span>
+            </p>
             {/* @ts-ignore */}
-            <QRCode
-              className="w-24 h-24 p-1 bg-[#FDF7F4]"
-              value={`https://wa.me/${process.env.NEXT_PUBLIC_TWILIO_PHONE_NUMBER}?text=Hit%20send%20to%20start!`}
-            />
+            <div className=" ">
+              <QRCode
+                className="mx-auto w-36 h-36 p-1 bg-[#FDF7F4]"
+                value={`https://wa.me/${process.env.NEXT_PUBLIC_TWILIO_PHONE_NUMBER}?text=Hit%20send%20to%20start!`}
+              />
+              <p className="align-center text-s text-gray-500">
+                {process.env.NEXT_PUBLIC_TWILIO_PHONE_NUMBER}
+              </p>
+            </div>
           </div>
         </div>
       </div>
