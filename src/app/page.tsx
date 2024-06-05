@@ -60,11 +60,11 @@ function App() {
           }}
           onAfterFinished={(selectedWedge: string) => {
             callWinners(
-              Object.values(bets).filter((bet) => bet.bet === selectedWedge)
+              Object.values(bets).filter((bet) => bet.bet === selectedWedge),
             );
             messageOthers(
               Object.values(bets).filter((bet) => bet.bet !== selectedWedge),
-              selectedWedge
+              selectedWedge,
             );
             clearBets();
           }}
