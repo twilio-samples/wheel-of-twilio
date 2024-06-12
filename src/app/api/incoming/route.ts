@@ -3,6 +3,7 @@ import twilio, { twiml } from "twilio";
 import i18next from "i18next";
 import { getCountry, capitalizeEachWord } from "./helper";
 import { createHash } from "crypto";
+import { Player, Stages } from "../../types";
 
 const en = require("../../../locale/en.json");
 const de = require("../../../locale/de.json");
@@ -23,13 +24,6 @@ const wedges = NEXT_PUBLIC_WEDGES.split(",");
 
 const regexForEmail = /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/;
 const regexFor6ConsecutiveDigits = /\d{6}/;
-
-const enum Stages {
-  NEW_USER = 1,
-  VERIFYING = 2,
-  VERIFIED_USER = 3,
-  ASKING_FOR_COUNTRY = 4,
-}
 
 export async function POST(req: NextRequest) {
   const formData = await req.formData();
@@ -61,7 +55,7 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  let currentUser, userStage;
+  let currentUser: Player | undefined, userStage;
   try {
     const syncItem = await attendeesMap.syncMapItems(hashedSender).fetch();
     currentUser = syncItem.data as UserData;
@@ -218,6 +212,25 @@ export async function POST(req: NextRequest) {
         to: senderID,
       });
     }
+  } else if (userStage === Stages.WINNER_UNCLAIMED) {
+    await client.messages.create({
+      body: i18next.t("alreadyPlayedNotClaimed"),
+      from: MESSAGING_SERVICE_SID,
+      to: senderID,
+    });
+  } else if (userStage === Stages.WINNER_CLAIMED) {
+    await client.messages.create({
+      body: i18next.t("alreadyPlayedPrizeClaimed"),
+      from: MESSAGING_SERVICE_SID,
+      to: senderID,
+    });
+  } else {
+    await client.messages.create({
+      body: i18next.t("catchAllError"),
+      from: MESSAGING_SERVICE_SID,
+      to: senderID,
+    });
+    console.error("Unhandled stage", userStage, currentUser);
   }
   const res = new NextResponse(twimlRes.toString());
   res.headers.set("Content-Type", "text/xml");

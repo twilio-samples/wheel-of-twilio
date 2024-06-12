@@ -2,10 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { Client, SyncClient } from "twilio-sync";
-import dynamic from "next/dynamic";
 import {
   fetchToken,
-  callWinners,
+  notifyAndUpdateWinners,
   messageOthers,
   clearBets,
   blockBets,
@@ -59,12 +58,12 @@ function App() {
             blockBets();
           }}
           onAfterFinished={(selectedWedge: string) => {
-            callWinners(
-              Object.values(bets).filter((bet) => bet.bet === selectedWedge)
+            notifyAndUpdateWinners(
+              Object.values(bets).filter((bet) => bet.bet === selectedWedge),
             );
             messageOthers(
               Object.values(bets).filter((bet) => bet.bet !== selectedWedge),
-              selectedWedge
+              selectedWedge,
             );
             clearBets();
           }}

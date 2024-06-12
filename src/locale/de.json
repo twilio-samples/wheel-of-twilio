@@ -10,6 +10,9 @@
     "winnerCall": "<Response><Say language='DE-de'>Herzlichen Glückwunsch {{name}}! Sie haben gewonnen!</Say></Response>",
     "winner": "Herzlichen Glückwunsch {{name}}! Sie haben gewonnen!",
     "loser": "Leider haben Sie verloren. Das Gewinnerfeld war {{winningWedge}}. \nViel Glück beim nächsten Mal!",
+    "alreadyPlayedNotClaimed": "Glückwunsch, Sie haben bereits in einer vorigen Runde gewonnen. Sie können ihren Preis am Twilio Stand abholen.",
+    "alreadyPlayedPrizeClaimed": "Viel Spaß mit ihrem Preis. Schauen Sie gerne beim Twilio Stand vorbei und reden mit uns über unsere Customer Engagement Platform.",
+    "catchAllError": "Entschuldigung, ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
     "invalidBetTemplateSID": "HX0261eba951f0ac1e82b88eabd64c8aa8",
     "countryTemplateSID": "HX31757760258b5e9f94a2d18c5a3e25f7",
     "betTemplateSID": "HX861a384bcef90877e8f69d77d26ff147"

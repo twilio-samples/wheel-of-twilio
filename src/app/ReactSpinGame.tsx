@@ -110,7 +110,7 @@ export default function SpinAndWin({
       let deg = "rotate(" + state.winnerAngle + "deg)";
       wheelCanvas.style.transform = deg;
       setTimeout(() => {
-        onAfterFinished(wedges[winnerIndex]);
+        onAfterFinished(wedges[0]);
       }, transitionTime * 1000);
     }
   };
