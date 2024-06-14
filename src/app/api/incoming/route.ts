@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
       name: "test-better",
       hashedSender: "test-better",
       bet: wedges.find((wedge) =>
-        capitalizeEachWord(messageContent).includes(wedge),
+        capitalizeEachWord(messageContent).includes(wedge)
       ),
     };
     await betsDoc.update({
@@ -147,11 +147,17 @@ export async function POST(req: NextRequest) {
         await attendeesMap.syncMapItems(hashedSender).update({
           data: {
             ...currentUser,
-            stage: Stages.ASKING_FOR_COUNTRY,
+            // stage: Stages.ASKING_FOR_COUNTRY,
+            stage: Stages.VERIFIED_USER,
           },
         });
+        // await client.messages.create({
+        //   contentSid: i18next.t("countryTemplateSID"),
+        //   from: MESSAGING_SERVICE_SID,
+        //   to: senderID,
+        // });
         await client.messages.create({
-          contentSid: i18next.t("countryTemplateSID"),
+          contentSid: i18next.t("betTemplateSID"),
           from: MESSAGING_SERVICE_SID,
           to: senderID,
         });
@@ -185,7 +191,7 @@ export async function POST(req: NextRequest) {
         name: senderName,
         hashedSender,
         bet: wedges.find((wedge) =>
-          capitalizeEachWord(messageContent).includes(wedge),
+          capitalizeEachWord(messageContent).includes(wedge)
         ),
       };
       await attendeesMap.syncMapItems(hashedSender).update({
@@ -205,7 +211,7 @@ export async function POST(req: NextRequest) {
         i18next.t("betPlaced", {
           senderName,
           messageContent: capitalizeEachWord(messageContent),
-        }),
+        })
       );
     } else {
       await client.messages.create({
