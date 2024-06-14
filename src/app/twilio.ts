@@ -134,7 +134,7 @@ export async function notifyAndUpdateWinners(winners: any[]) {
       });
 
       const to = winner.data.sender.replace("whatsapp:", "");
-      await callWinner(winner.data.name, to);
+      // await callWinner(winner.data.name, to);
 
       await client.messages.create({
         body: await localizeStringForPhoneNumber(
