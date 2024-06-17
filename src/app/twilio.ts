@@ -1,3 +1,5 @@
+// Copyright 2024 Twilio Inc.
+
 "use server";
 
 import AccessToken, { SyncGrant } from "twilio/lib/jwt/AccessToken";

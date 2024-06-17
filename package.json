@@ -1,7 +1,9 @@
 {
-  "name": "twilio-activation-wheel",
-  "version": "0.1.0",
-  "private": true,
+  "name": "wheel-of-twilio",
+  "description": "A game that uses Twilio to play a game of chance",
+  "version": "1.0.0",
+  "author": "Marius Obert",
+  "license": "MIT",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

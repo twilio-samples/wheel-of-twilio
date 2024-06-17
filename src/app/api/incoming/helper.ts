@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Twilio Inc.
+// Copyright 2024 Twilio Inc.
 
 import { ICountry, countries } from "countries-list";
 import { PhoneNumberUtil } from "google-libphonenumber";

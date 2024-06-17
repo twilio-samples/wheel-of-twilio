@@ -1,4 +1,6 @@
-import { useRef, useState, useEffect, useLayoutEffect } from "react";
+// Copyright 2024 Twilio Inc.
+
+import { useRef, useState, useLayoutEffect } from "react";
 
 interface SpinGameData {
   wedges: string[];
@@ -43,7 +45,7 @@ export default function SpinAndWin({
     return () => document.removeEventListener("visibilitychange", renderWheel);
   }, [wedges]);
   function isCanvas(
-    obj: HTMLCanvasElement | HTMLElement,
+    obj: HTMLCanvasElement | HTMLElement
   ): obj is HTMLCanvasElement {
     return obj.tagName === "CANVAS";
   }
@@ -55,7 +57,7 @@ export default function SpinAndWin({
     wheel: any,
     wheelX: number,
     wheelY: number,
-    wheelRadius: number,
+    wheelRadius: number
   ) => {
     var segment = 360 / list.length;
 
@@ -76,7 +78,7 @@ export default function SpinAndWin({
         wheelRadius,
         0 - degToRad(90) - degToRad(segment / 2),
         degToRad(segment) - degToRad(90) - degToRad(segment / 2),
-        false,
+        false
       );
       wheel.moveTo(wheelX, wheelY);
       wheel.fill();

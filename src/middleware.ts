@@ -1,3 +1,5 @@
+// Copyright 2024 Twilio Inc.
+
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 

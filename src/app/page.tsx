@@ -1,3 +1,5 @@
+// Copyright 2024 Twilio Inc.
+
 "use client";
 
 import { useState, useEffect } from "react";

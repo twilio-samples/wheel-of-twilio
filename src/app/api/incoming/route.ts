@@ -1,3 +1,5 @@
+// Copyright 2024 Twilio Inc.
+
 import { NextRequest, NextResponse } from "next/server";
 import twilio, { twiml } from "twilio";
 import i18next from "i18next";
@@ -75,7 +77,7 @@ export async function POST(req: NextRequest) {
       name: "test-better",
       hashedSender: "test-better",
       bet: wedges.find((wedge) =>
-        capitalizeEachWord(messageContent).includes(wedge),
+        capitalizeEachWord(messageContent).includes(wedge)
       ),
     };
     await betsDoc.update({
@@ -183,7 +185,7 @@ export async function POST(req: NextRequest) {
         name: senderName,
         hashedSender,
         bet: wedges.find((wedge) =>
-          capitalizeEachWord(messageContent).includes(wedge),
+          capitalizeEachWord(messageContent).includes(wedge)
         ),
       };
       await attendeesMap.syncMapItems(hashedSender).update({
@@ -203,7 +205,7 @@ export async function POST(req: NextRequest) {
         i18next.t("betPlaced", {
           senderName,
           messageContent: capitalizeEachWord(messageContent),
-        }),
+        })
       );
     } else {
       await client.messages.create({

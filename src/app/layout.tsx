@@ -1,3 +1,5 @@
+// Copyright 2024 Twilio Inc.
+
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -17,7 +19,11 @@ export default function RootLayout({
   return (
     <html className="h-full" lang="en">
       <head>
-        <link rel="icon" href="https://www.twilio.com/content/dam/twilio-com/core-assets/social/favicon-32x32.png" sizes="any" />
+        <link
+          rel="icon"
+          href="https://www.twilio.com/content/dam/twilio-com/core-assets/social/favicon-32x32.png"
+          sizes="any"
+        />
       </head>
       <body className={"h-full " + inter.className}>
         <div
