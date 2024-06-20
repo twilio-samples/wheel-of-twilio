@@ -1,6 +1,6 @@
 {
   "translation": {
-    "welcome": "Willkommen im Spiel, {{senderName}}! Bitte antworten Sie mit Ihrer geschäftlichen E-Mail-Adresse. Wir senden Ihnen eine E-Mail, um zu überprüfen, ob Ihre Adresse korrekt ist. Mit der Antwort stimmen Sie den Allgemeinen Geschäftsbedingungen zu, die im WhatsApp-Profil verlinkt sind.",
+    "welcome": "Willkommen im Spiel, {{senderName}}! Bitte antworten Sie mit Ihrer geschäftlichen E-Mail-Adresse. Wir senden Ihnen eine E-Mail, um zu überprüfen, ob Ihre Adresse korrekt ist.",
     "invalidEmail": "Leider ist dies keine gültige E-Mail-Adresse.",
     "emailVerified": "Danke schön! Deine E-Mail-Adresse wurde verifiziert. Sie können das Spiel jetzt spielen.",
     "sentEmail": "Wir haben Ihnen eine E-Mail mit einem Bestätigungscode gesendet. Bitte antworten Sie mit dem Code, um Ihre E-Mail-Adresse zu bestätigen.\n Falls Sie die E-Mail nicht erhalten haben, überprüfen Sie bitte Ihren Spam-Ordner oder geben Sie eine neue E-Mail-Adresse ein.",
@@ -8,8 +8,8 @@
     "betsClosed": "Entschuldigung, das Spiel ist blockiert.",
     "betPlaced": "Hallo {{senderName}}\nWir haben Ihre Wette erhalten {{messageContent}}",
     "winnerCall": "<Response><Say language='DE-de'>Herzlichen Glückwunsch {{name}}! Sie haben gewonnen!</Say></Response>",
-    "winner": "Herzlichen Glückwunsch {{name}}! Sie haben gewonnen!",
-    "loser": "Leider haben Sie verloren. Das Gewinnerfeld war {{winningWedge}}. \nViel Glück beim nächsten Mal!",
+    "winner": "Herzlichen Glückwunsch {{name}}! Sie haben gewonnen!\n\nPS: Wussten Sie, dass dieses Spiel Open Source ist? Schauen Sie sich den Code auf https://github.com/twilio-samples/wheel-of-twilio/ an.",
+    "loser": "Leider haben Sie verloren. Das Gewinnerfeld war {{winningWedge}}. \nViel Glück beim nächsten Mal!\n\nPS: Wussten Sie, dass dieses Spiel Open Source ist? Schauen Sie sich den Code auf https://github.com/twilio-samples/wheel-of-twilio/ an.",
     "alreadyPlayedNotClaimed": "Glückwunsch, Sie haben bereits in einer vorigen Runde gewonnen. Sie können ihren Preis am Twilio Stand abholen.",
     "alreadyPlayedPrizeClaimed": "Viel Spaß mit ihrem Preis. Schauen Sie gerne beim Twilio Stand vorbei und reden mit uns über unsere Customer Engagement Platform.",
     "catchAllError": "Entschuldigung, ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
