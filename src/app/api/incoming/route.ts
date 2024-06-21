@@ -183,16 +183,19 @@ export async function POST(req: NextRequest) {
       twimlRes.message(i18next.t("betsClosed"));
       // check if one of the wedges is a substring of the capitalized messageContent
     } else if (
-      wedges.some((wedge) => capitalizeEachWord(messageContent).includes(wedge))
+      wedges.some((wedge) =>
+        capitalizeEachWord(messageContent).includes(capitalizeEachWord(wedge))
+      )
     ) {
       const bets = betsDoc.data.bets || {};
+      const selectedBet = wedges.find((wedge) =>
+        capitalizeEachWord(messageContent).includes(capitalizeEachWord(wedge))
+      );
 
       bets[hashedSender] = {
         name: senderName,
         hashedSender,
-        bet: wedges.find((wedge) =>
-          capitalizeEachWord(messageContent).includes(wedge)
-        ),
+        bet: selectedBet,
       };
       await attendeesMap.syncMapItems(hashedSender).update({
         data: {
@@ -210,7 +213,7 @@ export async function POST(req: NextRequest) {
       twimlRes.message(
         i18next.t("betPlaced", {
           senderName,
-          messageContent: capitalizeEachWord(messageContent),
+          messageContent: selectedBet,
         })
       );
     } else {
