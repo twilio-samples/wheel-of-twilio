@@ -13,8 +13,8 @@
     "alreadyPlayedNotClaimed": "Glückwunsch, Sie haben bereits in einer vorigen Runde gewonnen. Sie können ihren Preis am Twilio Stand abholen.",
     "alreadyPlayedPrizeClaimed": "Viel Spaß mit ihrem Preis. Schauen Sie gerne beim Twilio Stand vorbei und reden mit uns über unsere Customer Engagement Platform.",
     "catchAllError": "Entschuldigung, ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
-    "invalidBetTemplateSID": "HX1e03b471aec8d1f8c5b5022fafb2c7d9",
-    "countryTemplateSID": "HX183a0756dbcc5d3ca7ba81ab2ac2cab6",
-    "betTemplateSID": "HXfe32c571c1cd40650d0374dddb90fed3"
+    "invalidBetTemplateSID": "HX7e11aebdf5c9b6194a5bc924835b5baf",
+    "countryTemplateSID": "HXb827219ab1d96ba1f2eb691f67cce24c",
+    "betTemplateSID": "HX3cce3115826782a8ffae0c936e5f9fea"
   }
 }
