@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
       name: "test-better",
       hashedSender: "test-better",
       bet: wedges.find((wedge) =>
-        capitalizeEachWord(messageContent).includes(wedge),
+        capitalizeEachWord(messageContent).includes(wedge)
       ),
     };
     await betsDoc.update({
@@ -184,13 +184,16 @@ export async function POST(req: NextRequest) {
       // check if one of the wedges is a substring of the capitalized messageContent
     } else if (
       wedges.some((wedge) =>
-        capitalizeEachWord(messageContent).includes(capitalizeEachWord(wedge)),
+        capitalizeEachWord(messageContent).includes(capitalizeEachWord(wedge))
       )
     ) {
       const bets = betsDoc.data.bets || {};
-      const selectedBet = wedges.find((wedge) =>
-        capitalizeEachWord(messageContent).includes(capitalizeEachWord(wedge)),
-      );
+      //sort longerst to shortest first
+      const selectedBet = wedges
+        .sort((a, b) => b.length - a.length)
+        .find((wedge) =>
+          capitalizeEachWord(messageContent).includes(capitalizeEachWord(wedge))
+        );
 
       bets[hashedSender] = {
         name: senderName,
@@ -214,7 +217,7 @@ export async function POST(req: NextRequest) {
         i18next.t("betPlaced", {
           senderName,
           messageContent: selectedBet,
-        }),
+        })
       );
     } else {
       await client.messages.create({
