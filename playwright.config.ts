@@ -8,6 +8,10 @@ dotenv.config({
 //@ts-ignore˝
 dotenv.populate(process.env, { demoBet: true });
 
+// Set webServer.url and use.baseURL with the location of the WebServer respecting the correct set port
+const PORT = process.env.PORT || 3000;
+const baseURL = `http://localhost:${PORT}`;
+
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -80,10 +84,10 @@ export default defineConfig({
     // },
   ],
 
-  /* Run your local dev server before starting the tests */
   webServer: {
     command: "NODE_ENV=test pnpm run dev",
-    url: "http://127.0.0.1:3000",
+    url: baseURL,
+    timeout: 120 * 1000,
     reuseExistingServer: !process.env.CI,
   },
 });

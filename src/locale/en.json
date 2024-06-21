@@ -1,20 +1,20 @@
 {
   "translation": {
-    "welcome": "Welcome to the game, {{senderName}}! Please reply with your business email address, we will send you an email to verify your address is correct. By replying, you agree to the terms and conditions that are linked in the WhatsApp profile.",
+    "welcome": "Welcome to the game, {{senderName}}! Please reply with your business email address, we will send you an email to verify your address is correct.",
     "invalidEmail": "Sorry, this is not a valid email address.",
     "emailVerified": "Thank you! Your email address has been verified. You can now play the game.",
-    "sentEmail": "We have sent you an email with a verification code. Please reply with the code to verify your email address.\n If you did not receive the email, please check your spam folder or enter a new email address.",
+    "sentEmail": "We have sent you an email with a verification code. Please reply with the code we sent to your email address.\n If you did not receive the email, please check your spam folder or enter a new email address.",
     "verificationFailed": "Sorry, the verification code is incorrect. Please try again or enter a new email address.",
     "betsClosed": "Sorry, the game is blocked.",
     "betPlaced": "Hi {{senderName}}\nWe received your bet on {{messageContent}}",
     "winnerCall": "<Response><Say>Congratulations {{name}}! You won!</Say></Response>",
-    "winner": "Congratulations {{name}}! You won!",
-    "loser": "Sorry {{name}}, you lost! The winning field was {{winningWedge}}. \nBetter luck next time!",
+    "winner": "Congratulations {{name}}! You won!\n\nPS: Did you know this game is open source? Check it out at https://github.com/twilio-samples/wheel-of-twilio/",
+    "loser": "Sorry {{name}}, you lost! The winning field was {{winningWedge}}. \nBetter luck next time!\n\nPS: Did you know this game is open source? Check it out at https://github.com/twilio-samples/wheel-of-twilio/",
     "alreadyPlayedNotClaimed": "Congrats, you already won in a previous round. Visit us at the Twilio booth to claim your prize.",
     "alreadyPlayedPrizeClaimed": "Enjoy your prize. Feel free to visit the Twilio booth to chat with us about our Customer Engagement Platform.",
     "catchAllError": "Sorry, an error occurred. Please try again later.",
-    "countryTemplateSID": "HX444e3ad96d17135b41132df6928b2781",
-    "betTemplateSID": "HXda2652a0f96a94093694d7099e2a58bd",
-    "invalidBetTemplateSID": "HXefaf6c92c01321e0fc260dd9b684b6a2"
+    "countryTemplateSID": "HX9e5959a69e734410218a585d7762fafb",
+    "betTemplateSID": "HX373a463b56e0f66ede2de1a88a6e0fe7",
+    "invalidBetTemplateSID": "HXc2129944e7d2e982e9040fb7dd93eda7"
   }
 }

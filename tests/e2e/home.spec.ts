@@ -15,10 +15,6 @@ test("See default page", async ({ page }) => {
       page.locator("div").filter({ hasText: new RegExp(`^${wedge}$`) }),
     ).toBeVisible();
   }
-
-  const munichWedge = page.locator("div").filter({ hasText: /^Munich$/ });
-  await expect(munichWedge).toBeVisible();
-  // await expect(munichWedge.getByTitle("test-better")).toBeVisible();
 });
 
 test("Remove all chips after spinning", async ({ page }) => {

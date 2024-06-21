@@ -1,0 +1,51 @@
+name: Tests
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install -g pnpm && pnpm install
+      - name: Run script tests
+        run: pnpm vitest
+        env:
+          TWILIO_ACCOUNT_SID: ${{ vars.TWILIO_ACCOUNT_SID }}
+          TWILIO_API_KEY: ${{ secrets.TWILIO_API_KEY }}
+          TWILIO_API_SECRET: ${{ secrets.TWILIO_API_SECRET }}
+          MESSAGING_SERVICE_SID: ${{ vars.MESSAGING_SERVICE_SID }}
+          SYNC_SERVICE_SID: ${{ vars.SYNC_SERVICE_SID }}
+          VERIFY_SERVICE_SID: ${{ vars.VERIFY_SERVICE_SID }}
+          BASIC_AUTH_USERNAME: ${{ vars.BASIC_AUTH_USERNAME }}
+          BASIC_AUTH_PASSWORD: ${{ vars.BASIC_AUTH_PASSWORD }}
+          NEXT_PUBLIC_WEDGES: "San Francisco,London,Paris,Madrid,Berlin,New York,Munich,Barcelona,Amsterdam,Vienna"
+          NEXT_PUBLIC_TWILIO_PHONE_NUMBER: "+4915712345600"
+      - name: Install Playwright Browsers
+        run: pnpm exec playwright install --with-deps
+      - name: Run Playwright tests
+        run: pnpm exec playwright test
+        env:
+          TWILIO_ACCOUNT_SID: ${{ vars.TWILIO_ACCOUNT_SID }}
+          TWILIO_API_KEY: ${{ secrets.TWILIO_API_KEY }}
+          TWILIO_API_SECRET: ${{ secrets.TWILIO_API_SECRET }}
+          MESSAGING_SERVICE_SID: ${{ vars.MESSAGING_SERVICE_SID }}
+          SYNC_SERVICE_SID: ${{ vars.SYNC_SERVICE_SID }}
+          VERIFY_SERVICE_SID: ${{ vars.VERIFY_SERVICE_SID }}
+          BASIC_AUTH_USERNAME: ${{ vars.BASIC_AUTH_USERNAME }}
+          BASIC_AUTH_PASSWORD: ${{ vars.BASIC_AUTH_PASSWORD }}
+          NEXT_PUBLIC_WEDGES: "San Francisco,London,Paris,Madrid,Berlin,New York,Munich,Barcelona,Amsterdam,Vienna"
+          NEXT_PUBLIC_TWILIO_PHONE_NUMBER: "+4915712345600"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
