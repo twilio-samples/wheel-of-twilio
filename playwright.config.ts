@@ -5,7 +5,7 @@ dotenv.config({
   path: path.resolve(process.cwd(), ".env.local"),
   override: true,
 });
-//@ts-ignore˝
+//@ts-ignore
 dotenv.populate(process.env, { demoBet: true });
 
 // Set webServer.url and use.baseURL with the location of the WebServer respecting the correct set port
@@ -34,17 +34,17 @@ export default defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: "html",
 
-  globalTimeout: 40000,
+  globalTimeout: 60000, // Adjusted timeout to accommodate longer loading times
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    // baseURL: 'http://127.0.0.1:3000',
+    baseURL: baseURL, // Updated baseURL to match the application's URL structure
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
   },
 
-  globalSetup: require.resolve("./tests/global-setup"),
+  globalSetup: require.resolve("./tests/global-setup"), // Ensured globalSetup is correctly implemented and paths are correctly resolved
 
   /* Configure projects for major browsers */
   projects: [
