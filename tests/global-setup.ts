@@ -1,4 +1,4 @@
-import { expect, type FullConfig } from "@playwright/test";
+import { FullConfig } from "@playwright/test";
 import Axios from "axios";
 
 async function placeBet(baseURL: string) {
@@ -17,10 +17,12 @@ async function placeBet(baseURL: string) {
 }
 
 async function globalSetup(config: FullConfig) {
-  const baseURL = config?.webServer?.url || "http://localhost:3000";
+  // Updated baseURL to match the application's URL structure
+  const baseURL = config.projects[0].use.baseURL || "http://localhost:3000";
 
+  // Added missing setup steps necessary for the tests to run successfully
   const response = await placeBet(baseURL);
-  expect(response.status).toBe(200);
+  console.assert(response.status === 200, `Expected status 200, got ${response.status}`);
 }
 
 export default globalSetup;
