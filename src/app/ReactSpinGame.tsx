@@ -85,10 +85,10 @@ export default function SpinAndWin({
 
       wheel.fillStyle = i % 2 === 0 ? "#FDF7F4" : "#121C2D";
       wheel.textAlign = "end";
-      wheel.font = "1.25rem sans-serif"; // TODO - add font size and family
+      wheel.font = "3.25rem sans-serif";
       wheel.transform = "translate(50px, 100px)";
       wheel.rotate(-1.57);
-      wheel.fillText(el, -20, wheelY + 10);
+      wheel.fillText(el, -70, wheelY + 10);
 
       wheel.restore();
     });
@@ -124,8 +124,8 @@ export default function SpinAndWin({
             ref={wheelRef}
             id="wheel"
             className="rounded-full border-solid border-8 bg-[radial-gradient(circle,#FFF_0%,#F22F46_98%)] border-black p-1  h-[550px] w-[550px]  m-[6px] absolute "
-            width="420px"
-            height="420px"
+            width="840px"
+            height="840px"
           />
           <span
             id="spinButton"
