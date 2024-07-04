@@ -1,5 +1,3 @@
-// Copyright 2024 Twilio Inc.
-
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -28,7 +26,7 @@ export default function RootLayout({
       <body className={"h-full " + inter.className}>
         <div
           style={{
-            backgroundColor: "#121C2D",
+            backgroundColor: "#d3d3d3",
             backgroundSize: "60px 60px",
             backgroundImage:
               "linear-gradient(to right, rgb(253, 247, 244, 30%) 0.35px, transparent 1px), linear-gradient(to bottom, rgb(253, 247, 244, 30%) 0.35px, transparent 1px)",
@@ -49,6 +47,21 @@ export default function RootLayout({
             src="/images/ConfettiRight.svg"
             alt="confetti right"
             className="absolute top-0 left-0"
+          />
+          <img
+            src="/images/ConfettiLeft.svg"
+            alt="confetti left"
+            className="absolute bottom-0 left-0"
+          />
+          <img
+            src="/images/TwilioCircle.svg"
+            alt="asteriks"
+            className="absolute bottom-0 left-0"
+          />
+          <img
+            src="/images/ConfettiRight.svg"
+            alt="confetti right"
+            className="absolute bottom-0 left-0"
           />
 
           <div className="absolute top-0 left-0 w-full">
