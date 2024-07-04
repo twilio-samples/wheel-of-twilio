@@ -127,6 +127,8 @@ export async function POST(req: NextRequest) {
       } catch (e: any) {
         if (e?.message?.startsWith("Invalid parameter `To`:")) {
           twimlRes.message(i18next.t("invalidEmail"));
+        } else {
+          throw e;
         }
       }
     }
