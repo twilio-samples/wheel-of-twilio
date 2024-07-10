@@ -1,5 +1,5 @@
 import { expect, test, describe } from "vitest";
-import { generateResponse } from "@/app/api/incoming/route";
+import { generateResponse } from "@/app/api/incoming/helper";
 import { Stages } from "@/app/types";
 
 describe("For unknown user, generate welcome message", async () => {
