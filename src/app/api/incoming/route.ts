@@ -20,6 +20,7 @@ const {
   EVENT_NAME = "",
   MESSAGING_SERVICE_SID = "",
   NEXT_PUBLIC_WEDGES = "",
+  OFFER_SMALL_PRIZES = "false",
 } = process.env;
 
 const wedges = NEXT_PUBLIC_WEDGES.split(",");
@@ -230,7 +231,10 @@ export async function POST(req: NextRequest) {
     }
   } else if (userStage === Stages.WINNER_UNCLAIMED) {
     await client.messages.create({
-      body: i18next.t("alreadyPlayedNotClaimed"),
+      body:
+        OFFER_SMALL_PRIZES === "true"
+          ? i18next.t("alreadyPlayedNotClaimedSmallPrize")
+          : i18next.t("alreadyPlayedNotClaimed"),
       from: MESSAGING_SERVICE_SID,
       to: senderID,
     });
