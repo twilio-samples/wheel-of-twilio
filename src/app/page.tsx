@@ -106,7 +106,6 @@ function App() {
                   {Object.values(bets)
                     .filter((bet) => bet.bet === wedge)
                     .map((bet, index) => {
-                      console.log(bet);
                       return (
                         <img
                           key={`bet-${bet.bet}-${index}`}
