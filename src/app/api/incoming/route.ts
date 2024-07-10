@@ -6,6 +6,8 @@ import i18next from "i18next";
 import { getCountry, capitalizeEachWord } from "./helper";
 import { createHash } from "crypto";
 import { Player, Stages } from "../../types";
+import { SyncMapContext } from "twilio/lib/rest/sync/v1/service/syncMap";
+import { DocumentInstance } from "twilio/lib/rest/sync/v1/service/document";
 
 const en = require("../../../locale/en.json");
 const de = require("../../../locale/de.json");
@@ -28,22 +30,7 @@ const wedges = NEXT_PUBLIC_WEDGES.split(",");
 const regexForEmail = /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/;
 const regexFor6ConsecutiveDigits = /\d{6}/;
 
-export async function POST(req: NextRequest) {
-  const formData = await req.formData();
-
-  const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
-    accountSid: TWILIO_ACCOUNT_SID,
-  });
-  const syncService = await client.sync.v1.services(SYNC_SERVICE_SID).fetch();
-  const betsDoc = await syncService.documents()("bets").fetch();
-  const attendeesMap = await syncService.syncMaps()("attendees");
-
-  const twimlRes = new twiml.MessagingResponse();
-
-  const senderID = formData.get("From") as string;
-  const hashedSender = createHash("sha256").update(senderID).digest("hex");
-  const senderName = formData.get("ProfileName") as string;
-  const messageContent = formData.get("Body") as string;
+async function initI18n(senderID: string) {
   let lng;
   if (senderID) {
     lng = getCountry(senderID)?.languages[0];
@@ -57,19 +44,23 @@ export async function POST(req: NextRequest) {
       de,
     },
   });
+  return lng;
+}
 
-  let currentUser: Player | undefined, userStage;
+async function getUser(attendeesMap: SyncMapContext, hashedSender: string) {
+  let currentUser: Player | undefined;
   try {
     const syncItem = await attendeesMap.syncMapItems(hashedSender).fetch();
     currentUser = syncItem.data as UserData;
-    userStage = currentUser.stage;
   } catch (e: any) {
     if (e.status !== 404) {
       throw e;
     }
   }
-  const matchedEmail = regexForEmail.exec(messageContent);
+  return currentUser;
+}
 
+async function addDemoBet(betsDoc: DocumentInstance, messageContent: string) {
   if (process.env.demoBet) {
     // also allow for testing in CI
     const bets = betsDoc.data.bets || {};
@@ -88,6 +79,31 @@ export async function POST(req: NextRequest) {
       },
     });
   }
+}
+
+export async function generateResponse(
+  currentUser: Player | undefined,
+  client: twilio.Twilio,
+  {
+    senderName,
+    senderID,
+    messageContent,
+    attendeesMap,
+    betsDoc,
+  }: {
+    senderName?: string;
+    senderID?: string;
+    messageContent: string;
+    attendeesMap: SyncMapContext;
+    betsDoc: DocumentInstance;
+  }
+) {
+  const twimlRes = new twiml.MessagingResponse();
+  const matchedEmail = regexForEmail.exec(messageContent);
+  const lng = await initI18n(currentUser?.sender || senderID || "");
+  const hashedSender = createHash("sha256")
+    .update(currentUser?.sender || "")
+    .digest("hex");
 
   if (!currentUser) {
     await attendeesMap.syncMapItems.create({
@@ -102,8 +118,8 @@ export async function POST(req: NextRequest) {
 
     twimlRes.message(i18next.t("welcome", { senderName }));
   } else if (
-    userStage === Stages.NEW_USER ||
-    (userStage === Stages.VERIFYING && matchedEmail !== null)
+    currentUser.stage === Stages.NEW_USER ||
+    (currentUser.stage === Stages.VERIFYING && matchedEmail !== null)
   ) {
     if (matchedEmail === null) {
       twimlRes.message(i18next.t("invalidEmail"));
@@ -133,7 +149,7 @@ export async function POST(req: NextRequest) {
         }
       }
     }
-  } else if (userStage === Stages.VERIFYING) {
+  } else if (currentUser.stage === Stages.VERIFYING) {
     try {
       const submittedCode = regexFor6ConsecutiveDigits.exec(messageContent);
       if (submittedCode === null) {
@@ -162,13 +178,16 @@ export async function POST(req: NextRequest) {
         await client.messages.create({
           contentSid: i18next.t("betTemplateSID"),
           from: MESSAGING_SERVICE_SID,
-          to: senderID,
+          to: currentUser.sender,
         });
       }
-    } catch (e) {
+    } catch (e: any) {
+      if (e.message !== "Invalid code") {
+        throw e;
+      }
       twimlRes.message(i18next.t("verificationFailed"));
     }
-  } else if (userStage === Stages.ASKING_FOR_COUNTRY) {
+  } else if (currentUser.stage === Stages.ASKING_FOR_COUNTRY) {
     await attendeesMap.syncMapItems(hashedSender).update({
       data: {
         ...currentUser,
@@ -179,9 +198,9 @@ export async function POST(req: NextRequest) {
     await client.messages.create({
       contentSid: i18next.t("betTemplateSID"),
       from: MESSAGING_SERVICE_SID,
-      to: senderID,
+      to: currentUser.sender,
     });
-  } else if (userStage === Stages.VERIFIED_USER) {
+  } else if (currentUser.stage === Stages.VERIFIED_USER) {
     if (betsDoc.data.blocked) {
       twimlRes.message(i18next.t("betsClosed"));
       // check if one of the wedges is a substring of the capitalized messageContent
@@ -226,33 +245,64 @@ export async function POST(req: NextRequest) {
       await client.messages.create({
         contentSid: i18next.t("invalidBetTemplateSID"),
         from: MESSAGING_SERVICE_SID,
-        to: senderID,
+        to: currentUser.sender,
       });
     }
-  } else if (userStage === Stages.WINNER_UNCLAIMED) {
+  } else if (currentUser.stage === Stages.WINNER_UNCLAIMED) {
     await client.messages.create({
       body:
         OFFER_SMALL_PRIZES === "true"
           ? i18next.t("alreadyPlayedNotClaimedSmallPrize")
           : i18next.t("alreadyPlayedNotClaimed"),
       from: MESSAGING_SERVICE_SID,
-      to: senderID,
+      to: currentUser.sender,
     });
-  } else if (userStage === Stages.WINNER_CLAIMED) {
+  } else if (currentUser.stage === Stages.WINNER_CLAIMED) {
     await client.messages.create({
       body: i18next.t("alreadyPlayedPrizeClaimed"),
       from: MESSAGING_SERVICE_SID,
-      to: senderID,
+      to: currentUser.sender,
     });
   } else {
     await client.messages.create({
       body: i18next.t("catchAllError"),
       from: MESSAGING_SERVICE_SID,
-      to: senderID,
+      to: currentUser.sender,
     });
-    console.error("Unhandled stage", userStage, currentUser);
+    console.error("Unhandled stage", currentUser.stage, currentUser);
   }
-  const res = new NextResponse(twimlRes.toString());
+
+  return twimlRes.toString();
+}
+
+export async function POST(req: NextRequest) {
+  const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
+    accountSid: TWILIO_ACCOUNT_SID,
+  });
+  const syncService = await client.sync.v1.services(SYNC_SERVICE_SID).fetch();
+  const [betsDoc, attendeesMap, formData] = await Promise.all([
+    await syncService.documents()("bets").fetch(),
+    await syncService.syncMaps()("attendees"),
+    await req.formData(),
+  ]);
+
+  const senderID = formData.get("From") as string;
+
+  const hashedSender = createHash("sha256").update(senderID).digest("hex");
+  const messageContent = formData.get("Body") as string;
+
+  const currentUser = await getUser(attendeesMap, hashedSender);
+
+  process.env.demoBet && (await addDemoBet(betsDoc, messageContent));
+
+  const response = await generateResponse(currentUser, client, {
+    senderName: formData.get("ProfileName") as string,
+    senderID,
+    messageContent,
+    attendeesMap,
+    betsDoc,
+  });
+  const res = new NextResponse(response);
   res.headers.set("Content-Type", "text/xml");
   return res;
 }

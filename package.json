@@ -35,7 +35,8 @@
     "tailwindcss-animate": "^1.0.7",
     "twilio": "^5.0.4",
     "twilio-sync": "^3.3.3",
-    "utf-8-validate": "^6.0.4"
+    "utf-8-validate": "^6.0.4",
+    "vite-tsconfig-paths": "^4.3.2"
   },
   "devDependencies": {
     "@playwright/test": "^1.44.0",
