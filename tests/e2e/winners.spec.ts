@@ -3,7 +3,7 @@ const { BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD } = process.env;
 
 test("See winners page", async ({ page }) => {
   await page.goto(
-    `http://${BASIC_AUTH_USERNAME}:${BASIC_AUTH_PASSWORD}@localhost:3000/winners`
+    `http://${BASIC_AUTH_USERNAME}:${BASIC_AUTH_PASSWORD}@localhost:3000/winners`,
   );
 
   await expect(page.getByPlaceholder("Filter name...")).toBeVisible();
