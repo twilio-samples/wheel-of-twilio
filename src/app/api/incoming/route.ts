@@ -43,7 +43,7 @@ async function addDemoBet(betsDoc: DocumentInstance, messageContent: string) {
       name: "test-better",
       hashedSender: "test-better",
       bet: wedges.find((wedge) =>
-        capitalizeEachWord(messageContent).includes(wedge)
+        capitalizeEachWord(messageContent).includes(wedge),
       ),
     };
     await betsDoc.update({

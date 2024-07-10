@@ -242,7 +242,6 @@ export async function generateResponse(
   return twimlRes.toString();
 }
 
-
 export function getCountry(phone: string): ICountry | undefined {
   const number = phoneUtil.parseAndKeepRawInput(phone.replace("whatsapp:", ""));
   return Object.values(countries).find((country) => {
