@@ -24,8 +24,8 @@ jobs:
           MESSAGING_SERVICE_SID: ${{ vars.MESSAGING_SERVICE_SID }}
           SYNC_SERVICE_SID: ${{ vars.SYNC_SERVICE_SID }}
           VERIFY_SERVICE_SID: ${{ vars.VERIFY_SERVICE_SID }}
-          BASIC_AUTH_USERNAME: ${{ vars.BASIC_AUTH_USERNAME }}
-          BASIC_AUTH_PASSWORD: ${{ vars.BASIC_AUTH_PASSWORD }}
+          BASIC_AUTH_USERNAME: ${{ secrets.BASIC_AUTH_USERNAME }}
+          BASIC_AUTH_PASSWORD: ${{ secrets.BASIC_AUTH_PASSWORD }}
           NEXT_PUBLIC_WEDGES: "San Francisco,London,Paris,Madrid,Berlin,New York,Munich,Barcelona,Amsterdam,Vienna"
           NEXT_PUBLIC_TWILIO_PHONE_NUMBER: "+4915712345600"
       - name: Install Playwright Browsers
@@ -39,8 +39,8 @@ jobs:
           MESSAGING_SERVICE_SID: ${{ vars.MESSAGING_SERVICE_SID }}
           SYNC_SERVICE_SID: ${{ vars.SYNC_SERVICE_SID }}
           VERIFY_SERVICE_SID: ${{ vars.VERIFY_SERVICE_SID }}
-          BASIC_AUTH_USERNAME: ${{ vars.BASIC_AUTH_USERNAME }}
-          BASIC_AUTH_PASSWORD: ${{ vars.BASIC_AUTH_PASSWORD }}
+          BASIC_AUTH_USERNAME: ${{ secrets.BASIC_AUTH_USERNAME }}
+          BASIC_AUTH_PASSWORD: ${{ secrets.BASIC_AUTH_PASSWORD }}
           NEXT_PUBLIC_WEDGES: "San Francisco,London,Paris,Madrid,Berlin,New York,Munich,Barcelona,Amsterdam,Vienna"
           NEXT_PUBLIC_TWILIO_PHONE_NUMBER: "+4915712345600"
       - uses: actions/upload-artifact@v4
