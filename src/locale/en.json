@@ -12,7 +12,7 @@
     "winner": "Congratulations {{name}}! You are now eligible for the prize!\n\nPS: Did you know this game is open source? Check it out at https://github.com/twilio-samples/wheel-of-twilio/",
     "loser": "Sorry {{name}}, you lost! The winning field was {{winningWedge}}. \nBetter luck next time!\n\nPS: Did you know this game is open source? Check it out at https://github.com/twilio-samples/wheel-of-twilio/",
     "alreadyPlayedNotClaimed": "Congrats, you already qualified for the prize.",
-    "alreadyPlayedNotClaimedSmallPrize":  "Congrats, you already won. Stop by the Twilio booth to claim your prize!",
+    "alreadyPlayedNotClaimedSmallPrize": "Congrats, you already won. Stop by the Twilio booth to claim your prize!",
     "alreadyPlayedPrizeClaimed": "Enjoy your prize. Feel free to visit the Twilio booth to chat with us about our Customer Engagement Platform.",
     "catchAllError": "Sorry, an error occurred. Please try again later.",
     "countryTemplateSID": "HXddbc30a5b2367bbc53c4f339fea85e28",

@@ -21,7 +21,7 @@ describe("For unknown user, generate welcome message", async () => {
             },
           },
         });
-      })()
+      })(),
     ).rejects.toThrowError(/Invalid country/);
   });
 
@@ -40,7 +40,7 @@ describe("For unknown user, generate welcome message", async () => {
       },
     });
     expect(newUserWelcome).toContain(
-      `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Willkommen im Spiel,`
+      `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Willkommen im Spiel,`,
     );
     expect(newUserWelcome).toContain(`</Message></Response>`);
   });
@@ -59,7 +59,7 @@ describe("For unknown user, generate welcome message", async () => {
       },
     });
     expect(newUserWelcome).toContain(
-      `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Welcome to the game,`
+      `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Welcome to the game,`,
     );
     expect(newUserWelcome).toContain(`</Message></Response>`);
   });
@@ -81,7 +81,7 @@ describe("For known user, generate response", async () => {
       attendeesMap: {},
     });
     expect(newUserWelcome).toContain(
-      `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Leider ist dies keine gültige E-Mail-Adresse`
+      `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Leider ist dies keine gültige E-Mail-Adresse`,
     );
     expect(newUserWelcome).toContain(`</Message></Response>`);
   });
@@ -101,7 +101,7 @@ describe("For known user, generate response", async () => {
       attendeesMap: {},
     });
     expect(response).toContain(
-      `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Sorry, this is not a valid email address`
+      `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Sorry, this is not a valid email address`,
     );
     expect(response).toContain(`</Message></Response>`);
   });
@@ -130,7 +130,7 @@ describe("For unverified user, generate response", async () => {
       },
     });
     expect(response).toContain(
-      `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Der Bestätigungscode ist leider falsch. `
+      `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Der Bestätigungscode ist leider falsch. `,
     );
     expect(response).toContain(`</Message></Response>`);
   });
@@ -170,15 +170,15 @@ describe("For unverified user, generate response", async () => {
       {
         messageContent: "My code is 123456",
         // @ts-ignore
-      attendeesMap: {
-        syncMapItems: () => {
-          return {
-            update: async (data: any) => {
-              return data;
-            },
-          };
+        attendeesMap: {
+          syncMapItems: () => {
+            return {
+              update: async (data: any) => {
+                return data;
+              },
+            };
+          },
         },
-      },
         // @ts-ignore
         betsDoc: {
           data: {
@@ -186,10 +186,9 @@ describe("For unverified user, generate response", async () => {
             blocked: true,
           },
         },
-      }
+      },
     );
-    expect(response).toBe(
-      `<?xml version="1.0" encoding="UTF-8"?><Response/>`);
+    expect(response).toBe(`<?xml version="1.0" encoding="UTF-8"?><Response/>`);
   });
 
   test("Check for right message when an invalid code is sent", async () => {
@@ -227,15 +226,15 @@ describe("For unverified user, generate response", async () => {
       {
         messageContent: "My code is 123456",
         // @ts-ignore
-      attendeesMap: {
-        syncMapItems: () => {
-          return {
-            update: async (data: any) => {
-              return data;
-            },
-          };
+        attendeesMap: {
+          syncMapItems: () => {
+            return {
+              update: async (data: any) => {
+                return data;
+              },
+            };
+          },
         },
-      },
         // @ts-ignore
         betsDoc: {
           data: {
@@ -243,10 +242,9 @@ describe("For unverified user, generate response", async () => {
             blocked: true,
           },
         },
-      }
+      },
     );
-    expect(response).toBe(
-      `<?xml version="1.0" encoding="UTF-8"?><Response/>`);
+    expect(response).toBe(`<?xml version="1.0" encoding="UTF-8"?><Response/>`);
   });
 });
 
@@ -273,7 +271,7 @@ describe("For verified user, generate response", async () => {
       },
     });
     expect(response).toContain(
-      `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Sorry, the game is blocked`
+      `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Sorry, the game is blocked`,
     );
     expect(response).toContain(`</Message></Response>`);
   });
@@ -311,7 +309,7 @@ describe("For verified user, generate response", async () => {
       },
     });
     expect(response).toContain(
-      `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Hi`
+      `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Hi`,
     );
     expect(response).toContain(`</Message></Response>`);
   });
@@ -348,14 +346,13 @@ describe("For verified user, generate response", async () => {
             return data;
           },
         },
-      }
+      },
     );
     expect(response).toEqual(
-      `<?xml version="1.0" encoding="UTF-8"?><Response/>`
+      `<?xml version="1.0" encoding="UTF-8"?><Response/>`,
     );
   });
 });
-
 
 describe("For winner user, generate response", async () => {
   test("Check for right message when the stage is WINNER_UNCLAIMED", async () => {
@@ -367,27 +364,34 @@ describe("For winner user, generate response", async () => {
     };
 
     // @ts-ignore just for this test
-    const response = await generateResponse(currentUser, {
-      messages: {
-        // @ts-ignore just for this test
-        create: (c) => {
-          expect(c.body).toBe("Congrats, you already won. Stop by the Twilio booth to claim your prize!");
+    const response = await generateResponse(
+      currentUser,
+      {
+        messages: {
+          // @ts-ignore just for this test
+          create: (c) => {
+            expect(c.body).toBe(
+              "Congrats, you already won. Stop by the Twilio booth to claim your prize!",
+            );
+          },
         },
       },
-    }, {
-      messageContent: "Hello, I'm a new user",
-      // @ts-ignore
-      attendeesMap: {},
-      // @ts-ignore
-      betsDoc: {
-        data: {
-          bets: {},
-          blocked: true,
+      {
+        messageContent: "Hello, I'm a new user",
+        // @ts-ignore
+        attendeesMap: {},
+        // @ts-ignore
+        betsDoc: {
+          data: {
+            bets: {},
+            blocked: true,
+          },
         },
       },
-    });
+    );
     expect(response).toContain(
-      `<?xml version="1.0" encoding="UTF-8"?><Response/>`);
+      `<?xml version="1.0" encoding="UTF-8"?><Response/>`,
+    );
   });
 
   test("Check for right message when the stage is WINNER_CLAIMED", async () => {
@@ -399,29 +403,35 @@ describe("For winner user, generate response", async () => {
     };
 
     // @ts-ignore just for this test
-    const response = await generateResponse(currentUser, {
-      messages: {
-        // @ts-ignore just for this test
-        create: (c) => {
-          expect(c.body).toContain("Enjoy your prize. Feel free to visit the Twilio booth");
+    const response = await generateResponse(
+      currentUser,
+      {
+        messages: {
+          // @ts-ignore just for this test
+          create: (c) => {
+            expect(c.body).toContain(
+              "Enjoy your prize. Feel free to visit the Twilio booth",
+            );
+          },
         },
       },
-    }, {
-      messageContent: "Hello, I'm a new user",
-      // @ts-ignore
-      attendeesMap: {},
-      // @ts-ignore
-      betsDoc: {
-        data: {
-          bets: {},
-          blocked: true,
+      {
+        messageContent: "Hello, I'm a new user",
+        // @ts-ignore
+        attendeesMap: {},
+        // @ts-ignore
+        betsDoc: {
+          data: {
+            bets: {},
+            blocked: true,
+          },
         },
       },
-    });
+    );
     expect(response).toContain(
-      `<?xml version="1.0" encoding="UTF-8"?><Response/>`);
+      `<?xml version="1.0" encoding="UTF-8"?><Response/>`,
+    );
   });
-
 });
 
 test("Check for right message when the stage is unknown", async () => {
@@ -433,25 +443,32 @@ test("Check for right message when the stage is unknown", async () => {
   };
 
   // @ts-ignore just for this test
-  const response = await generateResponse(currentUser, {
-    messages: {
-      // @ts-ignore just for this test
-      create: (c) => {
-        expect(c.body).toContain("Entschuldigung, ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.");
+  const response = await generateResponse(
+    currentUser,
+    {
+      messages: {
+        // @ts-ignore just for this test
+        create: (c) => {
+          expect(c.body).toContain(
+            "Entschuldigung, ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
+          );
+        },
       },
     },
-  }, {
-    messageContent: "Hello, I'm a new user",
-    // @ts-ignore
-    attendeesMap: {},
-    // @ts-ignore
-    betsDoc: {
-      data: {
-        bets: {},
-        blocked: true,
+    {
+      messageContent: "Hello, I'm a new user",
+      // @ts-ignore
+      attendeesMap: {},
+      // @ts-ignore
+      betsDoc: {
+        data: {
+          bets: {},
+          blocked: true,
+        },
       },
     },
-  });
+  );
   expect(response).toContain(
-    `<?xml version="1.0" encoding="UTF-8"?><Response/>`);
+    `<?xml version="1.0" encoding="UTF-8"?><Response/>`,
+  );
 });

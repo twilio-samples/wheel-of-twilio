@@ -3,7 +3,7 @@ const { BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD } = process.env;
 
 test("See default page", async ({ page }) => {
   await page.goto(
-    `http://${BASIC_AUTH_USERNAME}:${BASIC_AUTH_PASSWORD}@localhost:3000/`
+    `http://${BASIC_AUTH_USERNAME}:${BASIC_AUTH_PASSWORD}@localhost:3000/`,
   );
 
   await expect(page.locator("#spinButton")).toBeVisible();
@@ -12,14 +12,14 @@ test("See default page", async ({ page }) => {
 
   for (const wedge of wedges) {
     await expect(
-      page.locator("div").filter({ hasText: new RegExp(`^${wedge}$`) })
+      page.locator("div").filter({ hasText: new RegExp(`^${wedge}$`) }),
     ).toBeVisible();
   }
 });
 
 test("Remove all chips after spinning", async ({ page }) => {
   await page.goto(
-    `http://${BASIC_AUTH_USERNAME}:${BASIC_AUTH_PASSWORD}@localhost:3000/`
+    `http://${BASIC_AUTH_USERNAME}:${BASIC_AUTH_PASSWORD}@localhost:3000/`,
   );
   await page.click("#spinButton");
   await page.waitForTimeout(5000);
