@@ -17,6 +17,7 @@ const {
   TWILIO_ACCOUNT_SID = "",
   NEXT_PUBLIC_TWILIO_PHONE_NUMBER = "",
   SYNC_SERVICE_SID = "",
+  OFFER_SMALL_PRIZES = "false",
 } = process.env;
 
 enum Privilege {
@@ -111,8 +112,6 @@ export async function winnerPrizeClaimed(winnerKey: string) {
   const attendeesMap = syncService.syncMaps()("attendees");
   const winner = await attendeesMap.syncMapItems(winnerKey).fetch();
 
-  debugger
-
   await attendeesMap.syncMapItems(winnerKey).update({
     data: {
       ...winner.data,
@@ -150,11 +149,13 @@ export async function notifyAndUpdateWinners(winners: any[]) {
       });
 
       const to = winner.data.sender.replace("whatsapp:", "");
-      // await callWinner(winner.data.name, to);
+      if (OFFER_SMALL_PRIZES === "true") {
+        await callWinner(winner.data.name, to);
+      }
 
       await client.messages.create({
         body: await localizeStringForPhoneNumber(
-          "winner",
+          OFFER_SMALL_PRIZES === "true" ? "winnerSmallPrize" : "winner",
           to,
           winner.data.name
         ),

@@ -45,7 +45,10 @@ This project is Twilio's innovative booth activation designed to motivate people
      MESSAGING_SERVICE_SID="MGxxxxxxx"
      BASIC_AUTH_USERNAME="twilio"
      BASIC_AUTH_PASSWORD="admin!"
+     OFFER_SMALL_PRIZES="false"
      ```
+
+     > The flag `OFFER_SMALL_PRIZES` influences the message the winners get. If set to `false`, they are notified that they qualified for a larger prize. if set the `true`, they are informed that they won and can collect a small prize (and they get a prize).
 
 4. **Run the setup script:**
 
