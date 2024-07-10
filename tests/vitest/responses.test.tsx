@@ -284,9 +284,11 @@ describe("For verified user, generate response", async () => {
       stage: Stages.VERIFIED_USER,
     };
 
+    const firstWedge = (process.env.NEXT_PUBLIC_WEDGES || "").split(",")[0];
+
     // @ts-ignore just for this test
     const response = await generateResponse(currentUser, undefined, {
-      messageContent: "Hello, I'd like to bet on Java",
+      messageContent: `Hello, I'd like to bet on ${firstWedge}`,
       // @ts-ignore
       attendeesMap: {
         syncMapItems: () => {
