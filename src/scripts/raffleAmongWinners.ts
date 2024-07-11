@@ -42,11 +42,8 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
         stage: Stages.RAFFLE_WINNER,
       },
     });
-    
-  await sendRaffleWinnerMessage(
-    winner.data.sender.replace("whatsapp:", ""),
-    winner.data
-  );
+
+  await sendRaffleWinnerMessage(winner.data.name, winner.data.sender);
 
   await callWinner(
     winner.data.name,
