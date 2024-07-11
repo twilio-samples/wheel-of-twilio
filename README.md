@@ -73,6 +73,10 @@ After following these steps, the Wheel Of Twilio game should be up and running o
 
 If you encounter any issues or have questions, please refer to the issues section or open a new issue in the repository for assistance.
 
+### Display Considerations
+
+Monitor resolution may cause the wheel and fields to appear too small or too large, potentially overlapping with background graphics. To mitigate this, please use your browser's zoom functionality and view the landing page in full-screen mode for optimal display.
+
 ---
 
 ## Contributing
