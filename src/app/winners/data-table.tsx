@@ -48,7 +48,7 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="w-full mx-4 flex flex-col mt-40 mb-10 item justify-center relative ">
+    <div className="w-full mx-4 flex flex-col lg:mt-40 md:mt-10 mb-10 item justify-center relative ">
       <div className="flex items-center py-4 ">
         <Input
           placeholder="Filter name..."

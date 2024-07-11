@@ -25,7 +25,7 @@ export default function RootLayout({
           sizes="any"
         />
       </head>
-      <body className={"h-full " + inter.className}>
+      <body className={"h-full overflow-hidden " + inter.className}>
         <div
           style={{
             backgroundColor: "#121C2D",
