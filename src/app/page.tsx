@@ -18,7 +18,7 @@ function App() {
   const [bets, setBets] = useState<any[]>([]);
   const [doc, setDoc] = useState<any>({});
 
-  const wedges = (process.env.NEXT_PUBLIC_WEDGES || "").split(",");
+  let wedges = (process.env.NEXT_PUBLIC_WEDGES || "").split(",");
 
   useEffect(() => {
     let syncClient: SyncClient;
@@ -61,11 +61,11 @@ function App() {
           }}
           onAfterFinished={(selectedWedge: string) => {
             notifyAndUpdateWinners(
-              Object.values(bets).filter((bet) => bet.bet === selectedWedge),
+              Object.values(bets).filter((bet) => bet.bet === selectedWedge)
             );
             messageOthers(
               Object.values(bets).filter((bet) => bet.bet !== selectedWedge),
-              selectedWedge,
+              selectedWedge
             );
             clearBets();
           }}
@@ -106,13 +106,20 @@ function App() {
                   {Object.values(bets)
                     .filter((bet) => bet.bet === wedge)
                     .map((bet, index) => {
+                      const randomNumberBetween70And110InStepsOf5 =
+                        70 +
+                        Math.floor(Math.random() * ((110 - 70) / 5 + 1)) * 5;
+                      const randomNumberBetweenMinus100AndMinus140InStepsOf5 =
+                        -100 -
+                        Math.floor(Math.random() * ((140 - 100) / 5 + 1)) * 5;
+
                       return (
                         <img
                           key={`bet-${bet.bet}-${index}`}
                           src="/images/chip.png"
                           alt={`${bet.name} bet chip on ${bet.bet}`}
                           title={`${bet.name} bets on ${bet.bet}`}
-                          className={`absolute scale-[0.25] z-10 translate-x-[${Math.floor(Math.random() * 40 + 70)}px]  translate-y-[-${Math.floor(Math.random() * 40 + 70)}px]`}
+                          className={`absolute scale-[0.25] z-10 translate-x-[${randomNumberBetween70And110InStepsOf5}px]  translate-y-[${randomNumberBetweenMinus100AndMinus140InStepsOf5}px]`}
                         />
                       );
                     })}
@@ -120,13 +127,13 @@ function App() {
                   {/* <img
                     src="/images/chip.png"
                     alt="bet chip"
-                    className="absolute scale-[0.25] z-10 translate-x-[70px]  translate-y-[-70px]"
-                  />
-                  // Test Chip, top-right 
-                  <img
+                    className="absolute scale-[0.25] z-10 translate-x-[70px]  translate-y-[-100px]"
+                  /> */}
+                  {/* // Test Chip, top-right  */}
+                  {/* <img
                     src="/images/chip.png"
                     alt="bet chip"
-                    className="absolute scale-[0.25] z-10 translate-x-[110px]  translate-y-[-110px]"
+                    className="absolute scale-[0.25] z-10 translate-x-[110px]  translate-y-[-140px]"
                   /> */}
                   {wedge}
                 </div>
@@ -134,7 +141,7 @@ function App() {
             })}
           </div>
           <div className="w-2/3 mx-auto grid grid-cols-2 gap-6 ">
-            <p className="ml-auto my-auto text-right w-2/3 font-extrabold text-xl">
+            <p className="ml-auto my-auto text-right w-2/3 font-extrabold text-xl text-[#FDF7F4]">
               Scan the code and win prizes
             </p>
             <div>
