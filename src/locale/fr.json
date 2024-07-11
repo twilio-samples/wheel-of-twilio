@@ -1,0 +1,24 @@
+{
+  "translation": {
+    "welcome": "Bienvenue dans le jeu, {{senderName}} ! Veuillez répondre avec votre adresse e-mail professionnelle, nous vous enverrons un e-mail pour vérifier que votre adresse est correcte.",
+    "invalidEmail": "Désolé, ce n'est pas une adresse e-mail valide.",
+    "emailVerified": "Merci ! Votre adresse e-mail a été vérifiée. Vous pouvez maintenant jouer au jeu.",
+    "sentEmail": "Nous vous avons envoyé un e-mail avec un code de vérification. Veuillez répondre avec le code que nous avons envoyé à votre adresse e-mail.\n Si vous n'avez pas reçu l'e-mail, vérifiez votre dossier spam ou entrez une nouvelle adresse e-mail.",
+    "verificationFailed": "Désolé, le code de vérification est incorrect. Veuillez réessayer ou entrer une nouvelle adresse e-mail.",
+    "betsClosed": "Désolé, le jeu est bloqué.",
+    "betPlaced": "Bonjour {{senderName}}\nNous avons reçu votre pari sur {{messageContent}}",
+    "winnerCallSmallPrize": "<Response><Say>Félicitations {{name}} ! Vous avez gagné et vous pouvez réclamer votre prix au stand Twilio !</Say></Response>",
+    "winnerCallRafflePrize": "<Response><Say>Félicitations {{name}} ! Vous avez gagné le grand prix et vous pouvez réclamer votre prix au stand Twilio !</Say></Response>",
+    "winnerMessageRafflePrize": "Félicitations {{name}} ! Vous avez gagné le grand prix et vous pouvez réclamer votre prix au stand Twilio !",
+    "winnerMessageSmallPrize": "Félicitations {{name}} ! Vous avez gagné. Passez par le stand Twilio pour réclamer votre prix !\n\nPS: Saviez-vous que ce jeu est open source ? Vérifiez-le sur https://github.com/twilio-samples/wheel-of-twilio/",
+    "winnerMessage": "Félicitations {{name}} ! Vous êtes maintenant éligible pour le prix !\n\nPS: Saviez-vous que ce jeu est open source ? Vérifiez-le sur https://github.com/twilio-samples/wheel-of-twilio/",
+    "loser": "Désolé {{name}}, vous avez perdu ! Le champ gagnant était {{winningWedge}}. \nBonne chance la prochaine fois !\n\nPS : Saviez-vous que ce jeu est open source ? Vérifiez-le sur https://github.com/twilio-samples/wheel-of-twilio/",
+    "alreadyPlayedNotClaimed": "Félicitations, vous avez déjà qualifié pour le prix.",
+    "alreadyPlayedNotClaimedSmallPrize": "Félicitations, vous avez déjà gagné. Passez par le stand Twilio pour réclamer votre prix !",
+    "alreadyPlayedPrizeClaimed": "Profitez de votre prix. N'hésitez pas à visiter le stand Twilio pour discuter avec nous de notre plateforme d'engagement client.",
+    "catchAllError": "Désolé, une erreur s'est produite. Veuillez réessayer plus tard.",
+    "countryTemplateSID": "HX215f10709528adfc76e21db831b3cb3f",
+    "betTemplateSID": "HXbefcfcc87036987d06061f27e1d88502",
+    "invalidBetTemplateSID": "HX674265f42255cbd856fa13ed152b0363"
+  }
+}
