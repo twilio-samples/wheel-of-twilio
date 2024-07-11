@@ -1,5 +1,5 @@
 import twilio from "twilio";
-import { callWinner } from "@/app/twilio";
+import { callWinner, sendRaffleWinnerMessage } from "@/app/twilio";
 import { Stages } from "../app/types";
 
 const {
@@ -19,8 +19,15 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
     .syncMaps("attendees")
     .syncMapItems.list({ limit: 1000 });
   const potentialWinners = mapItems.filter(
-    (attendee) => attendee.data.stage === Stages.WINNER_UNCLAIMED,
+    (attendee) =>
+      attendee.data.stage === Stages.WINNER_UNCLAIMED ||
+      attendee.data.stage === Stages.WINNER_CLAIMED
   );
+
+  if (potentialWinners.length === 0) {
+    console.log("No potential winners found because no one has won yet.");
+    return;
+  }
 
   const winner =
     potentialWinners[Math.floor(Math.random() * potentialWinners.length)];
@@ -35,10 +42,17 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
         stage: Stages.RAFFLE_WINNER,
       },
     });
+    
+  await sendRaffleWinnerMessage(
+    winner.data.sender.replace("whatsapp:", ""),
+    winner.data
+  );
 
   await callWinner(
     winner.data.name,
     winner.data.sender.replace("whatsapp:", ""),
+    true
   );
+
   console.log("Found winner and called them");
 })();
