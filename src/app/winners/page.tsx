@@ -11,7 +11,7 @@ export default async function WinnerPage({
   let winners = await getWinners(searchParams.all === "true");
 
   return (
-    <div className="vh-full flex h-full  item justify-center relative">
+    <div className="vh-full flex h-full item justify-center relative">
       <DataTable columns={columns} data={winners} />
     </div>
   );
