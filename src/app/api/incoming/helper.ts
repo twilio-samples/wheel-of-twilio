@@ -14,6 +14,8 @@ import { DocumentInstance } from "twilio/lib/rest/sync/v1/service/document";
 
 const en = require("../../../locale/en.json");
 const de = require("../../../locale/de.json");
+const fr = require("../../../locale/fr.json");
+const es = require("../../../locale/es.json");
 
 const ONE_WEEK = 60 * 60 * 24 * 7;
 const {
@@ -41,6 +43,8 @@ async function initI18n(senderID: string) {
     resources: {
       en,
       de,
+      fr,
+      es,
     },
   });
   return lng;
@@ -61,7 +65,7 @@ export async function generateResponse(
     messageContent: string;
     attendeesMap: SyncMapContext;
     betsDoc: DocumentInstance;
-  },
+  }
 ) {
   const twimlRes = new twiml.MessagingResponse();
   const matchedEmail = regexForEmail.exec(messageContent);
@@ -171,7 +175,7 @@ export async function generateResponse(
       // check if one of the wedges is a substring of the capitalized messageContent
     } else if (
       wedges.some((wedge) =>
-        capitalizeEachWord(messageContent).includes(capitalizeEachWord(wedge)),
+        capitalizeEachWord(messageContent).includes(capitalizeEachWord(wedge))
       )
     ) {
       const bets = betsDoc.data.bets || {};
@@ -179,9 +183,7 @@ export async function generateResponse(
       const selectedBet = wedges
         .sort((a, b) => b.length - a.length)
         .find((wedge) =>
-          capitalizeEachWord(messageContent).includes(
-            capitalizeEachWord(wedge),
-          ),
+          capitalizeEachWord(messageContent).includes(capitalizeEachWord(wedge))
         );
 
       bets[hashedSender] = {
@@ -206,7 +208,7 @@ export async function generateResponse(
         i18next.t("betPlaced", {
           senderName,
           messageContent: selectedBet,
-        }),
+        })
       );
     } else {
       await client.messages.create({

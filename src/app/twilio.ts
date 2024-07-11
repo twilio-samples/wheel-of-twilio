@@ -10,6 +10,8 @@ import { Stages } from "./types";
 
 const en = require("../locale/en.json");
 const de = require("../locale/de.json");
+const fr = require("../locale/fr.json");
+const es = require("../locale/es.json");
 
 const {
   TWILIO_API_KEY = "",
@@ -39,6 +41,8 @@ async function localizeStringForPhoneNumber(
     resources: {
       en,
       de,
+      fr,
+      es,
     },
   });
 
