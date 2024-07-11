@@ -31,7 +31,7 @@ async function localizeStringForPhoneNumber(
   str: string,
   phone: string,
   name: string,
-  winningWedge?: string,
+  winningWedge?: string
 ) {
   await i18next.init({
     lng: getCountry(phone)?.languages[0],
@@ -56,7 +56,7 @@ export async function fetchToken() {
     TWILIO_API_SECRET,
     {
       identity: Privilege.FRONTEND,
-    },
+    }
   );
 
   token.addGrant(syncGrant);
@@ -103,7 +103,7 @@ export async function getWinners(allWinners: boolean): Promise<MaskedPlayer[]> {
       (a: any) =>
         a.stage === Stages.WINNER_UNCLAIMED ||
         (allWinners && a.stage === Stages.WINNER_CLAIMED) ||
-        (allWinners && a.stage === Stages.RAFFLE_WINNER),
+        (allWinners && a.stage === Stages.RAFFLE_WINNER)
     );
 }
 
@@ -150,26 +150,48 @@ export async function notifyAndUpdateWinners(winners: any[]) {
 
       const to = winner.data.sender.replace("whatsapp:", "");
       if (OFFER_SMALL_PRIZES === "true") {
-        await callWinner(winner.data.name, to);
+        await callWinner(winner.data.name, to, false);
       }
 
       await client.messages.create({
         body: await localizeStringForPhoneNumber(
-          OFFER_SMALL_PRIZES === "true" ? "winnerSmallPrize" : "winner",
+          OFFER_SMALL_PRIZES === "true"
+            ? "winnerMessageSmallPrize"
+            : "winnerMessage",
           to,
-          winner.data.name,
+          winner.data.name
         ),
         from: `whatsapp:${NEXT_PUBLIC_TWILIO_PHONE_NUMBER}`,
         to: winner.data.sender,
       });
-    }),
+    })
   );
 }
 
-export async function callWinner(name: string, to: string) {
+export async function callWinner(
+  name: string,
+  to: string,
+  rafflePrize: boolean
+) {
   await client.calls.create({
-    twiml: await localizeStringForPhoneNumber("winnerCall", to, name),
+    twiml: await localizeStringForPhoneNumber(
+      rafflePrize ? "winnerCallRafflePrize" : "callWinnerSmallPrize",
+      to,
+      name
+    ),
     from: NEXT_PUBLIC_TWILIO_PHONE_NUMBER,
+    to,
+  });
+}
+
+export async function sendRaffleWinnerMessage(name: string, to: string) {
+  await client.messages.create({
+    body: await localizeStringForPhoneNumber(
+      "winnerMessageRafflePrize",
+      to,
+      name
+    ),
+    from: `whatsapp:${NEXT_PUBLIC_TWILIO_PHONE_NUMBER}`,
     to,
   });
 }
@@ -186,13 +208,13 @@ export async function messageOthers(unluckyBets: any[], winningWedge: string) {
         "loser",
         unluckyPlayer.data.sender,
         unluckyPlayer.data.name,
-        winningWedge,
+        winningWedge
       );
       await client.messages.create({
         body,
         from: `whatsapp:${NEXT_PUBLIC_TWILIO_PHONE_NUMBER}`,
         to: unluckyPlayer.data.sender,
       });
-    }),
+    })
   );
 }
