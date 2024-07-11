@@ -226,7 +226,7 @@ export async function generateResponse(
       from: MESSAGING_SERVICE_SID,
       to: currentUser.sender,
     });
-  } else if (currentUser.stage === Stages.WINNER_CLAIMED) {
+  } else if (currentUser.stage === Stages.WINNER_CLAIMED || currentUser.stage === Stages.RAFFLE_WINNER) {
     await client.messages.create({
       body: i18next.t("alreadyPlayedPrizeClaimed"),
       from: MESSAGING_SERVICE_SID,
