@@ -29,7 +29,7 @@ const client = require("twilio")(TWILIO_API_KEY, TWILIO_API_SECRET, {
   accountSid: TWILIO_ACCOUNT_SID,
 });
 
-async function localizeStringForPhoneNumber(
+ async function localizeStringForPhoneNumber(
   str: string,
   phone: string,
   name: string,
@@ -179,7 +179,7 @@ export async function callWinner(
 ) {
   await client.calls.create({
     twiml: await localizeStringForPhoneNumber(
-      rafflePrize ? "winnerCallRafflePrize" : "callWinnerSmallPrize",
+      rafflePrize ? "winnerCallRafflePrize" : "winnerCallSmallPrize",
       to,
       name
     ),
