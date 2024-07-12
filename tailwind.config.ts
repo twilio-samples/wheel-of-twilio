@@ -26,7 +26,7 @@ const config = {
     "translate-y-[-125px]",
     "translate-y-[-130px]",
     "translate-y-[-135px]",
-    "translate-y-[-140px]"
+    "translate-y-[-140px]",
   ],
   prefix: "",
   theme: {

@@ -61,11 +61,11 @@ function App() {
           }}
           onAfterFinished={(selectedWedge: string) => {
             notifyAndUpdateWinners(
-              Object.values(bets).filter((bet) => bet.bet === selectedWedge)
+              Object.values(bets).filter((bet) => bet.bet === selectedWedge),
             );
             messageOthers(
               Object.values(bets).filter((bet) => bet.bet !== selectedWedge),
-              selectedWedge
+              selectedWedge,
             );
             unblockGame();
           }}
