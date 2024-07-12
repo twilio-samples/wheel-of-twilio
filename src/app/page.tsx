@@ -8,8 +8,8 @@ import {
   fetchToken,
   notifyAndUpdateWinners,
   messageOthers,
-  clearBets,
-  blockBets,
+  unblockGame,
+  blockGame,
 } from "./twilio";
 import SpinAndWin from "./ReactSpinGame";
 import QRCode from "react-qr-code";
@@ -57,7 +57,7 @@ function App() {
           wedges={wedges}
           time={3}
           onAfterStarted={() => {
-            blockBets();
+            blockGame();
           }}
           onAfterFinished={(selectedWedge: string) => {
             notifyAndUpdateWinners(
@@ -67,7 +67,7 @@ function App() {
               Object.values(bets).filter((bet) => bet.bet !== selectedWedge),
               selectedWedge
             );
-            clearBets();
+            unblockGame();
           }}
         />
         <div className="absolute bottom-3  text-gray-500 text-xs ml-16">
