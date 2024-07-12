@@ -17,8 +17,8 @@
     "alreadyPlayedNotClaimedSmallPrize": "Félicitations, vous avez déjà gagné. Passez par le stand Twilio pour réclamer votre prix !",
     "alreadyPlayedPrizeClaimed": "Profitez de votre prix. N'hésitez pas à visiter le stand Twilio pour discuter avec nous de notre plateforme d'engagement client.",
     "catchAllError": "Désolé, une erreur s'est produite. Veuillez réessayer plus tard.",
-    "betTemplateSID": "HXc5060a6d9588dc1e870475670ae65728",
-    "countryTemplateSID": "HX3538836c323b99aeff3e3b995b968bf1",
-    "invalidBetTemplateSID": "HX83e15ea7f5adb2568458ffccb4aeef5f"
+    "betTemplateSID": "HXeef5fbbf2599783d930f89469618d106",
+    "countryTemplateSID": "HX678e922acebb5400ba108926a2171065",
+    "invalidBetTemplateSID": "HXf4ac9aafd1909f69e203e5f8d376b056"
   }
 }

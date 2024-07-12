@@ -12,7 +12,6 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
 });
 
 (async () => {
-  //fetch all attendees and write to csv file with header columns
   const mapItems = await client.sync.v1
     .services(SYNC_SERVICE_SID)
     .syncMaps("attendees")

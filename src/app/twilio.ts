@@ -29,7 +29,7 @@ const client = require("twilio")(TWILIO_API_KEY, TWILIO_API_SECRET, {
   accountSid: TWILIO_ACCOUNT_SID,
 });
 
- async function localizeStringForPhoneNumber(
+async function localizeStringForPhoneNumber(
   str: string,
   phone: string,
   name: string,
@@ -68,9 +68,10 @@ export async function fetchToken() {
   return token.toJwt();
 }
 
-export async function clearBets() {
+export async function unblockGame() {
   const syncService = await client.sync.v1.services(SYNC_SERVICE_SID).fetch();
   const betsDoc = syncService.documents()("bets");
+
   await betsDoc.update({
     data: {
       bets: {},
@@ -124,15 +125,34 @@ export async function winnerPrizeClaimed(winnerKey: string) {
   });
 }
 
-export async function blockBets() {
+export async function blockGame() {
   const syncService = await client.sync.v1.services(SYNC_SERVICE_SID).fetch();
   const betsDoc = syncService.documents()("bets");
-  await betsDoc.update({
-    data: {
-      ...betsDoc.data,
-      blocked: true,
-    },
+  const completedBetsDoc = syncService.documents()("completedBets");
+
+  const bets = await betsDoc.fetch();
+  const completedBets = await completedBetsDoc.fetch();
+  const actualBets = bets.data.bets;
+
+  Object.values(actualBets).forEach((bet: any) => {
+    completedBets.data[bet.bet] =
+      completedBets.data[bet.bet] + 1 || 1;
   });
+
+  Promise.all([
+    await completedBetsDoc.update({
+      data: {
+        ...completedBets.data,
+      },
+    }),
+
+    await betsDoc.update({
+      data: {
+        ...betsDoc.data,
+        blocked: true,
+      },
+    }),
+  ]);
 }
 
 export async function notifyAndUpdateWinners(winners: any[]) {
