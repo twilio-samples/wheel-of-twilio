@@ -29,9 +29,7 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
 
   console.log(`All ${mapItems.length} attendees removed`);
 
-  const betsDoc = client.sync.v1
-    .services(SYNC_SERVICE_SID)
-    .documents("bets");
+  const betsDoc = client.sync.v1.services(SYNC_SERVICE_SID).documents("bets");
 
   await betsDoc.update({
     data: {
@@ -47,11 +45,8 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
     .documents("completedBets");
 
   await completedBetsDoc.update({
-    data: {
-      bets: {},
-    },
+    data: {},
   });
 
   console.log("Completed bets doc cleared");
-
 })();

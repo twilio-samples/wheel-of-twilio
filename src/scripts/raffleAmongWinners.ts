@@ -21,7 +21,7 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
   const potentialWinners = mapItems.filter(
     (attendee) =>
       attendee.data.stage === Stages.WINNER_UNCLAIMED ||
-      attendee.data.stage === Stages.WINNER_CLAIMED
+      attendee.data.stage === Stages.WINNER_CLAIMED,
   );
 
   if (potentialWinners.length === 0) {
@@ -48,7 +48,7 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
   await callWinner(
     winner.data.name,
     winner.data.sender.replace("whatsapp:", ""),
-    true
+    true,
   );
 
   console.log("Found winner and called them");
