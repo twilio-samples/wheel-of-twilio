@@ -1,6 +1,6 @@
 {
   "translation": {
-    "welcome": "¡Bienvenido al juego, {{senderName}}! Por favor, responde con tu dirección de correo electrónico comercial. Te enviaremos un correo para verificar que tu dirección es correcta.",
+    "welcome": "¡Bienvenido al juego, {{senderName}}! Por favor, responde con tu dirección de correo electrónico laboral. Te enviaremos un correo para verificar que tu dirección es correcta.",
     "invalidEmail": "Lo siento, esta no es una dirección de correo electrónico válida.",
     "emailVerified": "¡Gracias! Tu dirección de correo electrónico ha sido verificada. Ahora puedes jugar el juego.",
     "sentEmail": "Te hemos enviado un correo electrónico con un código de verificación. Responde con el código que te enviamos.\nSi no recibiste el correo, revisa tu carpeta de spam o ingresa una nueva dirección de correo electrónico.",
@@ -15,7 +15,7 @@
     "loser": "Lo siento {{name}}, perdiste. El campo ganador fue {{winningWedge}}. \n¡Mejor suerte la próxima vez!\nPD: ¿Sabías que este juego es de código abierto? Échale un vistazo en https://github.com/twilio-samples/wheel-of-twilio/",
     "alreadyPlayedNotClaimed": "Felicidades, ya calificaste para el premio.",
     "alreadyPlayedNotClaimedSmallPrize": "Felicidades, ya ganaste. ¡Pasa por el stand de Twilio para reclamar tu premio!",
-    "alreadyPlayedPrizeClaimed": "Disfruta de tu premio. No dudes en visitar el stand de Twilio para hablar con nosotros sobre nuestra Plataforma de Compromiso con el Cliente.",
+    "alreadyPlayedPrizeClaimed": "Disfruta de tu premio. Te invitamos a visitar el stand de Twilio para conversar con nosotros sobre nuestra Plataforma de Compromiso con el Cliente.",
     "catchAllError": "Lo siento, ocurrió un error. Por favor, inténtalo de nuevo más tarde.",
     "betTemplateSID": "HX1b9d29da0e6fb9f8160b91f0fd69aaac",
     "invalidBetTemplateSID": "HXa950f15f6052b3e28e649482bfe12359",
