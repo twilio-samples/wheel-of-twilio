@@ -101,7 +101,7 @@ export async function getWinners(allWinners: boolean): Promise<MaskedPlayer[]> {
         stage: w.data.stage,
         sender: w.data.sender
           .replace("whatsapp:", "")
-          .replace(/(\d{2})\d{8}(\d{2})/, "$1******$2"),
+          .replace(/(\d{2})\d{6}(\d+)/, "$1******$2"),
       };
     })
     .filter(
