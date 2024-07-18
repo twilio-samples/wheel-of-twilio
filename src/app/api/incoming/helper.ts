@@ -99,7 +99,7 @@ export async function generateResponse(
           .verifications.create({
             to: matchedEmail[0],
             channel: "email",
-            locale: lng,
+            // locale: lng,
           });
         await attendeesMap.syncMapItems(hashedSender).update({
           data: {
