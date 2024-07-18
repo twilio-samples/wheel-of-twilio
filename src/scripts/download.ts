@@ -17,7 +17,7 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
   const mapItems = await client.sync.v1
     .services(SYNC_SERVICE_SID)
     .syncMaps("attendees")
-    .syncMapItems.list({ limit: 1000 });
+    .syncMapItems.list({ limit: 1500 });
   const attendees = mapItems.map((item) => item.data);
   const csv = attendees.map((attendee) => {
     return `${attendee.name},${attendee.country},${attendee.email},${attendee.event},${attendee.stage}`;
