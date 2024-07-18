@@ -90,7 +90,7 @@ export async function getWinners(allWinners: boolean): Promise<MaskedPlayer[]> {
   const syncService = await client.sync.v1.services(SYNC_SERVICE_SID).fetch();
   const attendeesMap = syncService.syncMaps()("attendees");
   const winners: MaskedPlayer[] = await attendeesMap.syncMapItems.list({
-    limit: 200,
+    limit: 500,
   });
 
   return winners
