@@ -18,12 +18,11 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
     .services(SYNC_SERVICE_SID)
     .syncMaps("attendees")
     .syncMapItems.list({ limit: 1500 });
-  const attendees = mapItems.map((item) => item.data);
+  const attendees = mapItems
+    .map((item) => item.data)
+    .filter((a) => a.stage > 2);
   const csv = attendees.map((attendee) => {
-    return `${attendee.name},${attendee.country},${attendee.email},${attendee.event},${attendee.stage}`;
+    return `${attendee.email},${attendee.event},${attendee.stage}`;
   });
-  writeFileSync(
-    "attendees.csv",
-    `Name,Country,Email,Event,Stage\n${csv.join("\n")}`,
-  );
+  writeFileSync("attendees.csv", `Email,Event,Stage\n${csv.join("\n")}`);
 })();
