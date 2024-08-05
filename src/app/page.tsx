@@ -61,11 +61,11 @@ function App() {
           }}
           onAfterFinished={(selectedWedge: string) => {
             notifyAndUpdateWinners(
-              Object.values(bets).filter((bet) => bet.bet === selectedWedge),
+              Object.values(bets).filter((bet) => bet.bet === selectedWedge)
             );
             messageOthers(
               Object.values(bets).filter((bet) => bet.bet !== selectedWedge),
-              selectedWedge,
+              selectedWedge
             );
             unblockGame();
           }}
@@ -103,6 +103,12 @@ function App() {
                     isRed ? "text-[#FDF7F4]" : "text-[#121C2D]"
                   } py-5 rounded-t-lg w-full`}
                 >
+                  <span className="text-[6px] absolute bottom-0 left-1">
+                    {
+                      Object.values(bets).filter((bet) => bet.bet === wedge)
+                        .length
+                    }
+                  </span>
                   {Object.values(bets)
                     .filter((bet) => bet.bet === wedge)
                     .map((bet, index) => {
