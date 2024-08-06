@@ -180,7 +180,7 @@ export async function generateResponse(
         )
       ) {
         const bets = betsDoc.data.bets || {};
-        //sort longerst to shortest first
+        //sort longest to shortest first
         const selectedBet = wedges
           .sort((a, b) => b.length - a.length)
           .find((wedge) =>
