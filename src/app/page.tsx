@@ -16,7 +16,6 @@ import QRCode from "react-qr-code";
 
 function App() {
   const [bets, setBets] = useState<any[]>([]);
-  const [doc, setDoc] = useState<any>({});
   const [isFull, setIsFull] = useState(false);
 
   let wedges = (process.env.NEXT_PUBLIC_WEDGES || "").split(",");
@@ -34,17 +33,14 @@ function App() {
       });
       syncClient.on("connectionStateChanged", async (state: string) => {
         if (state === "connected") {
-          const doc = await syncClient.document("bets");
-          setDoc(doc);
+          const doc: any = await syncClient.document("bets");
           doc.on("updated", (event: any) => {
-            if (event.data.bets) setBets(Object.values(event.data.bets));
+            if (event.data.bets) setBets(event.data.bets);
             setIsFull(event?.data?.full || false);
           });
 
           if (doc.data) {
-            // @ts-ignore
-            setBets(Object.values(doc.data.bets));
-            // @ts-ignore
+            setBets(doc.data.bets || []);
             setIsFull(doc.data.full);
           }
         }
@@ -73,11 +69,12 @@ function App() {
             blockGame();
           }}
           onAfterFinished={(selectedWedge: string) => {
+            debugger
             notifyAndUpdateWinners(
-              Object.values(bets).filter((bet) => bet.bet === selectedWedge)
+              bets.filter((bet) => bet[1] === selectedWedge)
             );
             messageOthers(
-              Object.values(bets).filter((bet) => bet.bet !== selectedWedge),
+              bets.filter((bet) => bet[1] !== selectedWedge),
               selectedWedge
             );
             unblockGame();
@@ -117,13 +114,10 @@ function App() {
                   } py-5 rounded-t-lg w-full`}
                 >
                   <span className="text-[6px] absolute bottom-0 left-1">
-                    {
-                      Object.values(bets).filter((bet) => bet.bet === wedge)
-                        .length
-                    }
+                    {bets.filter((bet) => bet[1] === wedge).length}
                   </span>
-                  {Object.values(bets)
-                    .filter((bet) => bet.bet === wedge)
+                  {bets
+                    .filter((bet) => bet[1] === wedge)
                     .map((bet, index) => {
                       const randomNumberBetween70And110InStepsOf5 =
                         70 +
@@ -134,10 +128,10 @@ function App() {
 
                       return (
                         <img
-                          key={`bet-${bet.bet}-${index}`}
+                          key={`bet-${bet[1]}-${index}`}
                           src="/images/chip.png"
-                          alt={`${bet.name} bet chip on ${bet.bet}`}
-                          title={`${bet.name} bets on ${bet.bet}`}
+                          alt={`${bet[2]} bet chip on ${bet[1]}`}
+                          title={`${bet[2]} bets on ${bet[1]}`}
                           className={`absolute scale-[0.25] z-10 translate-x-[${randomNumberBetween70And110InStepsOf5}px]  translate-y-[${randomNumberBetweenMinus100AndMinus140InStepsOf5}px]`}
                         />
                       );

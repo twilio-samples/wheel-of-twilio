@@ -124,7 +124,7 @@ describe("For unverified user, generate response", async () => {
       // @ts-ignore
       betsDoc: {
         data: {
-          bets: {},
+          bets: [],
           blocked: true,
         },
       },

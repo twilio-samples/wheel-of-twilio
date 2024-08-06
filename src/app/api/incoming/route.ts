@@ -37,20 +37,21 @@ async function getUser(attendeesMap: SyncMapContext, hashedSender: string) {
 async function addDemoBet(betsDoc: DocumentInstance, messageContent: string) {
   if (process.env.demoBet) {
     // also allow for testing in CI
-    const bets = betsDoc.data.bets || {};
+    const bets = betsDoc.data.bets || [];
 
-    bets["test-better"] = {
-      name: "test-better",
-      hashedSender: "test-better",
-      bet: wedges.find((wedge) =>
-        capitalizeEachWord(messageContent).includes(wedge),
+    bets.push([
+      "test-better",
+      wedges.find((wedge) =>
+        capitalizeEachWord(messageContent).includes(wedge)
       ),
-    };
+      "test-better",
+    ]);
+
     await betsDoc.update({
       data: {
         bets,
         blocked: false,
-        full: false
+        full: false,
       },
     });
   }

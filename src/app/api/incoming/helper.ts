@@ -179,7 +179,7 @@ export async function generateResponse(
           capitalizeEachWord(messageContent).includes(capitalizeEachWord(wedge))
         )
       ) {
-        const bets = betsDoc.data.bets || {};
+        const bets = betsDoc.data.bets ? [...betsDoc.data.bets] : [];
         //sort longest to shortest first
         const selectedBet = wedges
           .sort((a, b) => b.length - a.length)
@@ -195,18 +195,17 @@ export async function generateResponse(
             event: EVENT_NAME,
           },
         });
+        const existingBet = bets.find((bet: any) => bet[0] === hashedSender);
+        if (existingBet) {
+          existingBet[1] = selectedBet;
+        } else {
+          bets.push([hashedSender, selectedBet, senderName]);
+        }
         await betsDoc.update({
           data: {
             ...betsDoc.data,
             full: false,
-            bets: {
-              ...bets,
-              [hashedSender]: {
-                name: senderName,
-                hashedSender,
-                bet: selectedBet,
-              },
-            },
+            bets: [...bets],
           },
         });
 
@@ -251,7 +250,8 @@ export async function generateResponse(
     }
   } catch (error: any) {
     if (error.code === 54006) {
-      await betsDoc.update({
+      betsDoc.update({
+        // not sync on purpose, should return warning even if it cannot be updated
         data: {
           ...betsDoc.data,
           full: true,
