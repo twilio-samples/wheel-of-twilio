@@ -33,7 +33,7 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
 
   await betsDoc.update({
     data: {
-      bets: {},
+      bets: [],
       blocked: false,
       full: false,
     },

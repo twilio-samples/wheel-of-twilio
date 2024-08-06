@@ -74,7 +74,7 @@ export async function unblockGame() {
 
   await betsDoc.update({
     data: {
-      bets: {},
+      bets: [],
       blocked: false,
       full: false,
     },
@@ -162,11 +162,11 @@ export async function notifyAndUpdateWinners(winners: any[]) {
   await Promise.all(
     winners.map(async (winningBet) => {
       const winner = await attendeesMap
-        .syncMapItems(winningBet.hashedSender)
+        .syncMapItems(winningBet[0])
         .fetch();
 
       try {
-        await attendeesMap.syncMapItems(winningBet.hashedSender).update({
+        await attendeesMap.syncMapItems(winningBet[0]).update({
           data: {
             ...winner.data,
             stage: Stages.WINNER_UNCLAIMED,
@@ -175,7 +175,7 @@ export async function notifyAndUpdateWinners(winners: any[]) {
       } catch (e: any) {
         if (e.code === 20404) {
           console.error(
-            `User ${winningBet.hashedSender} not found in sync map`
+            `User ${winningBet[0]} not found in sync map`
           );
         } else {
           console.error(e.message);
@@ -237,7 +237,7 @@ export async function messageOthers(unluckyBets: any[], winningWedge: string) {
     unluckyBets.map(async (unluckyBet) => {
       try {
         const unluckyPlayer = await attendeesMap
-          .syncMapItems(unluckyBet.hashedSender)
+          .syncMapItems(unluckyBet[0])
           .fetch();
         const body = await localizeStringForPhoneNumber(
           "loser",
@@ -253,7 +253,7 @@ export async function messageOthers(unluckyBets: any[], winningWedge: string) {
       } catch (e: any) {
         if (e.code === 20404) {
           console.error(
-            `User ${unluckyBet.hashedSender} not found in sync map`
+            `User ${unluckyBet[0]} not found in sync map`
           );
         } else {
           console.error(e.message);
