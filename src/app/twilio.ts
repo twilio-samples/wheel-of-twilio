@@ -33,7 +33,7 @@ async function localizeStringForPhoneNumber(
   str: string,
   phone: string,
   name: string,
-  winningWedge?: string,
+  winningWedge?: string
 ) {
   await i18next.init({
     lng: getCountry(phone)?.languages[0],
@@ -60,7 +60,7 @@ export async function fetchToken() {
     TWILIO_API_SECRET,
     {
       identity: Privilege.FRONTEND,
-    },
+    }
   );
 
   token.addGrant(syncGrant);
@@ -109,7 +109,7 @@ export async function getWinners(allWinners: boolean): Promise<MaskedPlayer[]> {
       (a: any) =>
         a.stage === Stages.WINNER_UNCLAIMED ||
         (allWinners && a.stage === Stages.WINNER_CLAIMED) ||
-        (allWinners && a.stage === Stages.RAFFLE_WINNER),
+        (allWinners && a.stage === Stages.RAFFLE_WINNER)
     );
 }
 
@@ -165,12 +165,22 @@ export async function notifyAndUpdateWinners(winners: any[]) {
         .syncMapItems(winningBet.hashedSender)
         .fetch();
 
-      await attendeesMap.syncMapItems(winningBet.hashedSender).update({
-        data: {
-          ...winner.data,
-          stage: Stages.WINNER_UNCLAIMED,
-        },
-      });
+      try {
+        await attendeesMap.syncMapItems(winningBet.hashedSender).update({
+          data: {
+            ...winner.data,
+            stage: Stages.WINNER_UNCLAIMED,
+          },
+        });
+      } catch (e: any) {
+        if (e.code === 20404) {
+          console.error(
+            `User ${winningBet.hashedSender} not found in sync map`
+          );
+        } else {
+          console.error(e.message);
+        }
+      }
 
       const to = winner.data.sender.replace("whatsapp:", "");
       if (OFFER_SMALL_PRIZES === "true") {
@@ -183,25 +193,25 @@ export async function notifyAndUpdateWinners(winners: any[]) {
             ? "winnerMessageSmallPrize"
             : "winnerMessage",
           to,
-          winner.data.name,
+          winner.data.name
         ),
         from: `whatsapp:${NEXT_PUBLIC_TWILIO_PHONE_NUMBER}`,
         to: winner.data.sender,
       });
-    }),
+    })
   );
 }
 
 export async function callWinner(
   name: string,
   to: string,
-  rafflePrize: boolean,
+  rafflePrize: boolean
 ) {
   await client.calls.create({
     twiml: await localizeStringForPhoneNumber(
       rafflePrize ? "winnerCallRafflePrize" : "winnerCallSmallPrize",
       to,
-      name,
+      name
     ),
     from: NEXT_PUBLIC_TWILIO_PHONE_NUMBER,
     to,
@@ -213,7 +223,7 @@ export async function sendRaffleWinnerMessage(name: string, to: string) {
     body: await localizeStringForPhoneNumber(
       "winnerMessageRafflePrize",
       to,
-      name,
+      name
     ),
     from: `whatsapp:${NEXT_PUBLIC_TWILIO_PHONE_NUMBER}`,
     to,
@@ -225,20 +235,30 @@ export async function messageOthers(unluckyBets: any[], winningWedge: string) {
   const attendeesMap = syncService.syncMaps()("attendees");
   await Promise.all(
     unluckyBets.map(async (unluckyBet) => {
-      const unluckyPlayer = await attendeesMap
-        .syncMapItems(unluckyBet.hashedSender)
-        .fetch();
-      const body = await localizeStringForPhoneNumber(
-        "loser",
-        unluckyPlayer.data.sender,
-        unluckyPlayer.data.name,
-        winningWedge,
-      );
-      await client.messages.create({
-        body,
-        from: `whatsapp:${NEXT_PUBLIC_TWILIO_PHONE_NUMBER}`,
-        to: unluckyPlayer.data.sender,
-      });
-    }),
+      try {
+        const unluckyPlayer = await attendeesMap
+          .syncMapItems(unluckyBet.hashedSender)
+          .fetch();
+        const body = await localizeStringForPhoneNumber(
+          "loser",
+          unluckyPlayer.data.sender,
+          unluckyPlayer.data.name,
+          winningWedge
+        );
+        await client.messages.create({
+          body,
+          from: `whatsapp:${NEXT_PUBLIC_TWILIO_PHONE_NUMBER}`,
+          to: unluckyPlayer.data.sender,
+        });
+      } catch (e: any) {
+        if (e.code === 20404) {
+          console.error(
+            `User ${unluckyBet.hashedSender} not found in sync map`
+          );
+        } else {
+          console.error(e.message);
+        }
+      }
+    })
   );
 }
