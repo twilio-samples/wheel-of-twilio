@@ -189,11 +189,6 @@ export async function generateResponse(
             )
           );
 
-        bets[hashedSender] = {
-          name: senderName,
-          hashedSender,
-          bet: selectedBet,
-        };
         await attendeesMap.syncMapItems(hashedSender).update({
           data: {
             ...currentUser,
@@ -203,7 +198,15 @@ export async function generateResponse(
         await betsDoc.update({
           data: {
             ...betsDoc.data,
-            bets,
+            full: false,
+            bets: {
+              ...bets,
+              [hashedSender]: {
+                name: senderName,
+                hashedSender,
+                bet: selectedBet,
+              },
+            },
           },
         });
 
@@ -254,8 +257,10 @@ export async function generateResponse(
           full: true,
         },
       });
+      twimlRes.message(i18next.t("roundFull"));
+    } else {
+      twimlRes.message(i18next.t("catchAllError"));
     }
-    twimlRes.message(i18next.t("catchAllError"));
     console.error(error.message);
   }
 

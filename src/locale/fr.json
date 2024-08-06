@@ -17,6 +17,7 @@
     "alreadyPlayedNotClaimedSmallPrize": "Félicitations, vous avez déjà gagné. Passez par le stand Twilio pour réclamer votre prix !",
     "alreadyPlayedPrizeClaimed": "Profitez de votre prix. N'hésitez pas à visiter le stand Twilio pour discuter avec nous de notre plateforme d'engagement client.",
     "catchAllError": "Désolé, une erreur s'est produite. Veuillez réessayer plus tard.",
+    "roundFull": "Désolé, la ronde est pleine. Veuillez attendre la prochaine ronde.",
     "betTemplateSID": "HXeef5fbbf2599783d930f89469618d106",
     "countryTemplateSID": "HX678e922acebb5400ba108926a2171065",
     "invalidBetTemplateSID": "HXf4ac9aafd1909f69e203e5f8d376b056"

@@ -17,6 +17,7 @@ import QRCode from "react-qr-code";
 function App() {
   const [bets, setBets] = useState<any[]>([]);
   const [doc, setDoc] = useState<any>({});
+  const [isFull, setIsFull] = useState(false);
 
   let wedges = (process.env.NEXT_PUBLIC_WEDGES || "").split(",");
 
@@ -37,10 +38,15 @@ function App() {
           setDoc(doc);
           doc.on("updated", (event: any) => {
             if (event.data.bets) setBets(Object.values(event.data.bets));
+            if (event.data.full) setIsFull(event.data.full);
           });
 
-          // @ts-ignore
-          if (doc.data.bets) setBets(Object.values(doc.data.bets));
+          if (doc.data) {
+            // @ts-ignore
+            setBets(Object.values(doc.data.bets));
+            // @ts-ignore
+            setIsFull(doc.data.full);
+          }
         }
       });
     });
@@ -49,6 +55,8 @@ function App() {
       syncClient && syncClient.shutdown();
     };
   }, []);
+
+  console.log(isFull)
 
   return (
     <div className="vh-full flex h-full">
