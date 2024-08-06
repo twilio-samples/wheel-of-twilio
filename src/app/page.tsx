@@ -38,7 +38,7 @@ function App() {
           setDoc(doc);
           doc.on("updated", (event: any) => {
             if (event.data.bets) setBets(Object.values(event.data.bets));
-            if (event.data.full) setIsFull(event.data.full);
+            setIsFull(event?.data?.full || false);
           });
 
           if (doc.data) {
@@ -56,10 +56,15 @@ function App() {
     };
   }, []);
 
-  console.log(isFull)
-
   return (
     <div className="vh-full flex h-full">
+      {isFull && (
+        <div className="absolute z-10 animate-bounce bottom-10 left-1/2 transform -translate-x-1/2">
+          <div className="bg-[#F22F46] text-[#FDF7F4] p-2 rounded-lg">
+            <p className="text-center">Game is full!</p>
+          </div>
+        </div>
+      )}
       <div className="w-1/2 flex  item justify-center relative">
         <SpinAndWin
           wedges={wedges}
