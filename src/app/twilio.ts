@@ -76,6 +76,7 @@ export async function unblockGame() {
     data: {
       bets: {},
       blocked: false,
+      full: false,
     },
   });
 }

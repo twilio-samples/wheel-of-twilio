@@ -50,6 +50,7 @@ async function addDemoBet(betsDoc: DocumentInstance, messageContent: string) {
       data: {
         bets,
         blocked: false,
+        full: false
       },
     });
   }
