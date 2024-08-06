@@ -35,6 +35,7 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
     data: {
       bets: {},
       blocked: false,
+      full: false,
     },
   });
 
