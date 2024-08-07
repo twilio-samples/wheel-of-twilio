@@ -302,7 +302,7 @@ describe("For verified user, generate response", async () => {
       // @ts-ignore
       betsDoc: {
         data: {
-          bets: {},
+          bets: [],
           blocked: false,
         },
         update: async (data: any) => {
