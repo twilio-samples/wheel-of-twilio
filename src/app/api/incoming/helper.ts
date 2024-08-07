@@ -136,15 +136,9 @@ export async function generateResponse(
           await attendeesMap.syncMapItems(hashedSender).update({
             data: {
               ...currentUser,
-              // stage: Stages.ASKING_FOR_COUNTRY,
               stage: Stages.VERIFIED_USER,
             },
           });
-          // await client.messages.create({
-          //   contentSid: i18next.t("countryTemplateSID"),
-          //   from: MESSAGING_SERVICE_SID,
-          //   to: senderID,
-          // });
           await client.messages.create({
             contentSid: i18next.t("betTemplateSID"),
             from: MESSAGING_SERVICE_SID,
@@ -157,19 +151,6 @@ export async function generateResponse(
         }
         twimlRes.message(i18next.t("verificationFailed"));
       }
-    } else if (currentUser.stage === Stages.ASKING_FOR_COUNTRY) {
-      await attendeesMap.syncMapItems(hashedSender).update({
-        data: {
-          ...currentUser,
-          country: messageContent,
-          stage: Stages.VERIFIED_USER,
-        },
-      });
-      await client.messages.create({
-        contentSid: i18next.t("betTemplateSID"),
-        from: MESSAGING_SERVICE_SID,
-        to: currentUser.sender,
-      });
     } else if (currentUser.stage === Stages.VERIFIED_USER) {
       if (betsDoc.data.blocked) {
         twimlRes.message(i18next.t("betsClosed"));
