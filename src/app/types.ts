@@ -2,10 +2,9 @@ export const enum Stages {
   NEW_USER = 1,
   VERIFYING = 2,
   VERIFIED_USER = 3,
-  ASKING_FOR_COUNTRY = 4,
-  WINNER_UNCLAIMED = 5,
-  WINNER_CLAIMED = 6,
-  RAFFLE_WINNER = 7,
+  WINNER_UNCLAIMED = 4,
+  WINNER_CLAIMED = 5,
+  RAFFLE_WINNER = 6,
 }
 
 export interface Player {
