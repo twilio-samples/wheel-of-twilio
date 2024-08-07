@@ -24,6 +24,7 @@ const {
   MESSAGING_SERVICE_SID = "",
   NEXT_PUBLIC_WEDGES = "",
   OFFER_SMALL_PRIZES = "false",
+  MAX_BETS_PER_USER = "0",
 } = process.env;
 
 const wedges = NEXT_PUBLIC_WEDGES.split(",");
@@ -82,6 +83,7 @@ export async function generateResponse(
         data: {
           name: senderName,
           sender: senderID,
+          submittedBets: 0,
           stage: Stages.NEW_USER,
         },
       });
@@ -133,17 +135,19 @@ export async function generateResponse(
           });
 
         if (verificationCheck.status === "approved") {
-          await attendeesMap.syncMapItems(hashedSender).update({
-            data: {
-              ...currentUser,
-              stage: Stages.VERIFIED_USER,
-            },
-          });
-          await client.messages.create({
-            contentSid: i18next.t("betTemplateSID"),
-            from: MESSAGING_SERVICE_SID,
-            to: currentUser.sender,
-          });
+          await Promise.all([
+            attendeesMap.syncMapItems(hashedSender).update({
+              data: {
+                ...currentUser,
+                stage: Stages.VERIFIED_USER,
+              },
+            }),
+            client.messages.create({
+              contentSid: i18next.t("betTemplateSID"),
+              from: MESSAGING_SERVICE_SID,
+              to: currentUser.sender,
+            }),
+          ]);
         }
       } catch (e: any) {
         if (e.message !== "Invalid code") {
@@ -170,13 +174,17 @@ export async function generateResponse(
             )
           );
 
-        await attendeesMap.syncMapItems(hashedSender).update({
-          data: {
-            ...currentUser,
-            event: EVENT_NAME,
-          },
-        });
         const existingBet = bets.find((bet: any) => bet[0] === hashedSender);
+
+        const maxBetsReached =
+          parseInt(MAX_BETS_PER_USER) > 0 &&
+          currentUser.submittedBets >= parseInt(MAX_BETS_PER_USER);
+
+        if (!existingBet && maxBetsReached) {
+          twimlRes.message(i18next.t("maxBetsReached"));
+          return twimlRes.toString();
+        }
+
         if (existingBet) {
           existingBet[1] = selectedBet;
         } else {
@@ -189,6 +197,16 @@ export async function generateResponse(
             bets: [...bets],
           },
         });
+        if (!existingBet) {
+          // inc counter only if new bet and if it was successfully added
+          await attendeesMap.syncMapItems(hashedSender).update({
+            data: {
+              ...currentUser,
+              submittedBets: currentUser.submittedBets + 1,
+              event: EVENT_NAME,
+            },
+          });
+        }
 
         twimlRes.message(
           i18next.t("betPlaced", {

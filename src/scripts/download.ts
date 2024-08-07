@@ -22,7 +22,7 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
     .map((item) => item.data)
     .filter((a) => a.stage > 2);
   const csv = attendees.map((attendee) => {
-    return `${attendee.email},${attendee.event},${attendee.stage}`;
+    return `${attendee.email},${attendee.event},${attendee.stage},${attendee.submittedBets}`;
   });
-  writeFileSync("attendees.csv", `Email,Event,Stage\n${csv.join("\n")}`);
+  writeFileSync("attendees.csv", `Email,Event,Stage,SubmittedBets\n${csv.join("\n")}`);
 })();

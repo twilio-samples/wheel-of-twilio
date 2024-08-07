@@ -40,6 +40,7 @@ This project is Twilio's innovative booth activation designed to motivate people
      EVENT_NAME="DevEvent 2024"
      NEXT_PUBLIC_WEDGES="San Francisco,London,Paris,Madrid,Berlin,New York,Munich,Barcelona,Amsterdam,Vienna"
      NEXT_PUBLIC_TWILIO_PHONE_NUMBER="+4918601860"
+     MAX_BETS_PER_USER="0"
      VERIFY_SERVICE_SID="VAxxxxxxx"
      SYNC_SERVICE_SID="ISxxxxxx"
      MESSAGING_SERVICE_SID="MGxxxxxxx"
@@ -48,7 +49,8 @@ This project is Twilio's innovative booth activation designed to motivate people
      OFFER_SMALL_PRIZES="false"
      ```
 
-     > The flag `OFFER_SMALL_PRIZES` influences the message the winners get. If set to `false`, they are notified that they qualified for a larger prize. if set the `true`, they are informed that they won and can collect a small prize (and they get a prize).
+      > The flag `OFFER_SMALL_PRIZES` influences the message the winners get. If set to `false`, they are notified that they qualified for a larger prize. if set the `true`, they are informed that they won and can collect a small prize (and they get a prize).
+      > The option `MAX_BETS_PER_USER` limits how often one user can submit a bet. If 0, the users can enter as many bets as they want.
 
 4. **Run the setup script:**
 

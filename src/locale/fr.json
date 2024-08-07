@@ -6,6 +6,7 @@
     "sentEmail": "Nous vous avons envoyé un e-mail avec un code de vérification. Veuillez répondre avec le code que nous avons envoyé à votre adresse e-mail.\n Si vous n'avez pas reçu l'e-mail, vérifiez votre dossier spam ou entrez une nouvelle adresse e-mail.",
     "verificationFailed": "Désolé, le code de vérification est incorrect. Veuillez réessayer ou entrer une nouvelle adresse e-mail.",
     "betsClosed": "Désolé, le jeu est bloqué.",
+    "maxBetsReached": "Désolé, vous avez déjà placé le nombre maximum de paris.",
     "betPlaced": "Bonjour {{senderName}}\nNous avons reçu votre pari sur {{messageContent}}",
     "winnerCallSmallPrize": "<Response><Say>Félicitations {{name}} ! Vous avez gagné et vous pouvez réclamer votre prix au stand Twilio !</Say></Response>",
     "winnerCallRafflePrize": "<Response><Say>Félicitations {{name}} ! Vous avez gagné le grand prix et vous pouvez réclamer votre prix au stand Twilio !</Say></Response>",
