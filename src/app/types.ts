@@ -11,6 +11,7 @@ export interface Player {
   name: string;
   sender: string;
   stage: Stages;
+  submittedBets: number;
   country?: string;
   verificationSid?: string;
   bet?: string;
