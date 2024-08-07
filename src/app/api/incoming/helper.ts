@@ -262,6 +262,7 @@ export async function generateResponse(
       twimlRes.message(i18next.t("catchAllError"));
     }
     console.error(error.message);
+    throw error;
   }
 
   return twimlRes.toString();
