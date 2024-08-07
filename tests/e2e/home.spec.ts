@@ -12,7 +12,7 @@ test("See default page", async ({ page }) => {
 
   for (const wedge of wedges) {
     await expect(
-      page.locator("div").filter({ hasText: new RegExp(`^${wedge}$`) }),
+      page.locator("div").filter({ hasText: new RegExp(`^0${wedge}$`) }),
     ).toBeVisible();
   }
 });
