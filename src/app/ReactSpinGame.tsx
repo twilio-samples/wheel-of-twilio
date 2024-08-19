@@ -1,5 +1,3 @@
-// Copyright 2024 Twilio Inc.
-
 import { useRef, useState, useLayoutEffect } from "react";
 
 interface SpinGameData {
@@ -85,7 +83,7 @@ export default function SpinAndWin({
 
       wheel.fillStyle = i % 2 === 0 ? "#FDF7F4" : "#121C2D";
       wheel.textAlign = "end";
-      wheel.font = "3.25rem sans-serif";
+      wheel.font = "4.25rem sans-serif";
       wheel.transform = "translate(50px, 100px)";
       wheel.rotate(-1.57);
       wheel.fillText(el, -70, wheelY + 10);

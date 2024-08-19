@@ -1,5 +1,3 @@
-// Copyright 2024 Twilio Inc.
-
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -28,7 +26,7 @@ export default function RootLayout({
       <body className={"h-full overflow-hidden " + inter.className}>
         <div
           style={{
-            backgroundColor: "#121C2D",
+            backgroundColor: "#d1d1d1",
             backgroundSize: "60px 60px",
             backgroundImage:
               "linear-gradient(to right, rgb(253, 247, 244, 30%) 0.35px, transparent 1px), linear-gradient(to bottom, rgb(253, 247, 244, 30%) 0.35px, transparent 1px)",
@@ -50,9 +48,18 @@ export default function RootLayout({
             alt="confetti right"
             className="absolute top-0 left-0"
           />
-
+          <div className="absolute bottom-0 right-0">
+            <svg width="100" height="100">
+              <circle cx="50" cy="50" r="40" fill="green" />
+            </svg>
+            <svg width="80" height="80">
+              <circle cx="40" cy="40" r="30" fill="green" />
+            </svg>
+            <svg width="60" height="60">
+              <circle cx="30" cy="30" r="20" fill="green" />
+            </svg>
+          </div>
           <div className="absolute top-0 left-0 w-full">
-            {/* needed because chrome won't render <image> in SVGs */}
             <img
               src="/images/twilio_devs.png"
               alt="logo"

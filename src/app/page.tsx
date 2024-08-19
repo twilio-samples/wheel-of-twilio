@@ -1,5 +1,3 @@
-// Copyright 2024 Twilio Inc.
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -99,11 +97,11 @@ function App() {
       </div>
       <div className="w-1/2 flex items-center justify-center">
         <div className="absolute pt-14 my-auto w-1/2">
-          <div className="flex flex-col text-3xl font-extrabold pb-8 w-2/3 mx-auto">
+          <div className="flex flex-col text-4xl font-extrabold pb-8 w-2/3 mx-auto">
             <h1 className="text-[#FDF7F4]">Better communication</h1>
             <h1 className="text-[#F2BE5A]">in the blink of an API</h1>
           </div>
-          <div className="w-2/3 mx-auto grid grid-cols-2 pb-8  gap-4 space-around text-center text-xl font-semibold ">
+          <div className="w-2/3 mx-auto grid grid-cols-2 pb-8  gap-4 space-around text-center text-2xl font-semibold ">
             {wedges.map((wedge, index) => {
               const isRed = Math.floor((index - 1) / 2) % 2 === 0;
               return (
