@@ -2,7 +2,6 @@
   "translation": {
     "welcome": "Welcome to the game, {{senderName}}! Please reply with your business email address, we will send you an email to verify your address is correct.",
     "invalidEmail": "Sorry, this is not a valid email address.",
-    "emailVerified": "Thank you! Your email address has been verified. You can now play the game.",
     "sentEmail": "We have sent you an email with a verification code. Please reply with the code we sent to your email address.\n If you did not receive the email, please check your spam folder or enter a new email address.",
     "verificationFailed": "Sorry, the verification code is incorrect. Please try again or enter a new email address.",
     "betsClosed": "Sorry, the game is blocked.",
@@ -19,8 +18,8 @@
     "alreadyPlayedPrizeClaimed": "Enjoy your prize. Feel free to visit the Twilio booth to chat with us about our Customer Engagement Platform.",
     "catchAllError": "Sorry, an error occurred. Please try again later.",
     "roundFull": "Sorry, the round is full. Please wait for the next round.",
-    "countryTemplateSID": "HX115e3ff7ef0908ff2f3140e29298e160",
-    "betTemplateSID": "HX98c46673d2d2c9dba3941cdbb47292ca",
-    "invalidBetTemplateSID": "HX04288e22a0f1b5405a2eef74f7ac331b"
+    "countryTemplateSID": "HX1adbb27b68b9e77d21932330b44dbf69",
+    "betTemplateSID": "HX5f61fdeba3e7ad908bf91cf59ac2c68b",
+    "invalidBetTemplateSID": "HX538c1d8adc3abb877129769dc9ffec9e"
   }
 }
