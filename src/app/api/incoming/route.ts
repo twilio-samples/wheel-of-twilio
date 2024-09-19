@@ -57,6 +57,13 @@ async function addDemoBet(betsDoc: DocumentInstance, messageContent: string) {
   }
 }
 
+export async function GET() {
+  const response = new NextResponse(
+    "Configure this endpoint to respond to incoming messages."
+  );
+  return response;
+}
+
 export async function POST(req: NextRequest) {
   const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
     accountSid: TWILIO_ACCOUNT_SID,
