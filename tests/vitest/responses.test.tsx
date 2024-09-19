@@ -248,13 +248,13 @@ describe("For unverified user, generate response", async () => {
   });
 });
 
-describe("For verified user, generate response", async () => {
+describe("For verified users with selected country, generate response", async () => {
   test("Check for right message when bets are blocked", async () => {
     const currentUser = {
       name: "test-better",
       sender: "+115112341234",
       bet: "test-better",
-      stage: Stages.VERIFIED_USER,
+      stage: Stages.COUNTRY_SELECTED,
     };
 
     // @ts-ignore just for this test
@@ -281,7 +281,7 @@ describe("For verified user, generate response", async () => {
       name: "test-better",
       sender: "+115112341234",
       bet: "test-better",
-      stage: Stages.VERIFIED_USER,
+      stage: Stages.COUNTRY_SELECTED,
     };
 
     const firstWedge = (process.env.NEXT_PUBLIC_WEDGES || "").split(",")[0];
@@ -321,7 +321,7 @@ describe("For verified user, generate response", async () => {
       name: "test-better",
       sender: "+115112341234",
       bet: "test-better",
-      stage: Stages.VERIFIED_USER,
+      stage: Stages.COUNTRY_SELECTED,
     };
 
     const response = await generateResponse(
