@@ -20,7 +20,7 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
     .syncMapItems.list({ limit: 1500 });
   const attendees = mapItems
     .map((item) => item.data)
-    .filter((a) => a.stage > 2);
+    .filter((a) => a.stage !== "NEW_USER" && a.stage !== "VERIFYING");
   const csv = attendees.map((attendee) => {
     return `${attendee.name},${attendee.country},${attendee.email},${attendee.event},${attendee.stage},${attendee.submittedBets}`;
   });
