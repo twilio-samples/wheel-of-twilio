@@ -48,7 +48,7 @@ async function initI18n(senderID: string) {
       es,
     },
   });
-  return lng;
+  return getCountry(senderID)?.name;
 }
 
 export async function generateResponse(
@@ -71,7 +71,7 @@ export async function generateResponse(
   const twimlRes = new twiml.MessagingResponse();
   try {
     const matchedEmail = regexForEmail.exec(messageContent);
-    const lng = await initI18n(currentUser?.sender || senderID || "");
+    const country = await initI18n(currentUser?.sender || senderID || "");
     const hashedSender = createHash("sha256")
       .update(currentUser?.sender || senderID || "")
       .digest("hex");
@@ -82,6 +82,7 @@ export async function generateResponse(
         key: hashedSender,
         data: {
           name: senderName,
+          country,
           sender: senderID,
           submittedBets: 0,
           stage: Stages.NEW_USER,
@@ -143,7 +144,7 @@ export async function generateResponse(
               },
             }),
             client.messages.create({
-              contentSid: i18next.t("countryTemplateSID"),
+              contentSid: i18next.t("betTemplateSID"),
               from: MESSAGING_SERVICE_SID,
               to: currentUser.sender,
             }),
@@ -156,22 +157,6 @@ export async function generateResponse(
         twimlRes.message(i18next.t("verificationFailed"));
       }
     } else if (currentUser.stage === Stages.VERIFIED_USER) {
-      await Promise.all([
-        attendeesMap.syncMapItems(hashedSender).update({
-          data: {
-            ...currentUser,
-            country: messageContent,
-            stage: Stages.COUNTRY_SELECTED,
-          },
-        }),
-        client.messages.create({
-          contentSid: i18next.t("betTemplateSID"),
-          from: MESSAGING_SERVICE_SID,
-          to: currentUser.sender,
-        }),
-      ]);
-
-    } else if (currentUser.stage === Stages.COUNTRY_SELECTED) {
       if (betsDoc.data.blocked) {
         twimlRes.message(i18next.t("betsClosed"));
         // check if one of the wedges is a substring of the capitalized messageContent

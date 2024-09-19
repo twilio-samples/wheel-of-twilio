@@ -1,107 +1,4 @@
-function getCountyTemplates(): WhatsAppTemplateConfig[] {
-  return [
-    {
-      friendly_name: "Ask For Country",
-      language: "en",
-      variables: {},
-      translationKey: "countryTemplateSID",
-      types: {
-        "twilio/quick-reply": {
-          actions: [
-            {
-              id: "Germany",
-              title: "Germany 🇩🇪",
-            },
-            {
-              id: "Austria",
-              title: "Austria 🇦🇹",
-            },
-            {
-              id: "United Kingdom",
-              title: "United Kingdom 🇬🇧",
-            },
-          ],
-          body: "Your email address has been verified. In which country are you based? \nYou can hit a quick reply or use free form text.",
-        },
-      },
-    },
-    {
-      friendly_name: "Frage nach Land",
-      language: "de",
-      variables: {},
-      translationKey: "countryTemplateSID",
-      types: {
-        "twilio/quick-reply": {
-          actions: [
-            {
-              id: "Germany",
-              title: "Deutschland 🇩🇪",
-            },
-            {
-              id: "Austria",
-              title: "Österreich 🇦🇹",
-            },
-            {
-              id: "United Kingdom",
-              title: "Großbritannien 🇬🇧",
-            },
-          ],
-          body: "Deine E-Mail-Adresse wurde verifiziert. In welchem Land sind Sie ansässig? \nWählen Sie eine der Auswahlmöglichkeiten oder antworten Sie mit Freitext.",
-        },
-      },
-    },
-    {
-      friendly_name: "Preguntar por País",
-      language: "es",
-      variables: {},
-      translationKey: "countryTemplateSID",
-      types: {
-        "twilio/quick-reply": {
-          actions: [
-            {
-              id: "Germany",
-              title: "Alemania 🇩🇪",
-            },
-            {
-              id: "Austria",
-              title: "Austria 🇦🇹",
-            },
-            {
-              id: "United Kingdom",
-              title: "Reino Unido 🇬🇧",
-            },
-          ],
-          body: "Tu dirección de correo electrónico ha sido verificada. ¿En qué país te encuentras?\nPuedes usar una respuesta rápida o un texto libre.",
-        },
-      },
-    },
-    {
-      friendly_name: "Demander le Pays",
-      language: "fr",
-      variables: {},
-      translationKey: "countryTemplateSID",
-      types: {
-        "twilio/quick-reply": {
-          actions: [
-            {
-              id: "Germany",
-              title: "Allemagne 🇩🇪",
-            },
-            {
-              id: "Austria",
-              title: "Autriche 🇦🇹",
-            },
-            {
-              id: "United Kingdom",
-              title: "Royaume-Uni 🇬🇧",
-            },
-          ],
-          body: "Votre adresse e-mail a été vérifiée. Dans quel pays êtes-vous basé(e) ?\nVous pouvez choisir une réponse rapide ou utiliser un texte libre.",
-        },
-      },
-    },
-  ];
-}
+
 
 import "dotenv/config";
 const { NEXT_PUBLIC_WEDGES = "" } = process.env;
@@ -255,7 +152,6 @@ function getInvalidBetsTemplates(): WhatsAppTemplateConfig[] {
 
 export function getTemplates(): WhatsAppTemplateConfig[] {
   return [
-    ...getCountyTemplates(),
     ...getOptionsTemplates(),
     ...getInvalidBetsTemplates(),
   ];

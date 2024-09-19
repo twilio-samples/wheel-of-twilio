@@ -49,6 +49,7 @@ describe("For unknown user, generate welcome message", async () => {
     // @ts-ignore just for this test
     const newUserWelcome = await generateResponse(undefined, undefined, {
       messageContent: "Hello, I'm a new user",
+      senderID: "+4477002341234",
       attendeesMap: {
         // @ts-ignore
         syncMapItems: {
@@ -254,7 +255,7 @@ describe("For verified users with selected country, generate response", async ()
       name: "test-better",
       sender: "+115112341234",
       bet: "test-better",
-      stage: Stages.COUNTRY_SELECTED,
+      stage: Stages.VERIFIED_USER,
     };
 
     // @ts-ignore just for this test
@@ -281,7 +282,7 @@ describe("For verified users with selected country, generate response", async ()
       name: "test-better",
       sender: "+115112341234",
       bet: "test-better",
-      stage: Stages.COUNTRY_SELECTED,
+      stage: Stages.VERIFIED_USER,
     };
 
     const firstWedge = (process.env.NEXT_PUBLIC_WEDGES || "").split(",")[0];
@@ -321,7 +322,7 @@ describe("For verified users with selected country, generate response", async ()
       name: "test-better",
       sender: "+115112341234",
       bet: "test-better",
-      stage: Stages.COUNTRY_SELECTED,
+      stage: Stages.VERIFIED_USER,
     };
 
     const response = await generateResponse(
