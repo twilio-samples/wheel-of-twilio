@@ -2,7 +2,6 @@
   "translation": {
     "welcome": "Bienvenue dans le jeu, {{senderName}} ! Veuillez répondre avec votre adresse e-mail professionnelle, nous vous enverrons un e-mail pour vérifier que votre adresse est correcte.",
     "invalidEmail": "Désolé, ce n'est pas une adresse e-mail valide.",
-    "emailVerified": "Merci ! Votre adresse e-mail a été vérifiée. Vous pouvez maintenant jouer au jeu.",
     "sentEmail": "Nous vous avons envoyé un e-mail avec un code de vérification. Veuillez répondre avec le code que nous avons envoyé à votre adresse e-mail.\n Si vous n'avez pas reçu l'e-mail, vérifiez votre dossier spam ou entrez une nouvelle adresse e-mail.",
     "verificationFailed": "Désolé, le code de vérification est incorrect. Veuillez réessayer ou entrer une nouvelle adresse e-mail.",
     "betsClosed": "Désolé, le jeu est bloqué.",
@@ -19,8 +18,8 @@
     "alreadyPlayedPrizeClaimed": "Profitez de votre prix. N'hésitez pas à visiter le stand Twilio pour discuter avec nous de notre plateforme d'engagement client.",
     "catchAllError": "Désolé, une erreur s'est produite. Veuillez réessayer plus tard.",
     "roundFull": "Désolé, la ronde est pleine. Veuillez attendre la prochaine ronde.",
-    "betTemplateSID": "HXeef5fbbf2599783d930f89469618d106",
-    "countryTemplateSID": "HX678e922acebb5400ba108926a2171065",
-    "invalidBetTemplateSID": "HXf4ac9aafd1909f69e203e5f8d376b056"
+    "betTemplateSID": "HX90e0a0ef84d6805b2e13268f28f67681",
+    "countryTemplateSID": "HX066ded8ca0755c96b3203b74a3852906",
+    "invalidBetTemplateSID": "HXac13305e7c1ab6aee195576accbc76da"
   }
 }

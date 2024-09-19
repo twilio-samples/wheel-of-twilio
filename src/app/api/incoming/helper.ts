@@ -143,7 +143,7 @@ export async function generateResponse(
               },
             }),
             client.messages.create({
-              contentSid: i18next.t("betTemplateSID"),
+              contentSid: i18next.t("countryTemplateSID"),
               from: MESSAGING_SERVICE_SID,
               to: currentUser.sender,
             }),
@@ -156,6 +156,22 @@ export async function generateResponse(
         twimlRes.message(i18next.t("verificationFailed"));
       }
     } else if (currentUser.stage === Stages.VERIFIED_USER) {
+      await Promise.all([
+        attendeesMap.syncMapItems(hashedSender).update({
+          data: {
+            ...currentUser,
+            country: messageContent,
+            stage: Stages.COUNTRY_SELECTED,
+          },
+        }),
+        client.messages.create({
+          contentSid: i18next.t("betTemplateSID"),
+          from: MESSAGING_SERVICE_SID,
+          to: currentUser.sender,
+        }),
+      ]);
+
+    } else if (currentUser.stage === Stages.COUNTRY_SELECTED) {
       if (betsDoc.data.blocked) {
         twimlRes.message(i18next.t("betsClosed"));
         // check if one of the wedges is a substring of the capitalized messageContent
