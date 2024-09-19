@@ -51,6 +51,7 @@ This project is Twilio's innovative booth activation designed to motivate people
 
       > The flag `OFFER_SMALL_PRIZES` influences the message the winners get. If set to `false`, they are notified that they qualified for a larger prize. if set the `true`, they are informed that they won and can collect a small prize (and they get a prize).
       > The option `MAX_BETS_PER_USER` limits how often one user can submit a bet. If 0, the users can enter as many bets as they want.
+      > The script `pnpm raffle` can be used to select one random winner and to trigger a noticiation message and a noticiation call
 
 4. **Run the setup script:**
 
@@ -74,6 +75,14 @@ This project is Twilio's innovative booth activation designed to motivate people
 After following these steps, the Wheel Of Twilio game should be up and running on your local machine. Enjoy testing and experimenting with Twilio's tech in a fun, interactive way!
 
 If you encounter any issues or have questions, please refer to the issues section or open a new issue in the repository for assistance.
+
+### Lead Collection
+
+This game collects lead information of participants and stores them in Twilio Sync. You can download the lead information by running the following script
+```bash
+pnpm download
+```
+
 
 ### Display Considerations
 
