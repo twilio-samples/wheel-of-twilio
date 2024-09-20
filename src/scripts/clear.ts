@@ -12,22 +12,40 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
 });
 
 (async () => {
-  const mapItems = await client.sync.v1
+  const attendeesMap = await client.sync.v1
     .services(SYNC_SERVICE_SID)
-    .syncMaps("attendees")
-    .syncMapItems.list({ limit: 1000 });
+    .syncMaps("attendees");
 
+  let res: any = await attendeesMap.syncMapItems.page({
+    pageSize: 500,
+  });
+  
   await Promise.all(
-    mapItems.map(async (item) => {
+    res.instances.map(async (item: any) => {
       await client.sync.v1
-        .services(SYNC_SERVICE_SID)
-        .syncMaps("attendees")
-        .syncMapItems(item.key)
-        .remove();
-    }),
+      .services(SYNC_SERVICE_SID)
+      .syncMaps("attendees")
+      .syncMapItems(item.key)
+      .remove();
+    })
   );
+  let counter = res.instances.length;
 
-  console.log(`All ${mapItems.length} attendees removed`);
+  while (res.nextPageUrl) {
+    res = await res.nextPage();
+    await Promise.all(
+      res.instances.map(async (item: any) => {
+        await client.sync.v1
+          .services(SYNC_SERVICE_SID)
+          .syncMaps("attendees")
+          .syncMapItems(item.key)
+          .remove();
+      })
+    );
+    counter += res.instances.length;
+  }
+
+  console.log(`All ${counter} attendees removed`);
 
   const betsDoc = client.sync.v1.services(SYNC_SERVICE_SID).documents("bets");
 

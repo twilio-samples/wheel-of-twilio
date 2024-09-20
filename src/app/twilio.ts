@@ -90,9 +90,16 @@ export interface MaskedPlayer {
 export async function getWinners(allWinners: boolean): Promise<MaskedPlayer[]> {
   const syncService = await client.sync.v1.services(SYNC_SERVICE_SID).fetch();
   const attendeesMap = syncService.syncMaps()("attendees");
-  const winners: MaskedPlayer[] = await attendeesMap.syncMapItems.list({
-    limit: 500,
+
+  let res = await attendeesMap.syncMapItems.page({
+    pageSize: 500,
   });
+
+  const winners: MaskedPlayer[] = [...res.instances];
+  while (res.nextPageUrl) {
+    res = await res.nextPage();
+    winners.push(...res.instances);
+  }
 
   return winners
     .map((w: any) => {
@@ -161,9 +168,7 @@ export async function notifyAndUpdateWinners(winners: any[]) {
 
   await Promise.all(
     winners.map(async (winningBet) => {
-      const winner = await attendeesMap
-        .syncMapItems(winningBet[0])
-        .fetch();
+      const winner = await attendeesMap.syncMapItems(winningBet[0]).fetch();
 
       try {
         await attendeesMap.syncMapItems(winningBet[0]).update({
@@ -174,9 +179,7 @@ export async function notifyAndUpdateWinners(winners: any[]) {
         });
       } catch (e: any) {
         if (e.code === 20404) {
-          console.error(
-            `User ${winningBet[0]} not found in sync map`
-          );
+          console.error(`User ${winningBet[0]} not found in sync map`);
         } else {
           console.error(e.message);
         }
@@ -252,9 +255,7 @@ export async function messageOthers(unluckyBets: any[], winningWedge: string) {
         });
       } catch (e: any) {
         if (e.code === 20404) {
-          console.error(
-            `User ${unluckyBet[0]} not found in sync map`
-          );
+          console.error(`User ${unluckyBet[0]} not found in sync map`);
         } else {
           console.error(e.message);
         }
