@@ -47,6 +47,7 @@ This project is Twilio's innovative booth activation designed to motivate people
      BASIC_AUTH_USERNAME="twilio"
      BASIC_AUTH_PASSWORD="admin!"
      OFFER_SMALL_PRIZES="false"
+     DISABLE_LEAD_COLLECTION="false"
      ```
 
       > The flag `OFFER_SMALL_PRIZES` influences the message the winners get. If set to `false`, they are notified that they qualified for a larger prize. if set the `true`, they are informed that they won and can collect a small prize (and they get a prize).
@@ -83,6 +84,13 @@ This game collects lead information of participants and stores them in Twilio Sy
 pnpm download
 ```
 
+### Feature Flag for Lead Collection
+
+Lead collection can be controlled using the `DISABLE_LEAD_COLLECTION` feature flag in the `.env` file. By default, it is set to `false`, meaning lead collection is enabled. If you want to disable lead collection, set the flag to `true` in the `.env` file:
+
+```env
+DISABLE_LEAD_COLLECTION="true"
+```
 
 ### Display Considerations
 

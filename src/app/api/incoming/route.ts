@@ -1,5 +1,3 @@
-// Copyright 2024 Twilio Inc.
-
 import { NextRequest, NextResponse } from "next/server";
 import twilio from "twilio";
 import { capitalizeEachWord, generateResponse } from "./helper";
@@ -17,6 +15,7 @@ const {
   TWILIO_ACCOUNT_SID = "",
   SYNC_SERVICE_SID = "",
   NEXT_PUBLIC_WEDGES = "",
+  DISABLE_LEAD_COLLECTION = "false",
 } = process.env;
 
 const wedges = NEXT_PUBLIC_WEDGES.split(",");
@@ -36,7 +35,6 @@ async function getUser(attendeesMap: SyncMapContext, hashedSender: string) {
 
 async function addDemoBet(betsDoc: DocumentInstance, messageContent: string) {
   if (process.env.demoBet) {
-    // also allow for testing in CI
     const bets = betsDoc.data.bets || [];
 
     bets.push([
