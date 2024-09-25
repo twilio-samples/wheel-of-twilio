@@ -1,6 +1,7 @@
 {
   "translation": {
     "welcome": "Willkommen im Spiel, {{senderName}}! Bitte antworten Sie mit Ihrer geschäftlichen E-Mail-Adresse. Wir senden Ihnen eine E-Mail, um zu überprüfen, ob Ihre Adresse korrekt ist.",
+    "welcomeNoLeadCollection": "Willkommen im Spiel, {{senderName}}! Durch das Platzieren einer Wette stimmen Sie zu, dass wir Sie zu Zwecken dieses Spiels kontaktieren dürfen. Alle Daten werden nach dem Event gelöscht.",
     "invalidEmail": "Leider ist dies keine gültige E-Mail-Adresse.",
     "sentEmail": "Wir haben Ihnen eine E-Mail mit einem Bestätigungscode gesendet. Bitte antworten Sie mit dem Code, um Ihre E-Mail-Adresse zu bestätigen.\nFalls Sie die E-Mail nicht erhalten haben, überprüfen Sie bitte Ihren Spam-Ordner oder geben Sie eine neue E-Mail-Adresse ein.",
     "verificationFailed": "Der Bestätigungscode ist leider falsch. Bitte versuchen Sie es erneut oder geben Sie eine neue E-Mail-Adresse ein.",

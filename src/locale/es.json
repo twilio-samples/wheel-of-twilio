@@ -1,6 +1,7 @@
 {
   "translation": {
     "welcome": "¡Bienvenido al juego, {{senderName}}! Por favor, responde con tu dirección de correo electrónico laboral. Te enviaremos un correo para verificar que tu dirección es correcta.",
+    "welcomeNoLeadCollection": "¡Bienvenido al juego, {{senderName}}! Al realizar una apuesta, aceptas que podamos contactarte con el propósito de este juego. Todos los datos se eliminarán después del evento.",
     "invalidEmail": "Lo siento, esta no es una dirección de correo electrónico válida.",
     "sentEmail": "Te hemos enviado un correo electrónico con un código de verificación. Responde con el código que te enviamos.\nSi no recibiste el correo, revisa tu carpeta de spam o ingresa una nueva dirección de correo electrónico.",
     "verificationFailed": "Lo siento, el código de verificación es incorrecto. Inténtalo de nuevo o ingresa una nueva dirección de correo electrónico.",
