@@ -162,7 +162,9 @@ export async function generateResponse(
           // check if one of the wedges is a substring of the capitalized messageContent
         } else if (
           wedges.some((wedge) =>
-            capitalizeEachWord(messageContent).includes(capitalizeEachWord(wedge))
+            capitalizeEachWord(messageContent).includes(
+              capitalizeEachWord(wedge)
+            )
           )
         ) {
           const bets = betsDoc.data.bets ? [...betsDoc.data.bets] : [];
@@ -261,13 +263,13 @@ export async function generateResponse(
           },
         });
 
-        twimlRes.message(i18next.t("welcome", { senderName }));
+        twimlRes.message(i18next.t("welcomeNoLeadCollection", { senderName }));
 
         setTimeout(async () => {
           await client.messages.create({
             contentSid: i18next.t("betTemplateSID"),
             from: MESSAGING_SERVICE_SID,
-            to: senderID,
+            to: senderID || "",
           });
         }, 2000);
       } else if (betsDoc.data.blocked) {

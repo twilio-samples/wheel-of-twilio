@@ -1,6 +1,7 @@
 {
   "translation": {
     "welcome": "Welcome to the game, {{senderName}}! Please reply with your business email address, we will send you an email to verify your address is correct.",
+    "welcomeNoLeadCollection": "Welcome to the game, {{senderName}}! By placing a bet, you agree that we can contact you for the purpose of this game. All data will be deleted after the event.",
     "invalidEmail": "Sorry, this is not a valid email address.",
     "sentEmail": "We have sent you an email with a verification code. Please reply with the code we sent to your email address.\n If you did not receive the email, please check your spam folder or enter a new email address.",
     "verificationFailed": "Sorry, the verification code is incorrect. Please try again or enter a new email address.",
