@@ -1,5 +1,5 @@
 import { expect, test, describe } from "vitest";
-import { generateResponse } from "@/app/api/incoming/helper";
+import { generateResponse, sendThankYouMessage } from "@/app/api/incoming/helper";
 import { Stages } from "@/app/types";
 
 describe("For unknown user, generate welcome message", async () => {
@@ -445,6 +445,18 @@ describe("For winner user, generate response", async () => {
     expect(response).toContain(
       `<?xml version="1.0" encoding="UTF-8"?><Response/>`,
     );
+  });
+
+  test("Check for thank you message when the prize is collected", async () => {
+    const client = {
+      messages: {
+        create: async (message: any) => {
+          expect(message.body).toContain("Thank you for collecting your prize! We hope you enjoy it.");
+        },
+      },
+    };
+
+    await sendThankYouMessage(client, "+4915156785678", "+115112341234");
   });
 });
 
