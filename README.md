@@ -51,9 +51,9 @@ This project is Twilio's innovative booth activation designed to motivate people
      DISABLE_LEAD_COLLECTION="false"
      ```
 
-      > The flag `OFFER_SMALL_PRIZES` influences the message the winners get. If set to `false`, they are notified that they qualified for a larger prize. if set the `true`, they are informed that they won and can collect a small prize (and they get a prize).
-      > The option `MAX_BETS_PER_USER` limits how often one user can submit a bet. If 0, the users can enter as many bets as they want.
-      > The script `pnpm raffle` can be used to select one random winner and to trigger a noticiation message and a noticiation call
+     > The flag `OFFER_SMALL_PRIZES` influences the message the winners get. If set to `false`, they are notified that they qualified for a larger prize. if set the `true`, they are informed that they won and can collect a small prize (and they get a prize).
+     > The option `MAX_BETS_PER_USER` limits how often one user can submit a bet. If 0, the users can enter as many bets as they want.
+     > The script `pnpm raffle` can be used to select one random winner and to trigger a noticiation message and a noticiation call
 
 4. **Run the setup script:**
 
@@ -81,6 +81,7 @@ If you encounter any issues or have questions, please refer to the issues sectio
 ### Lead Collection
 
 This game collects lead information of participants and stores them in Twilio Sync. You can download the lead information by running the following script
+
 ```bash
 pnpm download
 ```
