@@ -394,3 +394,12 @@ export function capitalizeEachWord(str: string) {
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
     .join(" ");
 }
+
+export async function sendThankYouMessage(client: twilio.Twilio, recipient: string, sender: string) {
+  await client.messages.create({
+    body: i18next.t("thankYouMessage"),
+    from: recipient,
+    messagingServiceSid: MESSAGING_SERVICE_SID,
+    to: sender,
+  });
+}

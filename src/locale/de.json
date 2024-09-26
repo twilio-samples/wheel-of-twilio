@@ -20,6 +20,7 @@
     "catchAllError": "Entschuldigung, ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
     "roundFull": "Entschuldigung, die Runde ist voll. Bitte warten Sie auf die nächste Runde.",
     "invalidBetTemplateSID": "HX4c04d40bd547d214c9bcd034e3df47bf",
-    "betTemplateSID": "HX5c1f00ac6bde0d1cf6eb7248849bdc00"
+    "betTemplateSID": "HX5c1f00ac6bde0d1cf6eb7248849bdc00",
+    "thankYouMessage": "Danke, dass Sie Ihren Preis abgeholt haben! Wir hoffen, Sie genießen ihn."
   }
 }

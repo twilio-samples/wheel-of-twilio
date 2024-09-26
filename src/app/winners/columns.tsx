@@ -3,6 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Stages } from "../types";
 import { MaskedPlayer, winnerPrizeClaimed } from "../twilio";
+import { sendThankYouMessage } from "../api/incoming/helper";
 
 export const columns: ColumnDef<MaskedPlayer>[] = [
   {
@@ -37,6 +38,7 @@ export const columns: ColumnDef<MaskedPlayer>[] = [
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded "
               onClick={async () => {
                 await winnerPrizeClaimed(row.getValue("key"));
+                await sendThankYouMessage(row.getValue("recipient"), row.getValue("sender"));
                 window.location.reload();
               }}
             >
