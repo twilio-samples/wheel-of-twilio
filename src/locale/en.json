@@ -1,13 +1,13 @@
 {
   "translation": {
-    "welcome": "Welcome to the game, {{senderName}}! Please reply with your business email address, we will send you an email to verify your address is correct.",
-    "welcomeNoLeadCollection": "Welcome to the game, {{senderName}}! By placing a bet, you agree that we can contact you for the purpose of this game. All data will be deleted after the event.",
+    "welcome": "Welcome to the game{{senderName}}! Please reply with your business email address, we will send you an email to verify your address is correct.",
+    "welcomeNoLeadCollection": "Welcome to the game{{senderName}}! By placing a bet, you agree that we can contact you for the purpose of this game. All data will be deleted after the event.",
     "invalidEmail": "Sorry, this is not a valid email address.",
     "sentEmail": "We have sent you an email with a verification code. Please reply with the code we sent to your email address.\n If you did not receive the email, please check your spam folder or enter a new email address.",
     "verificationFailed": "Sorry, the verification code is incorrect. Please try again or enter a new email address.",
     "betsClosed": "Sorry, the game is blocked.",
     "maxBetsReached": "Sorry, you have already placed the maximum number of bets.",
-    "betPlaced": "Hi {{senderName}}\nWe received your bet on {{messageContent}}",
+    "betPlaced": "Thank you. We have received your bet on \"{{messageContent}}\".",
     "winnerCallSmallPrize": "<Response><Say>Congratulations {{name}}! You won and can claim your prize at the Twilio booth!</Say></Response>",
     "winnerCallRafflePrize": "<Response><Say>Congratulations {{name}}! You won the grand prize and can claim your prize at the Twilio booth!</Say></Response>",
     "winnerMessageRafflePrize": "Congratulations {{name}}! You won the grand prize and can claim your prize at the Twilio booth!",
@@ -19,7 +19,7 @@
     "alreadyPlayedPrizeClaimed": "Enjoy your prize. Feel free to visit the Twilio booth to chat with us about our Customer Engagement Platform.",
     "catchAllError": "Sorry, an error occurred. Please try again later.",
     "roundFull": "Sorry, the round is full. Please wait for the next round.",
-    "betTemplateSID": "HX5f61fdeba3e7ad908bf91cf59ac2c68b",
-    "invalidBetTemplateSID": "HX538c1d8adc3abb877129769dc9ffec9e"
+    "betTemplateSID": "HX813700900606a6f5efb60fa0cc48c168",
+    "invalidBetTemplateSID": "HX6ad811e42e481a16b4dda496180c4238"
   }
 }

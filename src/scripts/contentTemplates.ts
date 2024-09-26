@@ -1,5 +1,3 @@
-
-
 import "dotenv/config";
 const { NEXT_PUBLIC_WEDGES = "" } = process.env;
 const wedges = NEXT_PUBLIC_WEDGES.split(",");
@@ -21,6 +19,9 @@ function getOptionsTemplates(): WhatsAppTemplateConfig[] {
             description: `Select ${wedge}`,
           })),
         },
+        "twilio/text": {
+          body: `Please select one of the following options:\n${wedges.map((wedge) => `- ${wedge}`).join("\n")}`,
+        },
       },
     },
     {
@@ -37,6 +38,9 @@ function getOptionsTemplates(): WhatsAppTemplateConfig[] {
             id: wedge,
             description: `Wähle ${wedge}`,
           })),
+        },
+        "twilio/text": {
+          body: `Auf welches Feld möchten Sie setzen?\n${wedges.map((wedge) => `- ${wedge}`).join("\n")}`,
         },
       },
     },
@@ -55,6 +59,9 @@ function getOptionsTemplates(): WhatsAppTemplateConfig[] {
             description: `Seleccionar ${wedge}`,
           })),
         },
+        "twilio/text": {
+          body: `Por favor, selecciona una de las siguientes opciones:\n${wedges.map((wedge) => `- ${wedge}`).join("\n")}`,
+        },
       },
     },
     {
@@ -71,6 +78,9 @@ function getOptionsTemplates(): WhatsAppTemplateConfig[] {
             id: wedge,
             description: `Sélectionner ${wedge}`,
           })),
+        },
+        "twilio/text": {
+          body: `Veuillez sélectionner l'une des options suivantes:\n${wedges.map((wedge) => `- ${wedge}`).join("\n")}`,
         },
       },
     },
@@ -94,6 +104,9 @@ function getInvalidBetsTemplates(): WhatsAppTemplateConfig[] {
             description: `Select ${wedge}`,
           })),
         },
+        "twilio/text": {
+          body: `Sorry, this is not a valid bet. Please bet on one of the following options \n${wedges.map((wedge) => `- ${wedge}`).join("\n")}`,
+        },
       },
     },
     {
@@ -110,6 +123,9 @@ function getInvalidBetsTemplates(): WhatsAppTemplateConfig[] {
             id: wedge,
             description: `Wähle ${wedge}`,
           })),
+        },
+        "twilio/text": {
+          body: `Entschuldigung, dies ist keine gültige Wette. Bitte setzen Sie auf eines der folgenden Felder  \n${wedges.map((wedge) => `- ${wedge}`).join("\n")}`,
         },
       },
     },
@@ -128,6 +144,9 @@ function getInvalidBetsTemplates(): WhatsAppTemplateConfig[] {
             description: `Seleccionar ${wedge}`,
           })),
         },
+        "twilio/text": {
+          body: `Lo siento, esta no es una apuesta válida. Por favor, apuesta por una de las siguientes opciones \n${wedges.map((wedge) => `- ${wedge}`).join("\n")}`,
+        },
       },
     },
     {
@@ -145,16 +164,16 @@ function getInvalidBetsTemplates(): WhatsAppTemplateConfig[] {
             description: `Sélectionner ${wedge}`,
           })),
         },
+        "twilio/text": {
+          body: `Désolé, ce n'est pas un pari valide. Veuillez parier sur l'une des options suivantes \n${wedges.map((wedge) => `- ${wedge}`).join("\n")}`,
+        },
       },
     },
   ];
 }
 
 export function getTemplates(): WhatsAppTemplateConfig[] {
-  return [
-    ...getOptionsTemplates(),
-    ...getInvalidBetsTemplates(),
-  ];
+  return [...getOptionsTemplates(), ...getInvalidBetsTemplates()];
 }
 
 export interface WhatsAppTemplateConfig {
@@ -179,7 +198,7 @@ export interface WhatsAppTemplateConfig {
       }>;
       button: string;
     };
-    "twilio/text"?: {
+    "twilio/text": {
       body: string;
     };
   };
