@@ -26,7 +26,8 @@ This project is Twilio's innovative booth activation designed to motivate people
    - Create the following services and save the service SIDs:
      - A [Sync Service](https://twilio.com/console/sync).
      - A [Verify Service](https://twilio.com/console/verify) with the [Email channel enabled](https://www.twilio.com/docs/verify/email). You can use a template similar to the one in [resources/sendgridTemplate.html](resources/sendgridTemplate.html).
-     - A [Messaging Service](https://twilio.com/console/messaging) with the correct WhatsApp sender configured.
+     - A [Messaging Service](https://twilio.com/console/messaging) with the correct WhatsApp sender configured. Also, ensure that the messaging service is configured to handle incoming SMS messages.
+     - Add an SMS sender to the Twilio Messaging Service to support SMS messages.
 
 3. **Configure Environment Variables:**
 
@@ -66,7 +67,7 @@ This project is Twilio's innovative booth activation designed to motivate people
    ngrok http 3000
    ```
 
-   Copy the public URL and use it in the **Integration** section of the messaging service you created above `<URL>/api/incoming`
+   Copy the public URL and use it in the **Integration** section of the messaging service you created above `<URL>/api/incoming` for both WhatsApp and SMS.
 
 6. **Start the application locally:**
    ```bash
