@@ -68,7 +68,7 @@ export async function generateResponse(
     messageContent: string;
     attendeesMap: SyncMapContext;
     betsDoc: DocumentInstance;
-  }
+  },
 ) {
   const twimlRes = new twiml.MessagingResponse();
   try {
@@ -96,7 +96,7 @@ export async function generateResponse(
         twimlRes.message(
           i18next.t("welcome", {
             senderName: senderName ? `, ${senderName}` : "",
-          })
+          }),
         );
       } else if (
         currentUser.stage === Stages.NEW_USER ||
@@ -172,8 +172,8 @@ export async function generateResponse(
         } else if (
           wedges.some((wedge) =>
             capitalizeEachWord(messageContent).includes(
-              capitalizeEachWord(wedge)
-            )
+              capitalizeEachWord(wedge),
+            ),
           )
         ) {
           const bets = betsDoc.data.bets ? [...betsDoc.data.bets] : [];
@@ -182,8 +182,8 @@ export async function generateResponse(
             .sort((a, b) => b.length - a.length)
             .find((wedge) =>
               capitalizeEachWord(messageContent).includes(
-                capitalizeEachWord(wedge)
-              )
+                capitalizeEachWord(wedge),
+              ),
             );
 
           const existingBet = bets.find((bet: any) => bet[0] === hashedSender);
@@ -227,7 +227,7 @@ export async function generateResponse(
           twimlRes.message(
             i18next.t("betPlaced", {
               messageContent: selectedBet,
-            })
+            }),
           );
         } else {
           await client.messages.create({
@@ -282,7 +282,7 @@ export async function generateResponse(
         twimlRes.message(
           i18next.t("welcomeNoLeadCollection", {
             senderName: senderName ? `, ${senderName}` : "",
-          })
+          }),
         );
 
         setTimeout(async () => {
@@ -297,7 +297,9 @@ export async function generateResponse(
         twimlRes.message(i18next.t("betsClosed"));
       } else if (
         wedges.some((wedge) =>
-          capitalizeEachWord(messageContent).includes(capitalizeEachWord(wedge))
+          capitalizeEachWord(messageContent).includes(
+            capitalizeEachWord(wedge),
+          ),
         )
       ) {
         const bets = betsDoc.data.bets ? [...betsDoc.data.bets] : [];
@@ -305,8 +307,8 @@ export async function generateResponse(
           .sort((a, b) => b.length - a.length)
           .find((wedge) =>
             capitalizeEachWord(messageContent).includes(
-              capitalizeEachWord(wedge)
-            )
+              capitalizeEachWord(wedge),
+            ),
           );
 
         const existingBet = bets.find((bet: any) => bet[0] === hashedSender);
@@ -346,7 +348,7 @@ export async function generateResponse(
           i18next.t("betPlaced", {
             senderName,
             messageContent: selectedBet,
-          })
+          }),
         );
       } else {
         await client.messages.create({

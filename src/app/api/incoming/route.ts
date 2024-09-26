@@ -40,7 +40,7 @@ async function addDemoBet(betsDoc: DocumentInstance, messageContent: string) {
     bets.push([
       "test-better",
       wedges.find((wedge) =>
-        capitalizeEachWord(messageContent).includes(wedge)
+        capitalizeEachWord(messageContent).includes(wedge),
       ),
       "test-better",
     ]);
@@ -57,7 +57,7 @@ async function addDemoBet(betsDoc: DocumentInstance, messageContent: string) {
 
 export async function GET() {
   const response = new NextResponse(
-    "Configure this endpoint to respond to incoming messages."
+    "Configure this endpoint to respond to incoming messages.",
   );
   return response;
 }

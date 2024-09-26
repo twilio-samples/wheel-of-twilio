@@ -36,6 +36,6 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
   });
   writeFileSync(
     "attendees.csv",
-    `Name,Country,Email,Event,Stage,SubmittedBets\n${csv.join("\n")}`
+    `Name,Country,Email,Event,Stage,SubmittedBets\n${csv.join("\n")}`,
   );
 })();
