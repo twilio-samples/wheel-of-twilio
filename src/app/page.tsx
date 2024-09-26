@@ -69,7 +69,7 @@ function App() {
             blockGame();
           }}
           onAfterFinished={(selectedWedge: string) => {
-            debugger
+            // selectedWedge = "Java" to test the winning condition
             notifyAndUpdateWinners(
               bets.filter((bet) => bet[1] === selectedWedge)
             );

@@ -18,7 +18,7 @@ const {
   TWILIO_API_KEY = "",
   TWILIO_API_SECRET = "",
   TWILIO_ACCOUNT_SID = "",
-  NEXT_PUBLIC_TWILIO_PHONE_NUMBER = "",
+  MESSAGING_SERVICE_SID = "",
   SYNC_SERVICE_SID = "",
   OFFER_SMALL_PRIZES = "false",
 } = process.env;
@@ -186,7 +186,7 @@ export async function notifyAndUpdateWinners(winners: any[]) {
 
       const to = winner.data.sender.replace("whatsapp:", "");
       if (OFFER_SMALL_PRIZES === "true") {
-        await callWinner(winner.data.name, to, false);
+        await callWinner(winner.data.name, to, winner.data.recipient, false);
       }
 
       await client.messages.create({
@@ -197,7 +197,8 @@ export async function notifyAndUpdateWinners(winners: any[]) {
           to,
           winner.data.name
         ),
-        from: `whatsapp:${NEXT_PUBLIC_TWILIO_PHONE_NUMBER}`,
+        messagingServiceSid: MESSAGING_SERVICE_SID,
+        from: winner.data.recipient,
         to: winner.data.sender,
       });
     })
@@ -207,6 +208,7 @@ export async function notifyAndUpdateWinners(winners: any[]) {
 export async function callWinner(
   name: string,
   to: string,
+  from: string,
   rafflePrize: boolean
 ) {
   await client.calls.create({
@@ -215,19 +217,23 @@ export async function callWinner(
       to,
       name
     ),
-    from: NEXT_PUBLIC_TWILIO_PHONE_NUMBER,
+    from,
     to,
   });
 }
 
-export async function sendRaffleWinnerMessage(name: string, to: string) {
+export async function sendRaffleWinnerMessage(
+  name: string,
+  to: string,
+  from: string
+) {
   await client.messages.create({
     body: await localizeStringForPhoneNumber(
       "winnerMessageRafflePrize",
       to,
       name
     ),
-    from: `whatsapp:${NEXT_PUBLIC_TWILIO_PHONE_NUMBER}`,
+    from,
     to,
   });
 }
@@ -249,7 +255,8 @@ export async function messageOthers(unluckyBets: any[], winningWedge: string) {
         );
         await client.messages.create({
           body,
-          from: `whatsapp:${NEXT_PUBLIC_TWILIO_PHONE_NUMBER}`,
+          messagingServiceSid: MESSAGING_SERVICE_SID,
+          from: unluckyPlayer.data.recipient,
           to: unluckyPlayer.data.sender,
         });
       } catch (e: any) {
