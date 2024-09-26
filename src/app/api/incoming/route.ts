@@ -74,6 +74,7 @@ export async function POST(req: NextRequest) {
   ]);
 
   const senderID = formData.get("From") as string;
+  const recipient = formData.get("To") as string;
 
   const hashedSender = createHash("sha256").update(senderID).digest("hex");
   const messageContent = formData.get("Body") as string;
@@ -85,6 +86,7 @@ export async function POST(req: NextRequest) {
   const response = await generateResponse(currentUser, client, {
     senderName: formData.get("ProfileName") as string,
     senderID,
+    recipient,
     messageContent,
     attendeesMap,
     betsDoc,

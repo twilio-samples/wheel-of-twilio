@@ -7,6 +7,7 @@ import AccessToken, { SyncGrant } from "twilio/lib/jwt/AccessToken";
 import i18next from "i18next";
 import { getCountry } from "./api/incoming/helper";
 import { Stages } from "./types";
+import { maskNumber } from "./util";
 
 const en = require("../locale/en.json");
 const de = require("../locale/de.json");
@@ -107,9 +108,7 @@ export async function getWinners(allWinners: boolean): Promise<MaskedPlayer[]> {
         key: w.key,
         name: w.data.name,
         stage: w.data.stage,
-        sender: w.data.sender
-          .replace("whatsapp:", "")
-          .replace(/(\d{2})\d{6}(\d+)/, "$1******$2"),
+        sender: maskNumber(w.data.sender),
       };
     })
     .filter(

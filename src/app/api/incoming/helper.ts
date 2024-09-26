@@ -9,6 +9,7 @@ import { createHash } from "crypto";
 import { Player, Stages } from "../../types";
 import { SyncMapContext } from "twilio/lib/rest/sync/v1/service/syncMap";
 import { DocumentInstance } from "twilio/lib/rest/sync/v1/service/document";
+import { maskNumber } from "@/app/util";
 
 const en = require("../../../locale/en.json");
 const de = require("../../../locale/de.json");
@@ -56,12 +57,14 @@ export async function generateResponse(
   {
     senderName,
     senderID,
+    recipient,
     messageContent,
     attendeesMap,
     betsDoc,
   }: {
     senderName?: string;
     senderID?: string;
+    recipient: string;
     messageContent: string;
     attendeesMap: SyncMapContext;
     betsDoc: DocumentInstance;
@@ -83,13 +86,18 @@ export async function generateResponse(
           data: {
             name: senderName,
             country,
+            recipient,
             sender: senderID,
             submittedBets: 0,
             stage: Stages.NEW_USER,
           },
         });
 
-        twimlRes.message(i18next.t("welcome", { senderName }));
+        twimlRes.message(
+          i18next.t("welcome", {
+            senderName: senderName ? `, ${senderName}` : "",
+          })
+        );
       } else if (
         currentUser.stage === Stages.NEW_USER ||
         (currentUser.stage === Stages.VERIFYING && matchedEmail !== null)
@@ -145,7 +153,8 @@ export async function generateResponse(
               }),
               client.messages.create({
                 contentSid: i18next.t("betTemplateSID"),
-                from: MESSAGING_SERVICE_SID,
+                from: recipient,
+                messagingServiceSid: MESSAGING_SERVICE_SID,
                 to: currentUser.sender,
               }),
             ]);
@@ -191,7 +200,11 @@ export async function generateResponse(
           if (existingBet) {
             existingBet[1] = selectedBet;
           } else {
-            bets.push([hashedSender, selectedBet, senderName]);
+            bets.push([
+              hashedSender,
+              selectedBet,
+              senderName || maskNumber(senderID || ""),
+            ]);
           }
           await betsDoc.update({
             data: {
@@ -213,14 +226,14 @@ export async function generateResponse(
 
           twimlRes.message(
             i18next.t("betPlaced", {
-              senderName,
               messageContent: selectedBet,
             })
           );
         } else {
           await client.messages.create({
             contentSid: i18next.t("invalidBetTemplateSID"),
-            from: MESSAGING_SERVICE_SID,
+            from: recipient,
+            messagingServiceSid: MESSAGING_SERVICE_SID,
             to: currentUser.sender,
           });
         }
@@ -230,7 +243,8 @@ export async function generateResponse(
             OFFER_SMALL_PRIZES === "true"
               ? i18next.t("alreadyPlayedNotClaimedSmallPrize")
               : i18next.t("alreadyPlayedNotClaimed"),
-          from: MESSAGING_SERVICE_SID,
+          from: recipient,
+          messagingServiceSid: MESSAGING_SERVICE_SID,
           to: currentUser.sender,
         });
       } else if (
@@ -239,13 +253,15 @@ export async function generateResponse(
       ) {
         await client.messages.create({
           body: i18next.t("alreadyPlayedPrizeClaimed"),
-          from: MESSAGING_SERVICE_SID,
+          from: recipient,
+          messagingServiceSid: MESSAGING_SERVICE_SID,
           to: currentUser.sender,
         });
       } else {
         await client.messages.create({
           body: i18next.t("catchAllError"),
-          from: MESSAGING_SERVICE_SID,
+          from: recipient,
+          messagingServiceSid: MESSAGING_SERVICE_SID,
           to: currentUser.sender,
         });
         console.error("Unhandled stage", currentUser.stage, currentUser);
@@ -263,12 +279,17 @@ export async function generateResponse(
           },
         });
 
-        twimlRes.message(i18next.t("welcomeNoLeadCollection", { senderName }));
+        twimlRes.message(
+          i18next.t("welcomeNoLeadCollection", {
+            senderName: senderName ? `, ${senderName}` : "",
+          })
+        );
 
         setTimeout(async () => {
           await client.messages.create({
             contentSid: i18next.t("betTemplateSID"),
-            from: MESSAGING_SERVICE_SID,
+            from: recipient,
+            messagingServiceSid: MESSAGING_SERVICE_SID,
             to: senderID || "",
           });
         }, 2000);
@@ -330,7 +351,8 @@ export async function generateResponse(
       } else {
         await client.messages.create({
           contentSid: i18next.t("invalidBetTemplateSID"),
-          from: MESSAGING_SERVICE_SID,
+          from: recipient,
+          messagingServiceSid: MESSAGING_SERVICE_SID,
           to: currentUser?.sender,
         });
       }
