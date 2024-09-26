@@ -29,6 +29,7 @@ describe("For unknown user, generate welcome message", async () => {
     // @ts-ignore just for this test
     const newUserWelcome = await generateResponse(undefined, undefined, {
       senderID: "+4915112341234",
+      recipient: "+4915156785678",
       messageContent: "Hello, I'm a new user",
       attendeesMap: {
         // @ts-ignore
@@ -40,7 +41,7 @@ describe("For unknown user, generate welcome message", async () => {
       },
     });
     expect(newUserWelcome).toContain(
-      `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Willkommen im Spiel,`,
+      `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Willkommen im Spiel`,
     );
     expect(newUserWelcome).toContain(`</Message></Response>`);
   });
@@ -50,6 +51,7 @@ describe("For unknown user, generate welcome message", async () => {
     const newUserWelcome = await generateResponse(undefined, undefined, {
       messageContent: "Hello, I'm a new user",
       senderID: "+4477002341234",
+      recipient: "+4915156785678",
       attendeesMap: {
         // @ts-ignore
         syncMapItems: {
@@ -60,7 +62,7 @@ describe("For unknown user, generate welcome message", async () => {
       },
     });
     expect(newUserWelcome).toContain(
-      `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Welcome to the game,`,
+      `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Welcome to the game`,
     );
     expect(newUserWelcome).toContain(`</Message></Response>`);
   });
@@ -71,6 +73,7 @@ describe("For known user, generate response", async () => {
     const currentUser = {
       name: "test-better",
       sender: "+4915112341234",
+      recipient: "+4915156785678",
       bet: "test-better",
       stage: Stages.NEW_USER,
     };
@@ -91,6 +94,7 @@ describe("For known user, generate response", async () => {
     const currentUser = {
       name: "test-better",
       sender: "+115112341234",
+      recipient: "+4915156785678",
       bet: "test-better",
       stage: Stages.NEW_USER,
     };
@@ -254,6 +258,7 @@ describe("For verified users with selected country, generate response", async ()
     const currentUser = {
       name: "test-better",
       sender: "+115112341234",
+      recipient: "+4915156785678",
       bet: "test-better",
       stage: Stages.VERIFIED_USER,
     };
@@ -281,6 +286,7 @@ describe("For verified users with selected country, generate response", async ()
     const currentUser = {
       name: "test-better",
       sender: "+115112341234",
+      recipient: "+4915156785678",
       bet: "test-better",
       stage: Stages.VERIFIED_USER,
     };
@@ -312,7 +318,7 @@ describe("For verified users with selected country, generate response", async ()
       },
     });
     expect(response).toContain(
-      `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Hi`,
+      `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Thank you.`,
     );
     expect(response).toContain(`</Message></Response>`);
   });
@@ -321,6 +327,7 @@ describe("For verified users with selected country, generate response", async ()
     const currentUser = {
       name: "test-better",
       sender: "+115112341234",
+      recipient: "+4915156785678",
       bet: "test-better",
       stage: Stages.VERIFIED_USER,
     };
@@ -362,6 +369,7 @@ describe("For winner user, generate response", async () => {
     const currentUser = {
       name: "test-better",
       sender: "+115112341234",
+      recipient: "+4915156785678",
       bet: "test-better",
       stage: Stages.WINNER_UNCLAIMED,
     };
@@ -403,6 +411,7 @@ describe("For winner user, generate response", async () => {
     const currentUser = {
       name: "test-better",
       sender: "+115112341234",
+      recipient: "+4915156785678",
       bet: "test-better",
       stage: Stages.WINNER_CLAIMED,
     };
@@ -443,6 +452,7 @@ test("Check for right message when the stage is unknown", async () => {
   const currentUser = {
     name: "test-better",
     sender: "+4915112341234",
+    recipient: "+4915156785678",
     bet: "test-better",
     stage: "UNKNOWN",
   };
