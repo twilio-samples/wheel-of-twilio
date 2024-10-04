@@ -283,7 +283,7 @@ export async function fetchSegmentTraits(email: string) {
     );
     return response.data.traits;
   } catch (e: any) {
-    if (e.response.status === 404) {
+    if (e.response?.status === 404) {
       return null;
     } else {
       throw e;
