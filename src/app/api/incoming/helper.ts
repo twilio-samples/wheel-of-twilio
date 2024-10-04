@@ -10,6 +10,7 @@ import { Player, Stages } from "../../types";
 import { SyncMapContext } from "twilio/lib/rest/sync/v1/service/syncMap";
 import { DocumentInstance } from "twilio/lib/rest/sync/v1/service/document";
 import { maskNumber } from "@/app/util";
+import { handleSegmentProfilesAPI } from "@/app/twilio";
 
 const en = require("../../../locale/en.json");
 const de = require("../../../locale/de.json");
@@ -25,6 +26,9 @@ const {
   OFFER_SMALL_PRIZES = "false",
   MAX_BETS_PER_USER = "0",
   DISABLE_LEAD_COLLECTION = "false",
+  SEGMENT_SPACE_ID = "",
+  SEGMENT_PROFILE_KEY = "",
+  SEGMENT_TRAIT_CHECK = "",
 } = process.env;
 
 const wedges = NEXT_PUBLIC_WEDGES.split(",");
@@ -49,6 +53,25 @@ async function initI18n(senderID: string) {
     },
   });
   return getCountry(senderID)?.name;
+}
+
+async function fetchSegmentTraits(email: string) {
+  const response = await fetch(
+    `https://profiles.segment.com/v1/spaces/${SEGMENT_SPACE_ID}/collections/users/profiles/email:${email}/traits`,
+    {
+      headers: {
+        Authorization: `Basic ${Buffer.from(SEGMENT_PROFILE_KEY + ":").toString(
+          "base64"
+        )}`,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch Segment traits");
+  }
+
+  return response.json();
 }
 
 export async function generateResponse(
@@ -158,6 +181,11 @@ export async function generateResponse(
                 to: currentUser.sender,
               }),
             ]);
+
+            if (SEGMENT_SPACE_ID && SEGMENT_PROFILE_KEY) {
+              const traits = await fetchSegmentTraits(currentUser.email);
+              console.log("Segment Traits:", traits);
+            }
           }
         } catch (e: any) {
           if (e.message !== "Invalid code") {

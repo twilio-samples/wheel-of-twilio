@@ -49,6 +49,9 @@ This project is Twilio's innovative booth activation designed to motivate people
      BASIC_AUTH_PASSWORD="admin!"
      OFFER_SMALL_PRIZES="false"
      DISABLE_LEAD_COLLECTION="false"
+     SEGMENT_SPACE_ID="your_segment_space_id"
+     SEGMENT_PROFILE_KEY="your_segment_profile_key"
+     SEGMENT_TRAIT_CHECK="your_segment_trait_check"
      ```
 
      > The flag `OFFER_SMALL_PRIZES` influences the message the winners get. If set to `false`, they are notified that they qualified for a larger prize. if set the `true`, they are informed that they won and can collect a small prize (and they get a prize).
@@ -93,6 +96,22 @@ Lead collection can be controlled using the `DISABLE_LEAD_COLLECTION` feature fl
 ```env
 DISABLE_LEAD_COLLECTION="true"
 ```
+
+### Segment Integration
+
+This project includes an optional integration with Segment's Profiles API. If you provide the `SEGMENT_SPACE_ID` and `SEGMENT_PROFILE_KEY` environment variables, the application will fetch user traits from Segment using the provided email address once the verification step is completed. The `SEGMENT_TRAIT_CHECK` environment variable allows you to specify a specific trait to check for in the user's profile.
+
+To set up Segment integration:
+
+1. **Create a Segment account** if you don't have one. Sign up [here](https://segment.com/).
+
+2. **Create a Segment Space** and obtain your `SEGMENT_SPACE_ID`.
+
+3. **Generate a Segment Profile API Key** and obtain your `SEGMENT_PROFILE_KEY`.
+
+4. **Specify a Trait to Check** by setting the `SEGMENT_TRAIT_CHECK` environment variable to the desired trait key.
+
+For more details on Segment and how to use the Profiles API, refer to the [Segment documentation](https://segment.com/docs/).
 
 ### Display Considerations
 

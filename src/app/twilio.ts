@@ -1,5 +1,3 @@
-// Copyright 2024 Twilio Inc.
-
 "use server";
 
 import AccessToken, { SyncGrant } from "twilio/lib/jwt/AccessToken";
@@ -21,6 +19,8 @@ const {
   MESSAGING_SERVICE_SID = "",
   SYNC_SERVICE_SID = "",
   OFFER_SMALL_PRIZES = "false",
+  SEGMENT_SPACE_ID = "",
+  SEGMENT_PROFILE_KEY = "",
 } = process.env;
 
 enum Privilege {
@@ -268,4 +268,36 @@ export async function messageOthers(unluckyBets: any[], winningWedge: string) {
       }
     }),
   );
+}
+
+async function fetchSegmentTraits(email: string) {
+  const response = await fetch(
+    `https://profiles.segment.com/v1/spaces/${SEGMENT_SPACE_ID}/collections/users/profiles/email:${email}/traits`,
+    {
+      headers: {
+        Authorization: `Basic ${Buffer.from(SEGMENT_PROFILE_KEY + ":").toString(
+          "base64"
+        )}`,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch Segment traits");
+  }
+
+  return response.json();
+}
+
+export async function handleSegmentProfilesAPI(email: string) {
+  if (SEGMENT_SPACE_ID && SEGMENT_PROFILE_KEY) {
+    try {
+      const traits = await fetchSegmentTraits(email);
+      console.log("Segment Traits:", traits);
+      return traits;
+    } catch (error) {
+      console.error("Error fetching Segment traits:", error);
+      throw error;
+    }
+  }
 }

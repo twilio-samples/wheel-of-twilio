@@ -16,6 +16,8 @@ const {
   SYNC_SERVICE_SID = "",
   NEXT_PUBLIC_WEDGES = "",
   DISABLE_LEAD_COLLECTION = "false",
+  SEGMENT_SPACE_ID = "",
+  SEGMENT_PROFILE_KEY = "",
 } = process.env;
 
 const wedges = NEXT_PUBLIC_WEDGES.split(",");
@@ -91,6 +93,16 @@ export async function POST(req: NextRequest) {
     attendeesMap,
     betsDoc,
   });
+
+  if (SEGMENT_SPACE_ID && SEGMENT_PROFILE_KEY && currentUser?.email) {
+    try {
+      const traits = await fetchSegmentTraits(currentUser.email);
+      console.log("Segment Traits:", traits);
+    } catch (error) {
+      console.error("Error fetching Segment traits:", error);
+    }
+  }
+
   const res = new NextResponse(response);
   res.headers.set("Content-Type", "text/xml");
   return res;
