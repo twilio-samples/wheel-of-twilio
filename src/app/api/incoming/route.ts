@@ -94,15 +94,6 @@ export async function POST(req: NextRequest) {
     betsDoc,
   });
 
-  if (SEGMENT_SPACE_ID && SEGMENT_PROFILE_KEY && currentUser?.email) {
-    try {
-      const traits = await fetchSegmentTraits(currentUser.email);
-      console.log("Segment Traits:", traits);
-    } catch (error) {
-      console.error("Error fetching Segment traits:", error);
-    }
-  }
-
   const res = new NextResponse(response);
   res.headers.set("Content-Type", "text/xml");
   return res;

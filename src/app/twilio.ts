@@ -6,6 +6,7 @@ import i18next from "i18next";
 import { getCountry } from "./api/incoming/helper";
 import { Stages } from "./types";
 import { maskNumber } from "./util";
+import Axios from "axios";
 
 const en = require("../locale/en.json");
 const de = require("../locale/de.json");
@@ -34,7 +35,7 @@ async function localizeStringForPhoneNumber(
   str: string,
   phone: string,
   name: string,
-  winningWedge?: string,
+  winningWedge?: string
 ) {
   await i18next.init({
     lng: getCountry(phone)?.languages[0],
@@ -61,7 +62,7 @@ export async function fetchToken() {
     TWILIO_API_SECRET,
     {
       identity: Privilege.FRONTEND,
-    },
+    }
   );
 
   token.addGrant(syncGrant);
@@ -115,7 +116,7 @@ export async function getWinners(allWinners: boolean): Promise<MaskedPlayer[]> {
       (a: any) =>
         a.stage === Stages.WINNER_UNCLAIMED ||
         (allWinners && a.stage === Stages.WINNER_CLAIMED) ||
-        (allWinners && a.stage === Stages.RAFFLE_WINNER),
+        (allWinners && a.stage === Stages.RAFFLE_WINNER)
     );
 }
 
@@ -195,13 +196,13 @@ export async function notifyAndUpdateWinners(winners: any[]) {
             ? "winnerMessageSmallPrize"
             : "winnerMessage",
           to,
-          winner.data.name,
+          winner.data.name
         ),
         messagingServiceSid: MESSAGING_SERVICE_SID,
         from: winner.data.recipient,
         to: winner.data.sender,
       });
-    }),
+    })
   );
 }
 
@@ -209,13 +210,13 @@ export async function callWinner(
   name: string,
   to: string,
   from: string,
-  rafflePrize: boolean,
+  rafflePrize: boolean
 ) {
   await client.calls.create({
     twiml: await localizeStringForPhoneNumber(
       rafflePrize ? "winnerCallRafflePrize" : "winnerCallSmallPrize",
       to,
-      name,
+      name
     ),
     from,
     to,
@@ -225,13 +226,13 @@ export async function callWinner(
 export async function sendRaffleWinnerMessage(
   name: string,
   to: string,
-  from: string,
+  from: string
 ) {
   await client.messages.create({
     body: await localizeStringForPhoneNumber(
       "winnerMessageRafflePrize",
       to,
-      name,
+      name
     ),
     from,
     to,
@@ -251,7 +252,7 @@ export async function messageOthers(unluckyBets: any[], winningWedge: string) {
           "loser",
           unluckyPlayer.data.sender,
           unluckyPlayer.data.name,
-          winningWedge,
+          winningWedge
         );
         await client.messages.create({
           body,
@@ -266,38 +267,26 @@ export async function messageOthers(unluckyBets: any[], winningWedge: string) {
           console.error(e.message);
         }
       }
-    }),
+    })
   );
 }
 
-async function fetchSegmentTraits(email: string) {
-  const response = await fetch(
-    `https://profiles.segment.com/v1/spaces/${SEGMENT_SPACE_ID}/collections/users/profiles/email:${email}/traits`,
-    {
-      headers: {
-        Authorization: `Basic ${Buffer.from(SEGMENT_PROFILE_KEY + ":").toString(
-          "base64"
-        )}`,
-      },
-    }
-  );
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch Segment traits");
-  }
-
-  return response.json();
-}
-
-export async function handleSegmentProfilesAPI(email: string) {
-  if (SEGMENT_SPACE_ID && SEGMENT_PROFILE_KEY) {
-    try {
-      const traits = await fetchSegmentTraits(email);
-      console.log("Segment Traits:", traits);
-      return traits;
-    } catch (error) {
-      console.error("Error fetching Segment traits:", error);
-      throw error;
+export async function fetchSegmentTraits(email: string) {
+  try {
+    const response = await Axios.get(
+      `https://profiles.segment.com/v1/spaces/${SEGMENT_SPACE_ID}/collections/users/profiles/email:${email}/traits`,
+      {
+        headers: {
+          Authorization: `Basic ${btoa(SEGMENT_PROFILE_KEY + ":")}`,
+        },
+      }
+    );
+    return response.data.traits;
+  } catch (e: any) {
+    if (e.response.status === 404) {
+      return null;
+    } else {
+      throw e;
     }
   }
 }
