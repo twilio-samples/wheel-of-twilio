@@ -153,7 +153,8 @@ export async function generateResponse(
             if (
               SEGMENT_SPACE_ID &&
               SEGMENT_PROFILE_KEY &&
-              SEGMENT_TRAIT_CHECK
+              SEGMENT_TRAIT_CHECK &&
+              verificationCheck.to // skip in the tests
             ) {
               const traits = await fetchSegmentTraits(verificationCheck.to);
               if (traits) {
