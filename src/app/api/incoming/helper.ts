@@ -10,7 +10,7 @@ import { Player, Stages } from "../../types";
 import { SyncMapContext } from "twilio/lib/rest/sync/v1/service/syncMap";
 import { DocumentInstance } from "twilio/lib/rest/sync/v1/service/document";
 import { maskNumber } from "@/app/util";
-import { handleSegmentProfilesAPI } from "@/app/twilio";
+import { fetchSegmentTraits } from "@/app/twilio";
 
 const en = require("../../../locale/en.json");
 const de = require("../../../locale/de.json");
@@ -55,25 +55,6 @@ async function initI18n(senderID: string) {
   return getCountry(senderID)?.name;
 }
 
-async function fetchSegmentTraits(email: string) {
-  const response = await fetch(
-    `https://profiles.segment.com/v1/spaces/${SEGMENT_SPACE_ID}/collections/users/profiles/email:${email}/traits`,
-    {
-      headers: {
-        Authorization: `Basic ${Buffer.from(SEGMENT_PROFILE_KEY + ":").toString(
-          "base64"
-        )}`,
-      },
-    }
-  );
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch Segment traits");
-  }
-
-  return response.json();
-}
-
 export async function generateResponse(
   currentUser: Player | undefined,
   client: twilio.Twilio,
@@ -91,7 +72,7 @@ export async function generateResponse(
     messageContent: string;
     attendeesMap: SyncMapContext;
     betsDoc: DocumentInstance;
-  },
+  }
 ) {
   const twimlRes = new twiml.MessagingResponse();
   try {
@@ -119,7 +100,7 @@ export async function generateResponse(
         twimlRes.message(
           i18next.t("welcome", {
             senderName: senderName ? `, ${senderName}` : "",
-          }),
+          })
         );
       } else if (
         currentUser.stage === Stages.NEW_USER ||
@@ -167,11 +148,27 @@ export async function generateResponse(
             });
 
           if (verificationCheck.status === "approved") {
+            let foundInSegment = false,
+              checkedTrait;
+            if (
+              SEGMENT_SPACE_ID &&
+              SEGMENT_PROFILE_KEY &&
+              SEGMENT_TRAIT_CHECK
+            ) {
+              const traits = await fetchSegmentTraits(verificationCheck.to);
+              if (traits) {
+                foundInSegment = true;
+                checkedTrait = traits[SEGMENT_TRAIT_CHECK];
+              }
+            }
+
             await Promise.all([
               attendeesMap.syncMapItems(hashedSender).update({
                 data: {
                   ...currentUser,
                   stage: Stages.VERIFIED_USER,
+                  [SEGMENT_TRAIT_CHECK]: checkedTrait,
+                  foundInSegment,
                 },
               }),
               client.messages.create({
@@ -181,11 +178,6 @@ export async function generateResponse(
                 to: currentUser.sender,
               }),
             ]);
-
-            if (SEGMENT_SPACE_ID && SEGMENT_PROFILE_KEY) {
-              const traits = await fetchSegmentTraits(currentUser.email);
-              console.log("Segment Traits:", traits);
-            }
           }
         } catch (e: any) {
           if (e.message !== "Invalid code") {
@@ -200,8 +192,8 @@ export async function generateResponse(
         } else if (
           wedges.some((wedge) =>
             capitalizeEachWord(messageContent).includes(
-              capitalizeEachWord(wedge),
-            ),
+              capitalizeEachWord(wedge)
+            )
           )
         ) {
           const bets = betsDoc.data.bets ? [...betsDoc.data.bets] : [];
@@ -210,8 +202,8 @@ export async function generateResponse(
             .sort((a, b) => b.length - a.length)
             .find((wedge) =>
               capitalizeEachWord(messageContent).includes(
-                capitalizeEachWord(wedge),
-              ),
+                capitalizeEachWord(wedge)
+              )
             );
 
           const existingBet = bets.find((bet: any) => bet[0] === hashedSender);
@@ -255,7 +247,7 @@ export async function generateResponse(
           twimlRes.message(
             i18next.t("betPlaced", {
               messageContent: selectedBet,
-            }),
+            })
           );
         } else {
           await client.messages.create({
@@ -310,7 +302,7 @@ export async function generateResponse(
         twimlRes.message(
           i18next.t("welcomeNoLeadCollection", {
             senderName: senderName ? `, ${senderName}` : "",
-          }),
+          })
         );
 
         setTimeout(async () => {
@@ -325,9 +317,7 @@ export async function generateResponse(
         twimlRes.message(i18next.t("betsClosed"));
       } else if (
         wedges.some((wedge) =>
-          capitalizeEachWord(messageContent).includes(
-            capitalizeEachWord(wedge),
-          ),
+          capitalizeEachWord(messageContent).includes(capitalizeEachWord(wedge))
         )
       ) {
         const bets = betsDoc.data.bets ? [...betsDoc.data.bets] : [];
@@ -335,8 +325,8 @@ export async function generateResponse(
           .sort((a, b) => b.length - a.length)
           .find((wedge) =>
             capitalizeEachWord(messageContent).includes(
-              capitalizeEachWord(wedge),
-            ),
+              capitalizeEachWord(wedge)
+            )
           );
 
         const existingBet = bets.find((bet: any) => bet[0] === hashedSender);
@@ -376,7 +366,7 @@ export async function generateResponse(
           i18next.t("betPlaced", {
             senderName,
             messageContent: selectedBet,
-          }),
+          })
         );
       } else {
         await client.messages.create({
