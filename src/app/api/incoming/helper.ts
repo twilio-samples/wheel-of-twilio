@@ -113,14 +113,14 @@ export async function generateResponse(
             const verification = await client.verify.v2
               .services(VERIFY_SERVICE_SID)
               .verifications.create({
-                to: matchedEmail[0],
+                to: matchedEmail[0].toLowerCase(),
                 channel: "email",
                 // locale: lng,
               });
             await attendeesMap.syncMapItems(hashedSender).update({
               data: {
                 ...currentUser,
-                email: matchedEmail[0],
+                email: matchedEmail[0].toLowerCase(),
                 stage: Stages.VERIFYING,
                 verificationSid: verification.sid,
               },
