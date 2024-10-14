@@ -156,7 +156,10 @@ export async function generateResponse(
               SEGMENT_TRAIT_CHECK &&
               verificationCheck.to // skip in the tests
             ) {
-              const traits = await fetchSegmentTraits(verificationCheck.to);
+              const traits = await fetchSegmentTraits(
+                verificationCheck.to,
+                SEGMENT_TRAIT_CHECK
+              );
               if (traits) {
                 foundInSegment = true;
                 checkedTrait = traits[SEGMENT_TRAIT_CHECK];

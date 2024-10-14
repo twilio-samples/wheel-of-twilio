@@ -271,16 +271,20 @@ export async function messageOthers(unluckyBets: any[], winningWedge: string) {
   );
 }
 
-export async function fetchSegmentTraits(email: string) {
+export async function fetchSegmentTraits(
+  email: string,
+  specificTrait?: string
+) {
+  let url = `https://profiles.segment.com/v1/spaces/${SEGMENT_SPACE_ID}/collections/users/profiles/email:${email}/traits`;
+  if (specificTrait) {
+    url += `?include=${specificTrait}`;
+  }
   try {
-    const response = await Axios.get(
-      `https://profiles.segment.com/v1/spaces/${SEGMENT_SPACE_ID}/collections/users/profiles/email:${email}/traits`,
-      {
-        headers: {
-          Authorization: `Basic ${btoa(SEGMENT_PROFILE_KEY + ":")}`,
-        },
-      }
-    );
+    const response = await Axios.get(url, {
+      headers: {
+        Authorization: `Basic ${btoa(SEGMENT_PROFILE_KEY + ":")}`,
+      },
+    });
     return response.data.traits;
   } catch (e: any) {
     if (e.response?.status === 404) {
