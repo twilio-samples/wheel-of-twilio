@@ -16,8 +16,6 @@ const {
   SYNC_SERVICE_SID = "",
   NEXT_PUBLIC_WEDGES = "",
   DISABLE_LEAD_COLLECTION = "false",
-  SEGMENT_SPACE_ID = "",
-  SEGMENT_PROFILE_KEY = "",
 } = process.env;
 
 const wedges = NEXT_PUBLIC_WEDGES.split(",");
