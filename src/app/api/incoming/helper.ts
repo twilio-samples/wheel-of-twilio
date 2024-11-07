@@ -55,6 +55,14 @@ async function initI18n(senderID: string) {
   return getCountry(senderID)?.name;
 }
 
+export async function getUserRemovedResponse(sender: string) {
+  await initI18n(sender);
+  const twimlRes = new twiml.MessagingResponse();
+  twimlRes.message(i18next.t("userRemoved"));
+
+  return twimlRes.toString();
+}
+
 export async function generateResponse(
   currentUser: Player | undefined,
   client: twilio.Twilio,
@@ -75,6 +83,7 @@ export async function generateResponse(
   },
 ) {
   const twimlRes = new twiml.MessagingResponse();
+
   try {
     const matchedEmail = regexForEmail.exec(messageContent);
     const country = await initI18n(currentUser?.sender || senderID || "");
@@ -97,13 +106,18 @@ export async function generateResponse(
           },
         });
 
-        twimlRes.message(
-          i18next.t("welcome", {
-            senderName: senderName ? `, ${senderName}` : "",
-          }),
-        );
+        twimlRes.message(i18next.t("welcome"));
+      } else if (currentUser.stage === Stages.NEW_USER) {
+        twimlRes.message(i18next.t("promptEmail"));
+        await attendeesMap.syncMapItems(hashedSender).update({
+          data: {
+            ...currentUser,
+            fullName: messageContent.trim(),
+            stage: Stages.NAME_CONFIRMED,
+          },
+        });
       } else if (
-        currentUser.stage === Stages.NEW_USER ||
+        currentUser.stage === Stages.NAME_CONFIRMED ||
         (currentUser.stage === Stages.VERIFYING && matchedEmail !== null)
       ) {
         if (matchedEmail === null) {

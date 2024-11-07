@@ -4,14 +4,12 @@ This project is Twilio's innovative booth activation designed to motivate people
 
 ![Screenshot of the game](./resources/wheel.png)
 
-## Development Setup
-
-### Prerequisites
+## Prerequisites
 
 - Ensure you have [pnpm](https://pnpm.io/) installed.
 - A Twilio account. Sign up [here](https://www.twilio.com/try-twilio) if you don't have one.
 
-### Getting Started
+## Getting Started
 
 1. **Clone the project repository:**
 
@@ -81,13 +79,17 @@ After following these steps, the Wheel Of Twilio game should be up and running o
 
 If you encounter any issues or have questions, please refer to the issues section or open a new issue in the repository for assistance.
 
-### Lead Collection
+## Optional
 
-This game collects lead information of participants and stores them in Twilio Sync. You can download the lead information by running the following script
+## Optional Setup
 
-```bash
-pnpm download
-```
+### Tips for production
+
+Here are a few helpful notes:
+
+- If you are using the SMS channel, make sure to [set the SMS Geo Permissions](https://www.twilio.com/docs/messaging/guides/sms-geo-permissions)to make sure senders from the entire world can interact with the Mixologist.
+- Edit the [opt-out management settings](https://help.twilio.com/articles/360034798533-Getting-Started-with-Advanced-Opt-Out-for-Messaging-Services) of the messaging service to avoid that users accidentally unsubscribe from the list.
+- Users can send the command "forget me" to remove all data stored about this user. It cancels pending orders, removes the user from the Sync data store and removes the Conversation resource. This can be used for debugging as well as to be GDPR-compliant.
 
 ### Feature Flag for Lead Collection
 
@@ -95,6 +97,12 @@ Lead collection can be controlled using the `DISABLE_LEAD_COLLECTION` feature fl
 
 ```env
 DISABLE_LEAD_COLLECTION="true"
+```
+
+You can download the lead information by running the following script
+
+```bash
+pnpm download
 ```
 
 ### Segment Integration
