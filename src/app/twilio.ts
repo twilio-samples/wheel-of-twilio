@@ -107,7 +107,7 @@ export async function getWinners(allWinners: boolean): Promise<MaskedPlayer[]> {
     .map((w: any) => {
       return {
         key: w.key,
-        name: w.data.name,
+        name: w.data.fullName,
         stage: w.data.stage,
         sender: maskNumber(w.data.sender),
       };
@@ -187,7 +187,12 @@ export async function notifyAndUpdateWinners(winners: any[]) {
 
       const to = winner.data.sender.replace("whatsapp:", "");
       if (OFFER_SMALL_PRIZES === "true") {
-        await callWinner(winner.data.name, to, winner.data.recipient, false);
+        await callWinner(
+          winner.data.fullName,
+          to,
+          winner.data.recipient,
+          false,
+        );
       }
 
       await client.messages.create({
@@ -196,7 +201,7 @@ export async function notifyAndUpdateWinners(winners: any[]) {
             ? "winnerMessageSmallPrize"
             : "winnerMessage",
           to,
-          winner.data.name,
+          winner.data.fullName,
         ),
         messagingServiceSid: MESSAGING_SERVICE_SID,
         from: winner.data.recipient,
@@ -251,7 +256,7 @@ export async function messageOthers(unluckyBets: any[], winningWedge: string) {
         const body = await localizeStringForPhoneNumber(
           "loser",
           unluckyPlayer.data.sender,
-          unluckyPlayer.data.name,
+          unluckyPlayer.data.fullName,
           winningWedge,
         );
         await client.messages.create({

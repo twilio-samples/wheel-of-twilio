@@ -33,7 +33,7 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
     .map((item) => item.data)
     .filter((a) => a.stage !== "NEW_USER" && a.stage !== "VERIFYING");
   const csv = attendees.map((attendee) => {
-    return `${attendee.name},${attendee.country},${attendee.email},${attendee.foundInSegment},${attendee[SEGMENT_TRAIT_CHECK]},${attendee.event},${attendee.stage},${attendee.submittedBets}`;
+    return `${attendee.fullName},${attendee.country},${attendee.email},${attendee.foundInSegment},${attendee[SEGMENT_TRAIT_CHECK]},${attendee.event},${attendee.stage},${attendee.submittedBets}`;
   });
   writeFileSync(
     "attendees.csv",

@@ -54,13 +54,13 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
     });
 
   await sendRaffleWinnerMessage(
-    winner.data.name,
+    winner.data.fullName,
     winner.data.sender,
     winner.data.recipient,
   );
 
   await callWinner(
-    winner.data.name,
+    winner.data.fullName,
     winner.data.sender.replace("whatsapp:", ""),
     winner.data.recipient.replace("whatsapp:", ""),
     true,

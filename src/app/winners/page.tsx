@@ -3,11 +3,9 @@ import { Stages } from "../types";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 
-export default async function WinnerPage(
-  props: {
-    searchParams: Promise<{ all: string }>;
-  }
-) {
+export default async function WinnerPage(props: {
+  searchParams: Promise<{ all: string }>;
+}) {
   const searchParams = await props.searchParams;
   let winners = await getWinners(searchParams.all === "true");
 

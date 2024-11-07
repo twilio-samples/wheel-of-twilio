@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import twilio from "twilio";
-import { capitalizeEachWord, generateResponse } from "./helper";
+import {
+  capitalizeEachWord,
+  generateResponse,
+  getUserRemovedResponse,
+} from "./helper";
 import { createHash } from "crypto";
 import { Player } from "../../types";
 import { SyncMapContext } from "twilio/lib/rest/sync/v1/service/syncMap";
@@ -15,7 +19,6 @@ const {
   TWILIO_ACCOUNT_SID = "",
   SYNC_SERVICE_SID = "",
   NEXT_PUBLIC_WEDGES = "",
-  DISABLE_LEAD_COLLECTION = "false",
 } = process.env;
 
 const wedges = NEXT_PUBLIC_WEDGES.split(",");
@@ -40,7 +43,7 @@ async function addDemoBet(betsDoc: DocumentInstance, messageContent: string) {
     bets.push([
       "test-better",
       wedges.find((wedge) =>
-        capitalizeEachWord(messageContent).includes(wedge),
+        capitalizeEachWord(messageContent).includes(wedge)
       ),
       "test-better",
     ]);
@@ -57,7 +60,7 @@ async function addDemoBet(betsDoc: DocumentInstance, messageContent: string) {
 
 export async function GET() {
   const response = new NextResponse(
-    "Configure this endpoint to respond to incoming messages.",
+    "Configure this endpoint to respond to incoming messages."
   );
   return response;
 }
@@ -82,15 +85,24 @@ export async function POST(req: NextRequest) {
   const currentUser = await getUser(attendeesMap, hashedSender);
 
   process.env.demoBet && (await addDemoBet(betsDoc, messageContent));
-
-  const response = await generateResponse(currentUser, client, {
-    senderName: formData.get("ProfileName") as string,
-    senderID,
-    recipient,
-    messageContent,
-    attendeesMap,
-    betsDoc,
-  });
+  let response = "";
+  if (messageContent.includes("forget me")) {
+    if (currentUser) {
+      await attendeesMap.syncMapItems(hashedSender).remove();
+    }
+    response = await getUserRemovedResponse(
+      currentUser?.sender || senderID || ""
+    );
+  } else {
+    response = await generateResponse(currentUser, client, {
+      senderName: formData.get("ProfileName") as string,
+      senderID,
+      recipient,
+      messageContent,
+      attendeesMap,
+      betsDoc,
+    });
+  }
 
   const res = new NextResponse(response);
   res.headers.set("Content-Type", "text/xml");

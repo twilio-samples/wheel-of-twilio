@@ -1,7 +1,7 @@
 export default async function WinnerPage({
   searchParams,
 }: {
-  searchParams: Promise<{ all: string }>
+  searchParams: Promise<{ all: string }>;
 }) {
   return (
     <div className="vh-full flex h-full item justify-center align-center relative">
