@@ -1,5 +1,4 @@
-import { getWinners, winnerPrizeClaimed } from "../twilio";
-import { Stages } from "../types";
+import { getWinners } from "../twilio";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 
