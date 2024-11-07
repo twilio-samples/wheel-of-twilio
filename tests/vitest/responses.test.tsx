@@ -82,9 +82,6 @@ describe("For unnamed user, generate response", async () => {
     const newUserWelcome = await generateResponse(currentUser, undefined, {
       messageContent: "Hello, I'm a new user",
       // @ts-ignore
-      attendeesMap: {},
-
-      // @ts-ignore
       attendeesMap: {
         syncMapItems: () => {
           return {
