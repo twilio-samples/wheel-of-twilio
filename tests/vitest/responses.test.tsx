@@ -1,6 +1,31 @@
 import { expect, test, describe } from "vitest";
-import { generateResponse } from "@/app/api/incoming/helper";
+import { generateResponse, getCountry } from "@/app/api/incoming/helper";
 import { Stages } from "@/app/types";
+
+describe("For known user, get country", async () => {
+  test("German phone number returns correct country/language", async () => {
+    const country = await getCountry("+4915112341234");
+    expect(country?.name).toBe("Germany");
+    expect(country?.languages[0]).toBe("de");
+  });
+
+  test("British phone number returns UK/English", async () => {
+    const country = await getCountry("+441312345678");
+    expect(country?.name).toBe("United Kingdom");
+    expect(country?.languages[0]).toBe("en");
+  });
+
+  test("Unknown phone number returns undefined", async () => {
+    const country = await getCountry("+1234567");
+    expect(country).toBeUndefined();
+  });
+
+  test("US phone number returns US/English", async () => {
+    const country = await getCountry("+12127363100");
+    expect(country?.name).toBe("United States");
+    expect(country?.languages[0]).toBe("en");
+  });
+});
 
 describe("For unknown user, generate welcome message", async () => {
   test("Test responses with invalid country code", async () => {
