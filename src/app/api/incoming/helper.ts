@@ -419,7 +419,11 @@ export async function generateResponse(
 export function getCountry(phone: string): ICountry | undefined {
   const number = phoneUtil.parseAndKeepRawInput(phone.replace("whatsapp:", ""));
   const regionCode = phoneUtil.getRegionCodeForNumber(number);
-  return countries[regionCode];
+  if (regionCode === undefined) {
+    return undefined;
+  }
+
+  return countries[regionCode as keyof typeof countries];
 }
 
 export function capitalizeEachWord(str: string) {
