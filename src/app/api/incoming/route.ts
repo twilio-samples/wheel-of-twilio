@@ -43,7 +43,7 @@ async function addDemoBet(betsDoc: DocumentInstance, messageContent: string) {
     bets.push([
       "test-better",
       wedges.find((wedge) =>
-        capitalizeEachWord(messageContent).includes(wedge)
+        capitalizeEachWord(messageContent).includes(wedge),
       ),
       "test-better",
     ]);
@@ -60,7 +60,7 @@ async function addDemoBet(betsDoc: DocumentInstance, messageContent: string) {
 
 export async function GET() {
   const response = new NextResponse(
-    "Configure this endpoint to respond to incoming messages."
+    "Configure this endpoint to respond to incoming messages.",
   );
   return response;
 }
@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
       await attendeesMap.syncMapItems(hashedSender).remove();
     }
     response = await getUserRemovedResponse(
-      currentUser?.sender || senderID || ""
+      currentUser?.sender || senderID || "",
     );
   } else {
     response = await generateResponse(currentUser, client, {
