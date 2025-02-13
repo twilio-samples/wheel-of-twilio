@@ -129,7 +129,11 @@ export async function generateResponse(
               .verifications.create({
                 to: matchedEmail[0].toLowerCase(),
                 channel: "email",
-                // locale: lng,
+                channelConfiguration: {
+                  substitutions: {
+                    "event-name": EVENT_NAME,
+                  },
+                },
               });
             await attendeesMap.syncMapItems(hashedSender).update({
               data: {
