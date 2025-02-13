@@ -85,10 +85,10 @@ export default function SpinAndWin({
 
       wheel.fillStyle = i % 2 === 0 ? "#FDF7F4" : "#121C2D";
       wheel.textAlign = "end";
-      wheel.font = "3.25rem sans-serif";
+      wheel.font = "3rem sans-serif";
       wheel.transform = "translate(50px, 100px)";
       wheel.rotate(-1.57);
-      wheel.fillText(el, -70, wheelY + 10);
+      wheel.fillText(el, -25, wheelY + 10);
 
       wheel.restore();
     });
