@@ -208,8 +208,8 @@ export async function generateResponse(
           twimlRes.message(i18next.t("verificationFailed"));
         }
       } else if (currentUser.stage === Stages.VERIFIED_USER) {
-        if (betsDoc.data.blocked) {
-          twimlRes.message(i18next.t("betsClosed"));
+        if (betsDoc.data.temporaryBlock) {
+          twimlRes.message(i18next.t("betsNotAccepted"));
           // check if one of the wedges is a substring of the capitalized messageContent
         } else if (
           wedges.some((wedge) =>
@@ -335,8 +335,8 @@ export async function generateResponse(
             to: senderID || "",
           });
         }, 2000);
-      } else if (betsDoc.data.blocked) {
-        twimlRes.message(i18next.t("betsClosed"));
+      } else if (betsDoc.data.temporaryBlock) {
+        twimlRes.message(i18next.t("betsNotAccepted"));
       } else if (
         wedges.some((wedge) =>
           capitalizeEachWord(messageContent).includes(

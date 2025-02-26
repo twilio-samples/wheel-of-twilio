@@ -27,7 +27,7 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
         .syncMaps("attendees")
         .syncMapItems(item.key)
         .remove();
-    }),
+    })
   );
   let counter = res.instances.length;
 
@@ -40,7 +40,7 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
           .syncMaps("attendees")
           .syncMapItems(item.key)
           .remove();
-      }),
+      })
     );
     counter += res.instances.length;
   }
@@ -52,7 +52,8 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
   await betsDoc.update({
     data: {
       bets: [],
-      blocked: false,
+      temporaryBlock: false,
+      closed: false,
       full: false,
     },
   });
