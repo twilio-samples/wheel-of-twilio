@@ -140,7 +140,7 @@ export default function SpinAndWin({
           </span>
         </div>
         <span className="absolute left-[50%] translate-x-[-30%] translate-y-[-290%] ">
-          <img src="/images/stopper.png" alt="chip" height="50px" />
+          <img src="/images/stopper.png" alt="stopper" height="50px" />
         </span>
       </div>
     </div>
