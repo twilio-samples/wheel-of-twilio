@@ -327,6 +327,8 @@ export async function generateResponse(
           })
         );
 
+        await sleep(1000);
+
         await client.messages.create({
           contentSid: i18next.t("betTemplateSID"),
           from: recipient,
@@ -431,4 +433,8 @@ export function capitalizeEachWord(str: string) {
     .split(" ")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
     .join(" ");
+}
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
