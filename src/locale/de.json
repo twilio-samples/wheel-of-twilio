@@ -2,18 +2,18 @@
   "translation": {
     "welcome": "Willkommen im Spiel! Um das Spiel zu starten, antworten Sie bitte mit Ihrem vollständigen Namen.",
     "promptEmail": "Danke.\nSenden Sie bitte Ihrer geschäftlichen E-Mail-Adresse als nächstes. Wir werden Ihnen dann (mithilfe von Twilio Verify & SendGrid) eine E-Mail mit einem Einmalkennwort schicken.",
-    "welcomeNoLeadCollection": "Willkommen im Spiel{{senderName}}! Durch das Platzieren einer Wette stimmen Sie zu, dass wir Sie zu Zwecken dieses Spiels kontaktieren dürfen. Alle Daten werden nach dem Event gelöscht.",
+    "welcomeNoLeadCollection": "Willkommen im Spiel! Durch das Platzieren einer Wette stimmen Sie zu, dass wir Sie zu Zwecken dieses Spiels kontaktieren dürfen. Alle Daten werden nach dem Event gelöscht.",
     "invalidEmail": "Leider ist dies keine gültige E-Mail-Adresse.",
     "sentEmail": "Wir haben Ihnen eine E-Mail mit einem Bestätigungscode gesendet. Bitte antworten Sie mit dem Code, um Ihre E-Mail-Adresse zu bestätigen.\nFalls Sie die E-Mail nicht erhalten haben, überprüfen Sie bitte Ihren Spam-Ordner oder geben Sie eine neue E-Mail-Adresse ein.",
     "verificationFailed": "Der Bestätigungscode ist leider falsch. Bitte versuchen Sie es erneut oder geben Sie eine neue E-Mail-Adresse ein.",
     "betsNotAccepted": "Entschuldigung, das Spiel ist blockiert.",
     "maxBetsReached": "Entschuldigung, Sie haben bereits die maximale Anzahl an Wetten platziert.",
     "betPlaced": "Danke. Wir haben Ihre Wette auf \"{{messageContent}}\" erhalten.",
-    "winnerCallSmallPrize": "<Response><Say language='DE-de'>Herzlichen Glückwunsch {{name}}! Sie haben gewonnen und können Ihren Preis am Twilio Stand abholen!</Say></Response>",
-    "winnerCallRafflePrize": "<Response><Say language='DE-de'>Herzlichen Glückwunsch {{name}}! Sie haben den Hauptpreis gewonnen und können Ihren Preis am Twilio Stand abholen!</Say></Response>",
-    "winnerMessageRafflePrize": "Herzlichen Glückwunsch {{name}}! Sie haben den Hauptpreis gewonnen und können Ihren Preis am Twilio Stand abholen!",
-    "winnerMessage": "Herzlichen Glückwunsch {{name}}! Sie sind nun für den Preis qualifiziert!\n\nPS: Wussten Sie, dass dieses Spiel Open Source ist? Schauen Sie sich den Code auf https://github.com/twilio-samples/wheel-of-twilio/ an.",
-    "winnerMessageSmallPrize": "Herzlichen Glückwunsch {{name}}! Sie haben gewonnen. Schauen Sie beim Twilio Stand vorbei, um Ihren Preis abzuholen!\n\nPS: Wussten Sie, dass dieses Spiel Open Source ist?  Schauen Sie sich den Code auf https://github.com/twilio-samples/wheel-of-twilio/ an.",
+    "winnerCallSmallPrize": "<Response><Say language='DE-de'>Herzlichen Glückwunsch! Sie haben gewonnen und sind für den Hauptpreis qualifiziert!</Say></Response>",
+    "winnerCallRafflePrize": "<Response><Say language='DE-de'>Herzlichen Glückwunsch! Sie haben den Hauptpreis gewonnen und können Ihren Preis am Twilio Stand abholen!</Say></Response>",
+    "winnerMessageRafflePrize": "Herzlichen Glückwunsch! Sie haben den Hauptpreis gewonnen und können Ihren Preis am Twilio Stand abholen!",
+    "winnerMessage": "Herzlichen Glückwunsch! Sie sind nun für den Preis qualifiziert!\n\nPS: Wussten Sie, dass dieses Spiel Open Source ist? Schauen Sie sich den Code auf https://github.com/twilio-samples/wheel-of-twilio/ an.",
+    "winnerMessageSmallPrize": "Herzlichen Glückwunsch! Sie haben gewonnen. Schauen Sie beim Twilio Stand vorbei, um Ihren Preis abzuholen!\n\nPS: Wussten Sie, dass dieses Spiel Open Source ist?  Schauen Sie sich den Code auf https://github.com/twilio-samples/wheel-of-twilio/ an.",
     "loser": "Leider haben Sie verloren. Das Gewinnerfeld war {{winningWedge}}. \nViel Glück beim nächsten Mal!\n\nPS: Wussten Sie, dass dieses Spiel Open Source ist? Schauen Sie sich den Code auf https://github.com/twilio-samples/wheel-of-twilio/ an.",
     "alreadyPlayedNotClaimed": "Glückwunsch, Sie haben sich bereits in einer vorigen Runde qualifiziert.",
     "alreadyPlayedNotClaimedSmallPrize": "Glückwunsch, Sie haben bereits gewonnen. Schauen Sie beim Twilio Stand vorbei, um Ihren Preis abzuholen!",
@@ -21,7 +21,7 @@
     "catchAllError": "Entschuldigung, ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
     "roundFull": "Entschuldigung, die Runde ist voll. Bitte warten Sie auf die nächste Runde.",
     "userRemoved": "Ihre Daten wurden entfernt. Um erneut teilzunehmen, senden Sie bitte eine Nachricht.",
-    "invalidBetTemplateSID": "HX4c04d40bd547d214c9bcd034e3df47bf",
-    "betTemplateSID": "HX5c1f00ac6bde0d1cf6eb7248849bdc00"
+    "invalidBetTemplateSID": "HX91401ccd62991a40d4bac181b23f3296",
+    "betTemplateSID": "HX25c16ab28001480fd627ea9c3f60a57c"
   }
 }
