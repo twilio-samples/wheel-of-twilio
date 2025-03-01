@@ -13,6 +13,8 @@ import { DocumentInstance } from "twilio/lib/rest/sync/v1/service/document";
 const en = require("../../../locale/en.json");
 const de = require("../../../locale/de.json");
 
+export const maxDuration = 15;
+
 const {
   TWILIO_API_KEY = "",
   TWILIO_API_SECRET = "",
@@ -43,7 +45,7 @@ async function addDemoBet(betsDoc: DocumentInstance, messageContent: string) {
     bets.push([
       "test-better",
       wedges.find((wedge) =>
-        capitalizeEachWord(messageContent).includes(wedge),
+        capitalizeEachWord(messageContent).includes(wedge)
       ),
       "test-better",
     ]);
@@ -61,7 +63,7 @@ async function addDemoBet(betsDoc: DocumentInstance, messageContent: string) {
 
 export async function GET() {
   const response = new NextResponse(
-    "Configure this endpoint to respond to incoming messages.",
+    "Configure this endpoint to respond to incoming messages."
   );
   return response;
 }
@@ -92,7 +94,7 @@ export async function POST(req: NextRequest) {
       await attendeesMap.syncMapItems(hashedSender).remove();
     }
     response = await getUserRemovedResponse(
-      currentUser?.sender || senderID || "",
+      currentUser?.sender || senderID || ""
     );
   } else {
     response = await generateResponse(currentUser, client, {
