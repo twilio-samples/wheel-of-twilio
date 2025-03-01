@@ -28,37 +28,10 @@ export default function RootLayout({
       <body className={"h-full overflow-hidden " + inter.className}>
         <div
           style={{
-            backgroundColor: "#121C2D",
-            backgroundSize: "60px 60px",
-            backgroundImage:
-              "linear-gradient(to right, rgb(253, 247, 244, 30%) 0.35px, transparent 1px), linear-gradient(to bottom, rgb(253, 247, 244, 30%) 0.35px, transparent 1px)",
+            backgroundColor: "#000D25",
           }}
           className="vh-full h-full "
         >
-          <img
-            src="/images/ConfettiLeft.svg"
-            alt="confetti left"
-            className="absolute top-0 left-0"
-          />
-          <img
-            src="/images/TwilioCircle.svg"
-            alt="asteriks"
-            className="absolute top-0 left-0"
-          />
-          <img
-            src="/images/ConfettiRight.svg"
-            alt="confetti right"
-            className="absolute top-0 left-0"
-          />
-
-          <div className="absolute top-0 left-0 w-full">
-            {/* needed because chrome won't render <image> in SVGs */}
-            <img
-              src="/images/twilio_devs.png"
-              alt="logo"
-              className="w-1/4 mx-auto"
-            />
-          </div>
           {children}
         </div>
       </body>

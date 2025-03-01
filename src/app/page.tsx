@@ -61,26 +61,63 @@ function App() {
           </div>
         </div>
       )}
-      <div className="w-1/2 flex  item justify-center relative">
-        <SpinAndWin
-          wedges={wedges}
-          time={3}
-          onAfterStarted={() => {
-            blockGame();
-          }}
-          onAfterFinished={(selectedWedge: string) => {
-            // selectedWedge = "Java" to test the winning condition
-            notifyAndUpdateWinners(
-              bets.filter((bet) => bet[1] === selectedWedge),
+      <div className="w-1/2 flex flex-col mt-24 relative">
+        <div className="flex flex-col text-3xl font-extrabold pb-8 w-4/5 mx-auto">
+          {/* <img src="/images/twilio_devs.png" alt="logo" className="w-2/3 mb-10" />*/}
+
+          <img src="/images/twilio.png" alt="logo" className="w-1/3 mb-16" />
+          <h1 className="text-[#EF223A] text-5xl">
+            Better communication
+          </h1>
+          <h1 className="text-[#FDF7F4]">in the blink of an API</h1>
+        </div>
+        <div className="w-4/5 mx-auto grid grid-cols-2 pb-8  gap-4 space-around text-center text-xl font-semibold ">
+          {wedges.map((wedge) => {
+            return (
+              <div
+                key={wedge}
+                className={`relative text-[#FDF7F4] border-2 border-solid border-[#EF223A]  py-5 rounded-lg w-full`}
+              >
+                <span className="text-[6px] absolute bottom-0 left-1">
+                  {bets.filter((bet) => bet[1] === wedge).length}
+                </span>
+                {bets
+                  .filter((bet) => bet[1] === wedge)
+                  .map((bet, index) => {
+                    const randomNumberBetween70And110InStepsOf5 =
+                      70 + Math.floor(Math.random() * ((110 - 70) / 5 + 1)) * 5;
+                    const randomNumberBetweenMinus100AndMinus140InStepsOf5 =
+                      -100 -
+                      Math.floor(Math.random() * ((140 - 100) / 5 + 1)) * 5;
+
+                    return (
+                      <img
+                        key={`bet-${bet[1]}-${index}`}
+                        src="/images/chip.png"
+                        alt={`${bet[2]} bet chip on ${bet[1]}`}
+                        title={`${bet[2]} bets on ${bet[1]}`}
+                        className={`absolute scale-[0.25] z-10 translate-x-[${randomNumberBetween70And110InStepsOf5}px]  translate-y-[${randomNumberBetweenMinus100AndMinus140InStepsOf5}px]`}
+                      />
+                    );
+                  })}
+                {/* Test Chip, bottom-left */}
+                {/* <img
+                    src="/images/chip.png"
+                    alt="bet chip"
+                    className="absolute scale-[0.25] z-10 translate-x-[70px]  translate-y-[-100px]"
+                  /> */}
+                {/* // Test Chip, top-right  */}
+                {/* <img
+                    src="/images/chip.png"
+                    alt="bet chip"
+                    className="absolute scale-[0.25] z-10 translate-x-[110px]  translate-y-[-140px]"
+                  /> */}
+                {wedge}
+              </div>
             );
-            messageOthers(
-              bets.filter((bet) => bet[1] !== selectedWedge),
-              selectedWedge,
-            );
-            unblockGame();
-          }}
-        />
-        <div className="absolute bottom-3  text-gray-500 text-xs ml-16">
+          })}
+        </div>
+        <div className="absolute bottom-3  text-gray-500 text-xs ml-16 mb-2">
           <p className="">
             Please note that by scanning the QR code a WhatsApp conversation
             will be prompted and your WhatsApp profile and phone number will be
@@ -99,67 +136,31 @@ function App() {
       </div>
       <div className="w-1/2 flex items-center justify-center">
         <div className="absolute pt-14 my-auto w-1/2">
-          <div className="flex flex-col text-3xl font-extrabold pb-8 w-2/3 mx-auto">
-            <h1 className="text-[#FDF7F4]">Better communication</h1>
-            <h1 className="text-[#F2BE5A]">in the blink of an API</h1>
-          </div>
-          <div className="w-2/3 mx-auto grid grid-cols-2 pb-8  gap-4 space-around text-center text-xl font-semibold ">
-            {wedges.map((wedge, index) => {
-              const isRed = Math.floor((index - 1) / 2) % 2 === 0;
-              return (
-                <div
-                  key={wedge}
-                  className={`relative ${isRed ? "bg-[#F22F46]" : "bg-[#FDF7F4]"} ${
-                    isRed ? "text-[#FDF7F4]" : "text-[#121C2D]"
-                  } py-5 rounded-t-lg w-full`}
-                >
-                  <span className="text-[6px] absolute bottom-0 left-1">
-                    {bets.filter((bet) => bet[1] === wedge).length}
-                  </span>
-                  {bets
-                    .filter((bet) => bet[1] === wedge)
-                    .map((bet, index) => {
-                      const randomNumberBetween70And110InStepsOf5 =
-                        70 +
-                        Math.floor(Math.random() * ((110 - 70) / 5 + 1)) * 5;
-                      const randomNumberBetweenMinus100AndMinus140InStepsOf5 =
-                        -100 -
-                        Math.floor(Math.random() * ((140 - 100) / 5 + 1)) * 5;
-
-                      return (
-                        <img
-                          key={`bet-${bet[1]}-${index}`}
-                          src="/images/chip.png"
-                          alt={`${bet[2]} bet chip on ${bet[1]}`}
-                          title={`${bet[2]} bets on ${bet[1]}`}
-                          className={`absolute scale-[0.25] z-10 translate-x-[${randomNumberBetween70And110InStepsOf5}px]  translate-y-[${randomNumberBetweenMinus100AndMinus140InStepsOf5}px]`}
-                        />
-                      );
-                    })}
-                  {/* Test Chip, bottom-left */}
-                  {/* <img
-                    src="/images/chip.png"
-                    alt="bet chip"
-                    className="absolute scale-[0.25] z-10 translate-x-[70px]  translate-y-[-100px]"
-                  /> */}
-                  {/* // Test Chip, top-right  */}
-                  {/* <img
-                    src="/images/chip.png"
-                    alt="bet chip"
-                    className="absolute scale-[0.25] z-10 translate-x-[110px]  translate-y-[-140px]"
-                  /> */}
-                  {wedge}
-                </div>
+          <SpinAndWin
+            wedges={wedges}
+            time={3}
+            onAfterStarted={() => {
+              blockGame();
+            }}
+            onAfterFinished={(selectedWedge: string) => {
+              // selectedWedge = "Java" to test the winning condition
+              notifyAndUpdateWinners(
+                bets.filter((bet) => bet[1] === selectedWedge)
               );
-            })}
-          </div>
-          <div className="w-2/3 mx-auto grid grid-cols-2 gap-6 ">
-            <p className="ml-auto my-auto text-right w-2/3 font-extrabold text-xl text-[#FDF7F4]">
+              messageOthers(
+                bets.filter((bet) => bet[1] !== selectedWedge),
+                selectedWedge
+              );
+              unblockGame();
+            }}
+          />
+          <div className="w-2/3 mx-auto grid grid-cols-3 gap-6 grdi ">
+            <p className="ml-auto my-auto text-right col-span-2 font-extrabold text-xl text-[#FDF7F4]">
               Scan the code and win prizes
             </p>
             <div>
               <QRCode
-                className="mx-auto w-36 h-36 p-1 bg-[#FDF7F4]"
+                className="mx-auto w-24 h-24 p-1 bg-[#FDF7F4]"
                 value={`https://wa.me/${process.env.NEXT_PUBLIC_TWILIO_PHONE_NUMBER}?text=Hit%20send%20to%20start!`}
               />
               <p className="text-center text-s text-gray-500">
