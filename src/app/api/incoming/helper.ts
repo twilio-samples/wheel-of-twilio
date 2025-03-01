@@ -334,7 +334,7 @@ export async function generateResponse(
             messagingServiceSid: MESSAGING_SERVICE_SID,
             to: senderID || "",
           });
-        }, 2000);
+        }, 750);
       } else if (betsDoc.data.temporaryBlock) {
         twimlRes.message(i18next.t("betsNotAccepted"));
       } else if (
