@@ -83,6 +83,12 @@ If you encounter any issues or have questions, please refer to the issues sectio
 
 ## Optional Setup
 
+### When Going on Breaks
+
+Consider using a "Be Right Back" (BRB) screen to indicate that you are on a break. This can help communicate to others that you will return shortly.
+
+The `/brb` endpoint can be accessed with a query parameter `kind`. If set to `end`, it will show a message that the game has ended and no more bets are accepted. If set to `break`, it shows a different message but still accepts bets. You can reset the flags with `kind=running`.
+
 ### Tips for production
 
 Here are a few helpful notes:
