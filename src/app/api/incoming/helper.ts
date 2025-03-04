@@ -210,8 +210,10 @@ export async function generateResponse(
       } else if (currentUser.stage === Stages.VERIFIED_USER) {
         if (betsDoc.data.temporaryBlock) {
           twimlRes.message(i18next.t("betsNotAccepted"));
-          // check if one of the wedges is a substring of the capitalized messageContent
+        } else if (betsDoc.data.eventEnded) {
+          twimlRes.message(i18next.t("gameEnded"));
         } else if (
+          // check if one of the wedges is a substring of the capitalized messageContent
           wedges.some((wedge) =>
             capitalizeEachWord(messageContent).includes(
               capitalizeEachWord(wedge)
@@ -337,6 +339,8 @@ export async function generateResponse(
         });
       } else if (betsDoc.data.temporaryBlock) {
         twimlRes.message(i18next.t("betsNotAccepted"));
+      } else if (betsDoc.data.eventEnded) {
+        twimlRes.message(i18next.t("gameEnded"));
       } else if (
         wedges.some((wedge) =>
           capitalizeEachWord(messageContent).includes(capitalizeEachWord(wedge))

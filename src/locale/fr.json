@@ -7,6 +7,7 @@
     "sentEmail": "Nous vous avons envoyé un e-mail avec un code de vérification. Veuillez répondre avec le code que nous avons envoyé à votre adresse e-mail.\n Si vous n'avez pas reçu l'e-mail, vérifiez votre dossier spam ou entrez une nouvelle adresse e-mail.",
     "verificationFailed": "Désolé, le code de vérification est incorrect. Veuillez réessayer ou entrer une nouvelle adresse e-mail.",
     "betsNotAccepted": "La roue tourne déjà. Nous ne pouvons pas accepter votre pari.",
+    "gameEnded": "Le jeu est terminé. Merci d'avoir participé!",
     "maxBetsReached": "Désolé, vous avez déjà placé le nombre maximum de paris.",
     "betPlaced": "Merci. Nous avons reçu votre pari sur \"{{messageContent}}\".",
     "winnerCallSmallPrize": "<Response><Say>Félicitations ! Vous avez gagné et êtes qualifié pour le prix de la tombola !</Say></Response>",

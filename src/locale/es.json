@@ -7,6 +7,7 @@
     "sentEmail": "Te hemos enviado un correo electrónico con un código de verificación. Responde con el código que te enviamos.\nSi no recibiste el correo, revisa tu carpeta de spam o ingresa una nueva dirección de correo electrónico.",
     "verificationFailed": "Lo siento, el código de verificación es incorrecto. Inténtalo de nuevo o ingresa una nueva dirección de correo electrónico.",
     "betsNotAccepted": "La ruleta ya está girando. No podemos aceptar tu apuesta.",
+    "gameEnded": "El juego ha terminado. ¡Gracias por participar!",
     "maxBetsReached": "Lo siento, ya has realizado el número máximo de apuestas.",
     "betPlaced": "Gracias. Hemos recibido tu apuesta en \"{{messageContent}}\".",
     "winnerCallSmallPrize": "<Response><Say>¡Felicidades! Ganaste y calificas para el premio de la rifa!</Say></Response>",

@@ -7,6 +7,7 @@
     "sentEmail": "We have sent you an email with a verification code. Please reply with the code we sent to your email address.\n If you did not receive the email, please check your spam folder or enter a new email address.",
     "verificationFailed": "Sorry, the verification code is incorrect. Please try again or enter a new email address.",
     "betsNotAccepted": "The wheel is already spinning. We cannot accept your bet anymore.",
+    "gameEnded": "The game is over. Thank you for participating!",
     "maxBetsReached": "Sorry, you have already placed the maximum number of bets.",
     "betPlaced": "Thank you. We have received your bet on \"{{messageContent}}\".",
     "winnerCallSmallPrize": "<Response><Say>Congratulations! You won and are qualified for the raffle prize!</Say></Response>",

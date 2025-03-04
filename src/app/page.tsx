@@ -8,8 +8,8 @@ import {
   fetchToken,
   notifyAndUpdateWinners,
   messageOthers,
-  unblockGame,
-  blockGame,
+  tempUnlockGame,
+  tempLockGame,
 } from "./twilio";
 import SpinAndWin from "./ReactSpinGame";
 import QRCode from "react-qr-code";
@@ -139,7 +139,7 @@ function App() {
             wedges={wedges}
             time={3}
             onAfterStarted={() => {
-              blockGame();
+              tempLockGame();
             }}
             onAfterFinished={(selectedWedge: string) => {
               // selectedWedge = "Java" to test the winning condition
@@ -150,7 +150,7 @@ function App() {
                 bets.filter((bet) => bet[1] !== selectedWedge),
                 selectedWedge
               );
-              unblockGame();
+              tempUnlockGame();
             }}
           />
           <div className="w-2/3 mx-auto grid grid-cols-3 gap-6 grdi ">

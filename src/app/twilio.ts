@@ -70,7 +70,7 @@ export async function fetchToken() {
   return token.toJwt();
 }
 
-export async function unblockGame() {
+export async function tempUnlockGame() {
   const syncService = await client.sync.v1.services(SYNC_SERVICE_SID).fetch();
   const betsDoc = syncService.documents()("bets");
 
@@ -134,7 +134,7 @@ export async function winnerPrizeClaimed(winnerKey: string) {
   });
 }
 
-export async function blockGame() {
+export async function tempLockGame() {
   const syncService = await client.sync.v1.services(SYNC_SERVICE_SID).fetch();
   const betsDoc = syncService.documents()("bets");
   const completedBetsDoc = syncService.documents()("completedBets");
@@ -157,6 +157,36 @@ export async function blockGame() {
       data: {
         ...betsDoc.data,
         temporaryBlock: true,
+      },
+    }),
+  ]);
+}
+
+export async function changeGameLock(severity: "running" | "break" | "end") {
+  const syncService = await client.sync.v1.services(SYNC_SERVICE_SID).fetch();
+  const betsDoc = syncService.documents()("bets");
+
+  const pause =
+    severity === "break"
+      ? {
+          quickBreak: true,
+          eventEnded: false,
+        }
+      : severity === "end"
+        ? {
+            quickBreak: false,
+            eventEnded: true,
+          }
+        : {
+            quickBreak: false,
+            eventEnded: false,
+          };
+
+  await Promise.all([
+    betsDoc.update({
+      data: {
+        ...betsDoc.data,
+        ...pause,
       },
     }),
   ]);
