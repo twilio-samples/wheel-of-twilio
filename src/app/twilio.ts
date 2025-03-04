@@ -35,7 +35,7 @@ async function localizeStringForPhoneNumber(
   str: string,
   phone: string,
   name: string,
-  winningWedge?: string,
+  winningWedge?: string
 ) {
   await i18next.init({
     lng: getCountry(phone)?.languages[0],
@@ -62,7 +62,7 @@ export async function fetchToken() {
     TWILIO_API_SECRET,
     {
       identity: Privilege.FRONTEND,
-    },
+    }
   );
 
   token.addGrant(syncGrant);
@@ -117,7 +117,7 @@ export async function getWinners(allWinners: boolean): Promise<MaskedPlayer[]> {
       (a: any) =>
         a.stage === Stages.WINNER_UNCLAIMED ||
         (allWinners && a.stage === Stages.WINNER_CLAIMED) ||
-        (allWinners && a.stage === Stages.RAFFLE_WINNER),
+        (allWinners && a.stage === Stages.RAFFLE_WINNER)
     );
 }
 
@@ -147,14 +147,13 @@ export async function blockGame() {
     completedBets.data[bet.bet] = completedBets.data[bet.bet] + 1 || 1;
   });
 
-  Promise.all([
-    await completedBetsDoc.update({
+  await Promise.all([
+    completedBetsDoc.update({
       data: {
         ...completedBets.data,
       },
     }),
-
-    await betsDoc.update({
+    betsDoc.update({
       data: {
         ...betsDoc.data,
         temporaryBlock: true,
@@ -191,7 +190,7 @@ export async function notifyAndUpdateWinners(winners: any[]) {
           winner.data.fullName,
           winner.data.sender.replace("whatsapp:", ""),
           winner.data.recipient.replace("whatsapp:", ""),
-          false,
+          false
         );
       }
 
@@ -201,13 +200,13 @@ export async function notifyAndUpdateWinners(winners: any[]) {
             ? "winnerMessageSmallPrize"
             : "winnerMessage",
           winner.data.sender.replace("whatsapp:", ""),
-          winner.data.fullName,
+          winner.data.fullName
         ),
         messagingServiceSid: MESSAGING_SERVICE_SID,
         from: winner.data.recipient,
         to: winner.data.sender,
       });
-    }),
+    })
   );
 }
 
@@ -215,13 +214,13 @@ export async function callWinner(
   name: string,
   to: string,
   from: string,
-  rafflePrize: boolean,
+  rafflePrize: boolean
 ) {
   await client.calls.create({
     twiml: await localizeStringForPhoneNumber(
       rafflePrize ? "winnerCallRafflePrize" : "winnerCallSmallPrize",
       to,
-      name,
+      name
     ),
     from,
     to,
@@ -231,13 +230,13 @@ export async function callWinner(
 export async function sendRaffleWinnerMessage(
   name: string,
   to: string,
-  from: string,
+  from: string
 ) {
   await client.messages.create({
     body: await localizeStringForPhoneNumber(
       "winnerMessageRafflePrize",
       to,
-      name,
+      name
     ),
     from,
     to,
@@ -257,7 +256,7 @@ export async function messageOthers(unluckyBets: any[], winningWedge: string) {
           "loser",
           unluckyPlayer.data.sender,
           unluckyPlayer.data.fullName,
-          winningWedge,
+          winningWedge
         );
         await client.messages.create({
           body,
@@ -272,13 +271,13 @@ export async function messageOthers(unluckyBets: any[], winningWedge: string) {
           console.error(e.message);
         }
       }
-    }),
+    })
   );
 }
 
 export async function fetchSegmentTraits(
   email: string,
-  specificTrait?: string,
+  specificTrait?: string
 ) {
   let url = `https://profiles.segment.com/v1/spaces/${SEGMENT_SPACE_ID}/collections/users/profiles/email:${email}/traits`;
   if (specificTrait) {
