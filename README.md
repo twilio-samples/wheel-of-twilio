@@ -29,8 +29,8 @@ This project is Twilio's innovative booth activation designed to motivate people
 
 3. **Configure Environment Variables:**
 
-   - Rename `sample.env` to `.env`.
-   - Add the required service SIDs and other variables in the `.env` file:
+   - Rename `sample.env` to `.env.local`.
+   - Add the required service SIDs and other variables in the `.env.local` file:
 
      ```env
      TWILIO_ACCOUNT_SID="ACxxxxx"
@@ -99,7 +99,7 @@ Here are a few helpful notes:
 
 ### Feature Flag for Lead Collection
 
-Lead collection can be controlled using the `DISABLE_LEAD_COLLECTION` feature flag in the `.env` file. By default, it is set to `false`, meaning lead collection is enabled. If you want to disable lead collection, set the flag to `true` in the `.env` file:
+Lead collection can be controlled using the `DISABLE_LEAD_COLLECTION` feature flag in the `.env.local` file. By default, it is set to `false`, meaning lead collection is enabled. If you want to disable lead collection, set the flag to `true` in the `.env.local` file:
 
 ```env
 DISABLE_LEAD_COLLECTION="true"
