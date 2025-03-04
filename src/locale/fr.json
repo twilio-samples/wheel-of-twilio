@@ -6,7 +6,7 @@
     "invalidEmail": "Désolé, ce n'est pas une adresse e-mail valide.",
     "sentEmail": "Nous vous avons envoyé un e-mail avec un code de vérification. Veuillez répondre avec le code que nous avons envoyé à votre adresse e-mail.\n Si vous n'avez pas reçu l'e-mail, vérifiez votre dossier spam ou entrez une nouvelle adresse e-mail.",
     "verificationFailed": "Désolé, le code de vérification est incorrect. Veuillez réessayer ou entrer une nouvelle adresse e-mail.",
-    "betsNotAccepted": "Désolé, le jeu est bloqué.",
+    "betsNotAccepted": "La roue tourne déjà. Nous ne pouvons pas accepter votre pari.",
     "maxBetsReached": "Désolé, vous avez déjà placé le nombre maximum de paris.",
     "betPlaced": "Merci. Nous avons reçu votre pari sur \"{{messageContent}}\".",
     "winnerCallSmallPrize": "<Response><Say>Félicitations ! Vous avez gagné et êtes qualifié pour le prix de la tombola !</Say></Response>",
@@ -21,7 +21,7 @@
     "catchAllError": "Désolé, une erreur s'est produite. Veuillez réessayer plus tard.",
     "roundFull": "Désolé, la ronde est pleine. Veuillez attendre la prochaine ronde.",
     "userRemoved": "Votre numéro de téléphone a été retiré de la liste des participants. Si vous souhaitez participer à nouveau, envoyez un message.",
-    "betTemplateSID": "HX0e620f58019914cda8a48519f64e1e64",
-    "invalidBetTemplateSID": "HX608017ba8f814a6fa1281c9207e116b3"
+    "betTemplateSID": "HX026e37f37452c7905420f31b4a2daee4",
+    "invalidBetTemplateSID": "HX621cf4127f558c8c194be5973b2ecd62"
   }
 }
