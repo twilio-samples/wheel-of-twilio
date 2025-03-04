@@ -67,6 +67,7 @@ function App() {
 
           <img src="/images/twilio.png" alt="logo" className="w-1/3 mb-16" />
           <h1 className="text-[#EF223A] text-5xl">Better communication</h1>
+          {/* TODO change font here */}
           <h1 className="text-[#FDF7F4]">in the blink of an API</h1>
         </div>
         <div className="w-4/5 mx-auto grid grid-cols-2 pb-8  gap-4 space-around text-center text-xl font-semibold ">
@@ -143,11 +144,11 @@ function App() {
             onAfterFinished={(selectedWedge: string) => {
               // selectedWedge = "Java" to test the winning condition
               notifyAndUpdateWinners(
-                bets.filter((bet) => bet[1] === selectedWedge),
+                bets.filter((bet) => bet[1] === selectedWedge)
               );
               messageOthers(
                 bets.filter((bet) => bet[1] !== selectedWedge),
-                selectedWedge,
+                selectedWedge
               );
               unblockGame();
             }}
