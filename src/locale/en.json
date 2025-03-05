@@ -19,6 +19,7 @@
     "loser": "Sorry, you lost! The winning field was \"{{winningWedge}}\". \nBetter luck next time!\n\nPS: Did you know this game is open source? Check it out at https://github.com/twilio-samples/wheel-of-twilio/",
     "alreadyPlayedAndQualified": "Congrats, you already guessed the right field in a previous round.",
     "alreadyPlayedNotClaimedSmallPrize": "Congrats, you already won. Stop by the Twilio booth to claim your prize!",
+    "prizePickup": "Enjoy your prize. We hope you enjoyed playing the game!\n\nSign up for a free Twilio account to build your own interactive games 👾 \n\nhttps://twilio.com/try-twilio",
     "alreadyPlayedPrizeClaimed": "Enjoy your prize. Feel free to visit the Twilio booth to chat with us about our Customer Engagement Platform.",
     "catchAllError": "Sorry, an error occurred. Please try again later.",
     "roundFull": "Sorry, the round is full. Please wait for the next round.",
