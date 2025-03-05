@@ -144,13 +144,17 @@ export async function tempLockGame() {
   const completedBetsDoc = syncService.documents()("completedBets");
 
   const bets = await betsDoc.fetch();
+  const DOUBLE_PRESS_EVENT = bets.data.temporaryBlock;
+  if (DOUBLE_PRESS_EVENT) {
+    return;
+  }
+
   const completedBets = await completedBetsDoc.fetch();
   const actualBets = bets.data.bets;
 
   Object.values(actualBets).forEach((bet: any) => {
     completedBets.data[bet.bet] = completedBets.data[bet.bet] + 1 || 1;
   });
-  debugger;
 
   await Promise.all([
     completedBetsDoc.update({
