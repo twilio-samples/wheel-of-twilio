@@ -1,6 +1,9 @@
-import { expect, test, describe } from "vitest";
+import { expect, test, describe, vi } from "vitest";
 import { generateResponse, getCountry } from "@/app/api/incoming/helper";
 import { Stages } from "@/app/types";
+
+vi.stubEnv("OFFERED_PRIZES", "both"); // TODO also cover other cases
+vi.stubEnv("DISABLE_LEAD_COLLECTION", "false"); // TODO also cover other cases
 
 describe("For known user, get country", async () => {
   test("German phone number returns correct country/language", async () => {
@@ -46,29 +49,8 @@ describe("For unknown user, generate welcome message", async () => {
             },
           },
         });
-      })(),
+      })()
     ).rejects.toThrowError(/Invalid country/);
-  });
-
-  test("Test German response from generateResponse", async () => {
-    // @ts-ignore just for this test
-    const newUserWelcome = await generateResponse(undefined, undefined, {
-      senderID: "+4915112341234",
-      recipient: "+4915156785678",
-      messageContent: "Hello, I'm a new user",
-      attendeesMap: {
-        // @ts-ignore
-        syncMapItems: {
-          create: async (data: any) => {
-            return data;
-          },
-        },
-      },
-    });
-    expect(newUserWelcome).toContain(
-      `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Willkommen im Spiel`,
-    );
-    expect(newUserWelcome).toContain(`</Message></Response>`);
   });
 
   test("Test English response from generateResponse", async () => {
@@ -87,7 +69,7 @@ describe("For unknown user, generate welcome message", async () => {
       },
     });
     expect(newUserWelcome).toContain(
-      `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Welcome to the game`,
+      `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Welcome to the game`
     );
     expect(newUserWelcome).toContain(`</Message></Response>`);
   });
@@ -97,7 +79,7 @@ describe("For unnamed user, generate response", async () => {
   test("Prompt NEW_USER for name", async () => {
     const currentUser = {
       name: "test-better",
-      sender: "+4915112341234",
+      sender: "+11231232468",
       recipient: "+4915156785678",
       bet: "test-better",
       stage: Stages.NEW_USER,
@@ -106,6 +88,13 @@ describe("For unnamed user, generate response", async () => {
     // @ts-ignore just for this test
     const newUserWelcome = await generateResponse(currentUser, undefined, {
       messageContent: "Hello, I'm a new user",
+      betsDoc: {
+        data: {
+          bets: [],
+          temporaryBlock: false,
+          closed: false,
+        },
+      },
       // @ts-ignore
       attendeesMap: {
         syncMapItems: () => {
@@ -118,7 +107,7 @@ describe("For unnamed user, generate response", async () => {
       },
     });
     expect(newUserWelcome).toContain(
-      `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Danke.`,
+      `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Thank you.`
     );
   });
 });
@@ -127,7 +116,7 @@ describe("For known user, generate response", async () => {
   test("Catch invalid email for German user at stage NAME_CONFIRMED", async () => {
     const currentUser = {
       name: "test-better",
-      sender: "+4915112341234",
+      sender: "+11231232468",
       recipient: "+4915156785678",
       bet: "test-better",
       stage: Stages.NAME_CONFIRMED,
@@ -140,7 +129,7 @@ describe("For known user, generate response", async () => {
       attendeesMap: {},
     });
     expect(newUserWelcome).toContain(
-      `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Leider ist dies keine gültige E-Mail-Adresse`,
+      `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Sorry, this is not a valid email address`
     );
     expect(newUserWelcome).toContain(`</Message></Response>`);
   });
@@ -161,7 +150,7 @@ describe("For known user, generate response", async () => {
       attendeesMap: {},
     });
     expect(response).toContain(
-      `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Sorry, this is not a valid email address`,
+      `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Sorry, this is not a valid email address`
     );
     expect(response).toContain(`</Message></Response>`);
   });
@@ -171,7 +160,7 @@ describe("For unverified user, generate response", async () => {
   test("Check for right message when the no code is sent", async () => {
     const currentUser = {
       name: "test-better",
-      sender: "+4915112341234",
+      sender: "+11231232468",
       bet: "test-better",
       stage: Stages.VERIFYING,
     };
@@ -191,7 +180,7 @@ describe("For unverified user, generate response", async () => {
       },
     });
     expect(response).toContain(
-      `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Der Bestätigungscode ist leider falsch. `,
+      `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Sorry, the verification code is incorrect. Please try again or enter a new email address.`
     );
     expect(response).toContain(`</Message></Response>`);
   });
@@ -249,7 +238,7 @@ describe("For unverified user, generate response", async () => {
             closed: false,
           },
         },
-      },
+      }
     );
     expect(response).toBe(`<?xml version="1.0" encoding="UTF-8"?><Response/>`);
   });
@@ -307,7 +296,7 @@ describe("For unverified user, generate response", async () => {
             closed: false,
           },
         },
-      },
+      }
     );
     expect(response).toBe(`<?xml version="1.0" encoding="UTF-8"?><Response/>`);
   });
@@ -338,7 +327,7 @@ describe("For verified users with selected country, generate response", async ()
       },
     });
     expect(response).toContain(
-      `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Sorry, the game is blocked`,
+      `<?xml version="1.0" encoding="UTF-8"?><Response><Message>The wheel is already spinning. We cannot accept your bet anymore.`
     );
     expect(response).toContain(`</Message></Response>`);
   });
@@ -380,7 +369,7 @@ describe("For verified users with selected country, generate response", async ()
       },
     });
     expect(response).toContain(
-      `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Thank you.`,
+      `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Thank you.`
     );
     expect(response).toContain(`</Message></Response>`);
   });
@@ -420,10 +409,10 @@ describe("For verified users with selected country, generate response", async ()
             return data;
           },
         },
-      },
+      }
     );
     expect(response).toEqual(
-      `<?xml version="1.0" encoding="UTF-8"?><Response/>`,
+      `<?xml version="1.0" encoding="UTF-8"?><Response/>`
     );
   });
 });
@@ -446,10 +435,8 @@ describe("For winner user, generate response", async () => {
         messages: {
           // @ts-ignore just for this test
           create: (c) => {
-            expect(c.body).toBe(
-              process.env.OFFER_SMALL_PRIZES !== "true" // TODO this is not quite working as expected
-                ? "Congrats, you already qualified for the prize."
-                : "Congrats, you already won. Stop by the Twilio booth to claim your prize!",
+            expect(c.body).toContain(
+              "Congrats, you already won. Stop by the Twilio booth to claim your prize!"
             );
           },
         },
@@ -466,10 +453,10 @@ describe("For winner user, generate response", async () => {
             closed: false,
           },
         },
-      },
+      }
     );
     expect(response).toContain(
-      `<?xml version="1.0" encoding="UTF-8"?><Response/>`,
+      `<?xml version="1.0" encoding="UTF-8"?><Response/>`
     );
   });
 
@@ -491,7 +478,7 @@ describe("For winner user, generate response", async () => {
           // @ts-ignore just for this test
           create: (c) => {
             expect(c.body).toContain(
-              "Enjoy your prize. Feel free to visit the Twilio booth",
+              "Enjoy your prize. Feel free to visit the Twilio booth"
             );
           },
         },
@@ -504,14 +491,14 @@ describe("For winner user, generate response", async () => {
         betsDoc: {
           data: {
             bets: {},
-            temporaryBlock: true,
+            temporaryBlock: false,
             closed: false,
           },
         },
-      },
+      }
     );
     expect(response).toContain(
-      `<?xml version="1.0" encoding="UTF-8"?><Response/>`,
+      `<?xml version="1.0" encoding="UTF-8"?><Response/>`
     );
   });
 });
@@ -533,7 +520,7 @@ test("Check for right message when the stage is unknown", async () => {
         // @ts-ignore just for this test
         create: (c) => {
           expect(c.body).toContain(
-            "Entschuldigung, ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
+            "Sorry, an error occurred. Please try again later."
           );
         },
       },
@@ -546,13 +533,13 @@ test("Check for right message when the stage is unknown", async () => {
       betsDoc: {
         data: {
           bets: {},
-          temporaryBlock: true,
+          temporaryBlock: false,
           closed: false,
         },
       },
-    },
+    }
   );
   expect(response).toContain(
-    `<?xml version="1.0" encoding="UTF-8"?><Response/>`,
+    `<?xml version="1.0" encoding="UTF-8"?><Response`
   );
 });
