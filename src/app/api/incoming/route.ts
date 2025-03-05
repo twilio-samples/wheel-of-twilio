@@ -10,9 +10,6 @@ import { Player } from "../../types";
 import { SyncMapContext } from "twilio/lib/rest/sync/v1/service/syncMap";
 import { DocumentInstance } from "twilio/lib/rest/sync/v1/service/document";
 
-const en = require("../../../locale/en.json");
-const de = require("../../../locale/de.json");
-
 export const maxDuration = 15;
 
 const {
@@ -89,7 +86,7 @@ export async function POST(req: NextRequest) {
 
   process.env.demoBet && (await addDemoBet(betsDoc, messageContent));
   let response = "";
-  if (messageContent.includes("forget me")) {
+  if (messageContent.toLowerCase().includes("forget me")) {
     if (currentUser) {
       await attendeesMap.syncMapItems(hashedSender).remove();
     }

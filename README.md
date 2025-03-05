@@ -45,14 +45,14 @@ This project is Twilio's innovative booth activation designed to motivate people
      MESSAGING_SERVICE_SID="MGxxxxxxx"
      BASIC_AUTH_USERNAME="twilio"
      BASIC_AUTH_PASSWORD="admin!"
-     OFFER_SMALL_PRIZES="false"
+     OFFERED_PRIZES="big"
      DISABLE_LEAD_COLLECTION="false"
      SEGMENT_SPACE_ID="your_segment_space_id"
      SEGMENT_PROFILE_KEY="your_segment_profile_key"
      SEGMENT_TRAIT_CHECK="your_segment_trait_check"
      ```
 
-     > The flag `OFFER_SMALL_PRIZES` influences the message the winners get. If set to `false`, they are notified that they qualified for a larger prize. if set the `true`, they are informed that they won and can collect a small prize (and they get a prize).
+     > The flag `OFFERED_PRIZES` influences the message the winners get. If set the `small`, winners who bet on the right field are informed that they won and can collect a small prize at the Twilio booth. If set to `big`, they are notified that they qualified for a larger prize. You can also set the value to `both`, so winners can pick up a small prize and are qualified for the raffle prize at the same time.
      > The option `MAX_BETS_PER_USER` limits how often one user can submit a bet. If 0, the users can enter as many bets as they want.
      > The script `pnpm raffle` can be used to select one random winner and to trigger a noticiation message and a noticiation call
 

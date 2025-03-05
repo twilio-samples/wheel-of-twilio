@@ -13,9 +13,6 @@ import { maskNumber } from "@/app/util";
 import { fetchSegmentTraits } from "@/app/twilio";
 
 const en = require("../../../locale/en.json");
-const de = require("../../../locale/de.json");
-const fr = require("../../../locale/fr.json");
-const es = require("../../../locale/es.json");
 
 const ONE_WEEK = 60 * 60 * 24 * 7;
 const {
@@ -23,7 +20,7 @@ const {
   EVENT_NAME = "",
   MESSAGING_SERVICE_SID = "",
   NEXT_PUBLIC_WEDGES = "",
-  OFFER_SMALL_PRIZES = "false",
+  OFFERED_PRIZES = "big",
   MAX_BETS_PER_USER = "0",
   DISABLE_LEAD_COLLECTION = "false",
   SEGMENT_SPACE_ID = "",
@@ -47,9 +44,6 @@ async function initI18n(senderID: string) {
     fallbackLng: "en",
     resources: {
       en,
-      de,
-      fr,
-      es,
     },
   });
   return getCountry(senderID)?.name;
@@ -284,9 +278,9 @@ export async function generateResponse(
       } else if (currentUser.stage === Stages.WINNER_UNCLAIMED) {
         await client.messages.create({
           body:
-            OFFER_SMALL_PRIZES === "true"
+            OFFERED_PRIZES === "small" || OFFERED_PRIZES === "both"
               ? i18next.t("alreadyPlayedNotClaimedSmallPrize")
-              : i18next.t("alreadyPlayedNotClaimed"),
+              : i18next.t("alreadyPlayedAndQualified"),
           from: recipient,
           messagingServiceSid: MESSAGING_SERVICE_SID,
           to: currentUser.sender,
@@ -317,6 +311,8 @@ export async function generateResponse(
           key: hashedSender,
           data: {
             name: senderName,
+            country,
+            recipient,
             sender: senderID,
             submittedBets: 0,
             stage: Stages.NEW_USER,
@@ -341,6 +337,26 @@ export async function generateResponse(
         twimlRes.message(i18next.t("betsNotAccepted"));
       } else if (betsDoc.data.eventEnded) {
         twimlRes.message(i18next.t("gameEnded"));
+      } else if (currentUser.stage === Stages.WINNER_UNCLAIMED) {
+        await client.messages.create({
+          body:
+            OFFERED_PRIZES === "small" || OFFERED_PRIZES === "both"
+              ? i18next.t("alreadyPlayedNotClaimedSmallPrize")
+              : i18next.t("alreadyPlayedAndQualified"),
+          from: recipient,
+          messagingServiceSid: MESSAGING_SERVICE_SID,
+          to: currentUser.sender,
+        });
+      } else if (
+        currentUser.stage === Stages.WINNER_CLAIMED ||
+        currentUser.stage === Stages.RAFFLE_WINNER
+      ) {
+        await client.messages.create({
+          body: i18next.t("alreadyPlayedPrizeClaimed"),
+          from: recipient,
+          messagingServiceSid: MESSAGING_SERVICE_SID,
+          to: currentUser.sender,
+        });
       } else if (
         wedges.some((wedge) =>
           capitalizeEachWord(messageContent).includes(capitalizeEachWord(wedge))
