@@ -119,12 +119,23 @@ export async function winnerPrizeClaimed(winnerKey: string) {
   const attendeesMap = syncService.syncMaps()("attendees");
   const winner = await attendeesMap.syncMapItems(winnerKey).fetch();
 
-  await attendeesMap.syncMapItems(winnerKey).update({
-    data: {
-      ...winner.data,
-      stage: Stages.WINNER_CLAIMED,
-    },
-  });
+  await Promise.all([
+    client.messages.create({
+      body: await localizeStringForPhoneNumber(
+        "prizePickup",
+        winner.data.sender.replace("whatsapp:", "")
+      ),
+      messagingServiceSid: MESSAGING_SERVICE_SID,
+      from: winner.data.recipient,
+      to: winner.data.sender,
+    }),
+    attendeesMap.syncMapItems(winnerKey).update({
+      data: {
+        ...winner.data,
+        stage: Stages.WINNER_CLAIMED,
+      },
+    }),
+  ]);
 }
 
 export async function tempLockGame() {
@@ -139,6 +150,7 @@ export async function tempLockGame() {
   Object.values(actualBets).forEach((bet: any) => {
     completedBets.data[bet.bet] = completedBets.data[bet.bet] + 1 || 1;
   });
+  debugger;
 
   await Promise.all([
     completedBetsDoc.update({
@@ -223,7 +235,7 @@ export async function notifyAndUpdateWinners(winners: any[]) {
             : OFFERED_PRIZES === "big"
               ? "winnerMessageRaffleQualification"
               : "winnerMessageBothPrizes",
-          winner.data.sender.replace("whatsapp:", ""),
+          winner.data.sender.replace("whatsapp:", "")
         ),
         messagingServiceSid: MESSAGING_SERVICE_SID,
         from: winner.data.recipient,
@@ -254,10 +266,7 @@ export async function sendRaffleWinnerMessage(
   from: string
 ) {
   await client.messages.create({
-    body: await localizeStringForPhoneNumber(
-      "winnerMessageRafflePrize",
-      to,
-    ),
+    body: await localizeStringForPhoneNumber("winnerMessageRafflePrize", to),
     from,
     to,
   });
