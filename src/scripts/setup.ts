@@ -140,7 +140,6 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
     } else {
       try {
         existingTemplate = await createWhatsAppTemplate(template);
-   
       } catch (e) {
         console.error(`Failed to create template ${template.friendly_name}`);
         console.error(e);

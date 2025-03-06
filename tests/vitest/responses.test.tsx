@@ -618,7 +618,7 @@ describe("Lead collection disabled", async () => {
   describe("Check if max bets are handled correctly", async () => {
     test("Check for right message when the max bets are reached", async () => {
       vi.stubEnv("DISABLE_LEAD_COLLECTION", "false");
-      vi.stubEnv("MAX_BETS", "2");
+      vi.stubEnv("MAX_BETS_PER_USER", "2");
       const currentUser = {
         name: "test-better",
         sender: "+115112341234",
@@ -662,7 +662,7 @@ describe("Lead collection disabled", async () => {
 
     test("Check for right message when the max bets are not reached", async () => {
       vi.stubEnv("DISABLE_LEAD_COLLECTION", "false");
-      vi.stubEnv("MAX_BETS", "20");
+      vi.stubEnv("MAX_BETS_PER_USER", "20");
       const currentUser = {
         name: "test-better",
         sender: "+115112341234",
@@ -689,7 +689,15 @@ describe("Lead collection disabled", async () => {
         {
           messageContent: `Hello, I'd like to bet on ${firstWedge}`,
           // @ts-ignore
-          attendeesMap: {},
+          attendeesMap: {
+            syncMapItems: () => {
+              return {
+                update: async (data: any) => {
+                  return data;
+                },
+              };
+            },
+          },
           // @ts-ignore
           betsDoc: {
             data: {
@@ -697,17 +705,18 @@ describe("Lead collection disabled", async () => {
               temporaryBlock: false,
               closed: false,
             },
+            update: () => {},
           },
         },
       );
       expect(response).toContain(
-        '<?xml version="1.0" encoding="UTF-8"?><Response><Message>Sorry, you have already placed the maximum number of bets.</Message>',
+        '<?xml version="1.0" encoding="UTF-8"?><Response><Message>Thank you. We have received your bet on "Vondelpark".</Message></Response>',
       );
     });
 
     test("Check for right message when there are no max bets", async () => {
       vi.stubEnv("DISABLE_LEAD_COLLECTION", "false");
-      vi.stubEnv("MAX_BETS", "0");
+      vi.stubEnv("MAX_BETS_PER_USER", "0");
       const currentUser = {
         name: "test-better",
         sender: "+115112341234",
@@ -734,7 +743,15 @@ describe("Lead collection disabled", async () => {
         {
           messageContent: `Hello, I'd like to bet on ${firstWedge}`,
           // @ts-ignore
-          attendeesMap: {},
+          attendeesMap: {
+            syncMapItems: () => {
+              return {
+                update: async (data: any) => {
+                  return data;
+                },
+              };
+            },
+          },
           // @ts-ignore
           betsDoc: {
             data: {
@@ -742,6 +759,7 @@ describe("Lead collection disabled", async () => {
               temporaryBlock: false,
               closed: false,
             },
+            update: () => {},
           },
         },
       );
@@ -1228,177 +1246,198 @@ describe("Lead collection enabled", async () => {
     });
   });
 
-  // describe("Check if max bets are handled correctly", async () => {
-  //   test("Check for right message when the max bets are reached", async () => {
-  //     vi.stubEnv("MAX_BETS", "2");
-  //     const currentUser = {
-  //       name: "test-better",
-  //       sender: "+115112341234",
-  //       recipient: "+4915156785678",
-  //       bet: "test-better",
-  //       submittedBets: 3,
-  //       stage: Stages.VERIFIED_USER,
-  //     };
+  describe("Check if max bets are handled correctly", async () => {
+    test("Check for right message when the max bets are reached", async () => {
+      vi.stubEnv("MAX_BETS_PER_USER", "2");
+      const currentUser = {
+        name: "test-better",
+        sender: "+115112341234",
+        recipient: "+4915156785678",
+        bet: "test-better",
+        submittedBets: 3,
+        stage: Stages.VERIFIED_USER,
+      };
 
-  //     // @ts-ignore just for this test
-  //     const response = await generateResponse(
-  //       // @ts-ignore just for this test
-  //       currentUser,
-  //       {
-  //         messages: {
-  //           // @ts-ignore just for this test
-  //           create: (c) => {
-  //             debugger;
-  //             expect(c.body).toContain("");
-  //           },
-  //         },
-  //       },
-  //       {
-  //         messageContent: `Hello, I'd like to bet on ${firstWedge}`,
-  //         // @ts-ignore
-  //         attendeesMap: {},
-  //         // @ts-ignore
-  //         betsDoc: {
-  //           data: {
-  //             bets: [],
-  //             temporaryBlock: false,
-  //             closed: false,
-  //           },
-  //         },
-  //       }
-  //     );
-  //     expect(response).toContain(
-  //       '<?xml version="1.0" encoding="UTF-8"?><Response><Message>Sorry, you have already placed the maximum number of bets.</Message>'
-  //     );
-  //   });
+      // @ts-ignore just for this test
+      const response = await generateResponse(
+        // @ts-ignore just for this test
+        currentUser,
+        {
+          messages: {
+            // @ts-ignore just for this test
+            create: (c) => {
+              debugger;
+              expect(c.body).toContain("");
+            },
+          },
+        },
+        {
+          messageContent: `Hello, I'd like to bet on ${firstWedge}`,
+          // @ts-ignore
+          attendeesMap: {
+            syncMapItems: () => {
+              return {
+                update: async (data: any) => {
+                  return data;
+                },
+              };
+            },
+          },
+          // @ts-ignore
+          betsDoc: {
+            data: {
+              bets: [],
+              temporaryBlock: false,
+              closed: false,
+            },
+            update: () => {},
+          },
+        },
+      );
+      expect(response).toContain(
+        '<?xml version="1.0" encoding="UTF-8"?><Response><Message>Sorry, you have already placed the maximum number of bets.</Message>',
+      );
+    });
 
-  //   test("Check for right message when the max bets are not reached", async () => {
-  //     vi.stubEnv("MAX_BETS", "20");
-  //     const currentUser = {
-  //       name: "test-better",
-  //       sender: "+115112341234",
-  //       recipient: "+4915156785678",
-  //       bet: "test-better",
-  //       submittedBets: 2,
-  //       stage: Stages.VERIFIED_USER,
-  //     };
+    test("Check for right message when the max bets are not reached", async () => {
+      vi.stubEnv("MAX_BETS_PER_USER", "20");
+      const currentUser = {
+        name: "test-better",
+        sender: "+115112341234",
+        recipient: "+4915156785678",
+        bet: "test-better",
+        submittedBets: 2,
+        stage: Stages.VERIFIED_USER,
+      };
 
-  //     // @ts-ignore just for this test
-  //     const response = await generateResponse(
-  //       // @ts-ignore just for this test
-  //       currentUser,
-  //       {
-  //         messages: {
-  //           // @ts-ignore just for this test
-  //           create: (c) => {
-  //             expect(c.body).toContain(
-  //               "You have successfully placed your bet. Good luck!"
-  //             );
-  //           },
-  //         },
-  //       },
-  //       {
-  //         messageContent: `Hello, I'd like to bet on ${firstWedge}`,
-  //         // @ts-ignore
-  //         attendeesMap: {},
-  //         // @ts-ignore
-  //         betsDoc: {
-  //           data: {
-  //             bets: [],
-  //             temporaryBlock: false,
-  //             closed: false,
-  //           },
-  //         },
-  //       }
-  //     );
-  //     expect(response).toContain(
-  //       '<?xml version="1.0" encoding="UTF-8"?><Response><Message>Sorry, you have already placed the maximum number of bets.</Message>'
-  //     );
-  //   });
+      // @ts-ignore just for this test
+      const response = await generateResponse(
+        // @ts-ignore just for this test
+        currentUser,
+        {
+          messages: {
+            // @ts-ignore just for this test
+            create: (c) => {},
+          },
+        },
+        {
+          messageContent: `Hello, I'd like to bet on ${firstWedge}`,
+          // @ts-ignore
+          attendeesMap: {
+            syncMapItems: () => {
+              return {
+                update: async (data: any) => {
+                  return data;
+                },
+              };
+            },
+          },
+          // @ts-ignore
+          betsDoc: {
+            data: {
+              bets: [],
+              temporaryBlock: false,
+              closed: false,
+            },
+            update: () => {},
+          },
+        },
+      );
+      expect(response).toContain(
+        '<?xml version="1.0" encoding="UTF-8"?><Response><Message>Thank you. We have received your bet on "Vondelpark".</Message></Response>',
+      );
+    });
 
-  //   test("Check for right message when there are no max bets", async () => {
-  //     vi.stubEnv("MAX_BETS", "0");
-  //     const currentUser = {
-  //       name: "test-better",
-  //       sender: "+115112341234",
-  //       recipient: "+4915156785678",
-  //       bet: "test-better",
-  //       submittedBets: 2,
-  //       stage: Stages.VERIFIED_USER,
-  //     };
+    test("Check for right message when there are no max bets", async () => {
+      vi.stubEnv("MAX_BETS_PER_USER", "0");
+      const currentUser = {
+        name: "test-better",
+        sender: "+115112341234",
+        recipient: "+4915156785678",
+        bet: "test-better",
+        submittedBets: 2,
+        stage: Stages.VERIFIED_USER,
+      };
 
-  //     // @ts-ignore just for this test
-  //     const response = await generateResponse(
-  //       // @ts-ignore just for this test
-  //       currentUser,
-  //       {
-  //         messages: {
-  //           // @ts-ignore just for this test
-  //           create: (c) => {
-  //             expect(c.body).toContain(
-  //               "You have successfully placed your bet. Good luck!"
-  //             );
-  //           },
-  //         },
-  //       },
-  //       {
-  //         messageContent: `Hello, I'd like to bet on ${firstWedge}`,
-  //         // @ts-ignore
-  //         attendeesMap: {},
-  //         // @ts-ignore
-  //         betsDoc: {
-  //           data: {
-  //             bets: [],
-  //             temporaryBlock: false,
-  //             closed: false,
-  //           },
-  //         },
-  //       }
-  //     );
-  //     expect(response).toContain(
-  //       '<?xml version="1.0" encoding="UTF-8"?><Response>'
-  //     );
-  //   });
-  // });
+      // @ts-ignore just for this test
+      const response = await generateResponse(
+        // @ts-ignore just for this test
+        currentUser,
+        {
+          messages: {
+            // @ts-ignore just for this test
+            create: (c) => {
+              expect(c.body).toContain(
+                "You have successfully placed your bet. Good luck!",
+              );
+            },
+          },
+        },
+        {
+          messageContent: `Hello, I'd like to bet on ${firstWedge}`,
+          // @ts-ignore
+          attendeesMap: {
+            syncMapItems: () => {
+              return {
+                update: async (data: any) => {
+                  return data;
+                },
+              };
+            },
+          },
+          // @ts-ignore
+          betsDoc: {
+            data: {
+              bets: [],
+              temporaryBlock: false,
+              closed: false,
+            },
+            update: () => {},
+          },
+        },
+      );
+      expect(response).toContain(
+        '<?xml version="1.0" encoding="UTF-8"?><Response><Message>Thank you. We have received your bet on',
+      );
+    });
+  });
 
-  // test("Check for right message when the stage is unknown", async () => {
-  //   const currentUser = {
-  //     name: "test-better",
-  //     sender: "+4915112341234",
-  //     recipient: "+4915156785678",
-  //     bet: "test-better",
-  //     stage: "UNKNOWN",
-  //   };
+  test("Check for right message when the stage is unknown", async () => {
+    const currentUser = {
+      name: "test-better",
+      sender: "+4915112341234",
+      recipient: "+4915156785678",
+      bet: "test-better",
+      stage: "UNKNOWN",
+    };
 
-  //   const response = await generateResponse(
-  //     // @ts-ignore just for this test
-  //     currentUser,
-  //     {
-  //       messages: {
-  //         // @ts-ignore just for this test
-  //         create: (c) => {
-  //           expect(c.body).toContain(
-  //             "Sorry, an error occurred. Please try again later."
-  //           );
-  //         },
-  //       },
-  //     },
-  //     {
-  //       messageContent: "Hello, I'm a new user",
-  //       // @ts-ignore
-  //       attendeesMap: {},
-  //       // @ts-ignore
-  //       betsDoc: {
-  //         data: {
-  //           bets: {},
-  //           temporaryBlock: false,
-  //           closed: false,
-  //         },
-  //       },
-  //     }
-  //   );
-  //   expect(response).toContain(
-  //     `<?xml version="1.0" encoding="UTF-8"?><Response`
-  //   );
-  // });
+    const response = await generateResponse(
+      // @ts-ignore just for this test
+      currentUser,
+      {
+        messages: {
+          // @ts-ignore just for this test
+          create: (c) => {
+            expect(c.contentSid).toContain("HX");
+          },
+        },
+      },
+      {
+        messageContent: "Hello, I'm a new user",
+        // @ts-ignore
+        attendeesMap: {},
+        // @ts-ignore
+        betsDoc: {
+          data: {
+            bets: {},
+            temporaryBlock: false,
+            closed: false,
+          },
+        },
+      },
+    );
+    expect(response).toContain(
+      `<?xml version="1.0" encoding="UTF-8"?><Response`,
+    );
+  });
 });
