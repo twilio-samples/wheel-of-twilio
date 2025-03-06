@@ -137,6 +137,6 @@ Monitor resolution may cause the wheel and fields to appear too small or too lar
 
 We welcome contributions! Please fork the repository
 
-
 Here are some ideas for possible features to be added:
+
 - Add Branded Calling so that conference attendees are not surprised by an unknown call (the winner notification)
