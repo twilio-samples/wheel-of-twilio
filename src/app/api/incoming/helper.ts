@@ -71,7 +71,7 @@ export async function generateResponse(
     messageContent: string;
     attendeesMap: SyncMapContext;
     betsDoc: DocumentInstance;
-  }
+  },
 ) {
   const {
     OFFERED_PRIZES,
@@ -173,7 +173,7 @@ export async function generateResponse(
             ) {
               const traits = await fetchSegmentTraits(
                 verificationCheck.to,
-                SEGMENT_TRAIT_CHECK
+                SEGMENT_TRAIT_CHECK,
               );
               if (traits) {
                 foundInSegment = true;
@@ -213,8 +213,8 @@ export async function generateResponse(
           // check if one of the wedges is a substring of the capitalized messageContent
           wedges.some((wedge) =>
             capitalizeEachWord(messageContent).includes(
-              capitalizeEachWord(wedge)
-            )
+              capitalizeEachWord(wedge),
+            ),
           )
         ) {
           const bets = betsDoc.data.bets ? [...betsDoc.data.bets] : [];
@@ -223,8 +223,8 @@ export async function generateResponse(
             .sort((a, b) => b.length - a.length)
             .find((wedge) =>
               capitalizeEachWord(messageContent).includes(
-                capitalizeEachWord(wedge)
-              )
+                capitalizeEachWord(wedge),
+              ),
             );
 
           const existingBet = bets.find((bet: any) => bet[0] === hashedSender);
@@ -235,7 +235,7 @@ export async function generateResponse(
           console.log(
             parseInt(MAX_BETS_PER_USER) > 0,
             currentUser.submittedBets >= parseInt(MAX_BETS_PER_USER),
-            maxBetsReached
+            maxBetsReached,
           );
 
           if (!existingBet && maxBetsReached) {
@@ -273,7 +273,7 @@ export async function generateResponse(
           twimlRes.message(
             i18next.t("betPlaced", {
               messageContent: selectedBet,
-            })
+            }),
           );
         } else {
           await client.messages.create({
@@ -327,9 +327,7 @@ export async function generateResponse(
           },
         });
 
-        twimlRes.message(
-          i18next.t("welcomeNoLeadCollection")
-        );
+        twimlRes.message(i18next.t("welcomeNoLeadCollection"));
 
         await sleep(1000);
 
@@ -363,9 +361,11 @@ export async function generateResponse(
         twimlRes.message(i18next.t("betsNotAccepted"));
       } else if (betsDoc.data.eventEnded) {
         twimlRes.message(i18next.t("gameEnded"));
-      }  else if (
+      } else if (
         wedges.some((wedge) =>
-          capitalizeEachWord(messageContent).includes(capitalizeEachWord(wedge))
+          capitalizeEachWord(messageContent).includes(
+            capitalizeEachWord(wedge),
+          ),
         )
       ) {
         const bets = betsDoc.data.bets ? [...betsDoc.data.bets] : [];
@@ -373,8 +373,8 @@ export async function generateResponse(
           .sort((a, b) => b.length - a.length)
           .find((wedge) =>
             capitalizeEachWord(messageContent).includes(
-              capitalizeEachWord(wedge)
-            )
+              capitalizeEachWord(wedge),
+            ),
           );
 
         const existingBet = bets.find((bet: any) => bet[0] === hashedSender);
@@ -414,7 +414,7 @@ export async function generateResponse(
           i18next.t("betPlaced", {
             senderName,
             messageContent: selectedBet,
-          })
+          }),
         );
       } else {
         await client.messages.create({

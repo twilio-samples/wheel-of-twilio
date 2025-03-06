@@ -54,7 +54,7 @@ describe("Lead collection disabled", async () => {
               },
             },
           });
-        })()
+        })(),
       ).rejects.toThrowError(/Invalid country/);
     });
 
@@ -75,7 +75,7 @@ describe("Lead collection disabled", async () => {
         },
       });
       expect(newUserWelcome).toContain(
-        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Welcome to the game`
+        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Welcome to the game`,
       );
       expect(newUserWelcome).toContain(`</Message></Response>`);
     });
@@ -114,7 +114,7 @@ describe("Lead collection disabled", async () => {
         },
       });
       expect(newUserWelcome).toContain(
-        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Thank you.`
+        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Thank you.`,
       );
     });
   });
@@ -137,7 +137,7 @@ describe("Lead collection disabled", async () => {
         attendeesMap: {},
       });
       expect(newUserWelcome).toContain(
-        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Sorry, this is not a valid email address`
+        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Sorry, this is not a valid email address`,
       );
       expect(newUserWelcome).toContain(`</Message></Response>`);
     });
@@ -159,7 +159,7 @@ describe("Lead collection disabled", async () => {
         attendeesMap: {},
       });
       expect(response).toContain(
-        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Sorry, this is not a valid email address`
+        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Sorry, this is not a valid email address`,
       );
       expect(response).toContain(`</Message></Response>`);
     });
@@ -190,7 +190,7 @@ describe("Lead collection disabled", async () => {
         },
       });
       expect(response).toContain(
-        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Sorry, the verification code is incorrect. Please try again or enter a new email address.`
+        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Sorry, the verification code is incorrect. Please try again or enter a new email address.`,
       );
       expect(response).toContain(`</Message></Response>`);
     });
@@ -249,10 +249,10 @@ describe("Lead collection disabled", async () => {
               closed: false,
             },
           },
-        }
+        },
       );
       expect(response).toBe(
-        `<?xml version="1.0" encoding="UTF-8"?><Response/>`
+        `<?xml version="1.0" encoding="UTF-8"?><Response/>`,
       );
     });
 
@@ -310,10 +310,10 @@ describe("Lead collection disabled", async () => {
               closed: false,
             },
           },
-        }
+        },
       );
       expect(response).toBe(
-        `<?xml version="1.0" encoding="UTF-8"?><Response/>`
+        `<?xml version="1.0" encoding="UTF-8"?><Response/>`,
       );
     });
   });
@@ -344,7 +344,7 @@ describe("Lead collection disabled", async () => {
         },
       });
       expect(response).toContain(
-        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>The wheel is already spinning. We cannot accept your bet anymore.`
+        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>The wheel is already spinning. We cannot accept your bet anymore.`,
       );
       expect(response).toContain(`</Message></Response>`);
     });
@@ -385,7 +385,7 @@ describe("Lead collection disabled", async () => {
         },
       });
       expect(response).toContain(
-        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Thank you.`
+        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Thank you.`,
       );
       expect(response).toContain(`</Message></Response>`);
     });
@@ -427,10 +427,10 @@ describe("Lead collection disabled", async () => {
               return data;
             },
           },
-        }
+        },
       );
       expect(response).toEqual(
-        `<?xml version="1.0" encoding="UTF-8"?><Response/>`
+        `<?xml version="1.0" encoding="UTF-8"?><Response/>`,
       );
     });
   });
@@ -457,7 +457,7 @@ describe("Lead collection disabled", async () => {
             // @ts-ignore just for this test
             create: (c) => {
               expect(c.body).toContain(
-                "Congrats, you already won. Stop by the Twilio booth to claim your prize!"
+                "Congrats, you already won. Stop by the Twilio booth to claim your prize!",
               );
             },
           },
@@ -474,10 +474,10 @@ describe("Lead collection disabled", async () => {
               closed: false,
             },
           },
-        }
+        },
       );
       expect(response).toContain(
-        `<?xml version="1.0" encoding="UTF-8"?><Response/>`
+        `<?xml version="1.0" encoding="UTF-8"?><Response/>`,
       );
     });
 
@@ -502,7 +502,7 @@ describe("Lead collection disabled", async () => {
             // @ts-ignore just for this test
             create: (c) => {
               expect(c.body).toContain(
-                "Congrats, you already won. Stop by the Twilio booth to claim your prize!"
+                "Congrats, you already won. Stop by the Twilio booth to claim your prize!",
               );
             },
           },
@@ -519,10 +519,10 @@ describe("Lead collection disabled", async () => {
               closed: false,
             },
           },
-        }
+        },
       );
       expect(response).toContain(
-        `<?xml version="1.0" encoding="UTF-8"?><Response/>`
+        `<?xml version="1.0" encoding="UTF-8"?><Response/>`,
       );
     });
 
@@ -547,7 +547,7 @@ describe("Lead collection disabled", async () => {
             // @ts-ignore just for this test
             create: (c) => {
               expect(c.body).toContain(
-                "Congrats, you already guessed the right field in a previous round."
+                "Congrats, you already guessed the right field in a previous round.",
               );
             },
           },
@@ -564,10 +564,10 @@ describe("Lead collection disabled", async () => {
               closed: false,
             },
           },
-        }
+        },
       );
       expect(response).toContain(
-        `<?xml version="1.0" encoding="UTF-8"?><Response/>`
+        `<?xml version="1.0" encoding="UTF-8"?><Response/>`,
       );
     });
 
@@ -590,7 +590,7 @@ describe("Lead collection disabled", async () => {
             // @ts-ignore just for this test
             create: (c) => {
               expect(c.body).toContain(
-                "Enjoy your prize. Feel free to visit the Twilio booth"
+                "Enjoy your prize. Feel free to visit the Twilio booth",
               );
             },
           },
@@ -607,10 +607,10 @@ describe("Lead collection disabled", async () => {
               closed: false,
             },
           },
-        }
+        },
       );
       expect(response).toContain(
-        `<?xml version="1.0" encoding="UTF-8"?><Response/>`
+        `<?xml version="1.0" encoding="UTF-8"?><Response/>`,
       );
     });
   });
@@ -653,10 +653,10 @@ describe("Lead collection disabled", async () => {
               closed: false,
             },
           },
-        }
+        },
       );
       expect(response).toContain(
-        '<?xml version="1.0" encoding="UTF-8"?><Response><Message>Sorry, you have already placed the maximum number of bets.</Message>'
+        '<?xml version="1.0" encoding="UTF-8"?><Response><Message>Sorry, you have already placed the maximum number of bets.</Message>',
       );
     });
 
@@ -681,7 +681,7 @@ describe("Lead collection disabled", async () => {
             // @ts-ignore just for this test
             create: (c) => {
               expect(c.body).toContain(
-                "You have successfully placed your bet. Good luck!"
+                "You have successfully placed your bet. Good luck!",
               );
             },
           },
@@ -698,10 +698,10 @@ describe("Lead collection disabled", async () => {
               closed: false,
             },
           },
-        }
+        },
       );
       expect(response).toContain(
-        '<?xml version="1.0" encoding="UTF-8"?><Response><Message>Sorry, you have already placed the maximum number of bets.</Message>'
+        '<?xml version="1.0" encoding="UTF-8"?><Response><Message>Sorry, you have already placed the maximum number of bets.</Message>',
       );
     });
 
@@ -726,7 +726,7 @@ describe("Lead collection disabled", async () => {
             // @ts-ignore just for this test
             create: (c) => {
               expect(c.body).toContain(
-                "You have successfully placed your bet. Good luck!"
+                "You have successfully placed your bet. Good luck!",
               );
             },
           },
@@ -743,10 +743,10 @@ describe("Lead collection disabled", async () => {
               closed: false,
             },
           },
-        }
+        },
       );
       expect(response).toContain(
-        '<?xml version="1.0" encoding="UTF-8"?><Response>'
+        '<?xml version="1.0" encoding="UTF-8"?><Response>',
       );
     });
   });
@@ -769,7 +769,7 @@ describe("Lead collection disabled", async () => {
           // @ts-ignore just for this test
           create: (c) => {
             expect(c.body).toContain(
-              "Sorry, an error occurred. Please try again later."
+              "Sorry, an error occurred. Please try again later.",
             );
           },
         },
@@ -786,10 +786,10 @@ describe("Lead collection disabled", async () => {
             closed: false,
           },
         },
-      }
+      },
     );
     expect(response).toContain(
-      `<?xml version="1.0" encoding="UTF-8"?><Response`
+      `<?xml version="1.0" encoding="UTF-8"?><Response`,
     );
   });
 });
@@ -815,7 +815,7 @@ describe("Lead collection enabled", async () => {
               },
             },
           });
-        })()
+        })(),
       ).rejects.toThrowError(/Invalid country/);
     });
 
@@ -843,10 +843,10 @@ describe("Lead collection enabled", async () => {
               },
             },
           },
-        }
+        },
       );
       expect(newUserWelcome).toContain(
-        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Welcome to the game`
+        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Welcome to the game`,
       );
       expect(newUserWelcome).toContain(`</Message></Response>`);
     });
@@ -894,15 +894,14 @@ describe("Lead collection enabled", async () => {
               };
             },
           },
-        }
+        },
       );
       expect(newUserWelcome).toContain(
-        `<?xml version="1.0" encoding="UTF-8"?><Response/>`
+        `<?xml version="1.0" encoding="UTF-8"?><Response/>`,
       );
     });
   });
 
- 
   describe("For unverified user, generate response", async () => {
     test("Check for right message when the no code is sent", async () => {
       vi.stubEnv("DISABLE_LEAD_COLLECTION", "true");
@@ -928,7 +927,7 @@ describe("Lead collection enabled", async () => {
         },
       });
       expect(response).toContain(
-        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>The wheel is already spinning. We cannot accept your bet anymore.`
+        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>The wheel is already spinning. We cannot accept your bet anymore.`,
       );
     });
   });
@@ -959,7 +958,7 @@ describe("Lead collection enabled", async () => {
         },
       });
       expect(response).toContain(
-        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>The wheel is already spinning. We cannot accept your bet anymore.`
+        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>The wheel is already spinning. We cannot accept your bet anymore.`,
       );
       expect(response).toContain(`</Message></Response>`);
     });
@@ -1000,7 +999,7 @@ describe("Lead collection enabled", async () => {
         },
       });
       expect(response).toContain(
-        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Thank you.`
+        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Thank you.`,
       );
       expect(response).toContain(`</Message></Response>`);
     });
@@ -1041,10 +1040,10 @@ describe("Lead collection enabled", async () => {
               return data;
             },
           },
-        }
+        },
       );
       expect(response).toEqual(
-        `<?xml version="1.0" encoding="UTF-8"?><Response/>`
+        `<?xml version="1.0" encoding="UTF-8"?><Response/>`,
       );
     });
   });
@@ -1071,7 +1070,7 @@ describe("Lead collection enabled", async () => {
             // @ts-ignore just for this test
             create: (c) => {
               expect(c.body).toContain(
-                "Congrats, you already won. Stop by the Twilio booth to claim your prize!"
+                "Congrats, you already won. Stop by the Twilio booth to claim your prize!",
               );
             },
           },
@@ -1088,10 +1087,10 @@ describe("Lead collection enabled", async () => {
               closed: false,
             },
           },
-        }
+        },
       );
       expect(response).toContain(
-        `<?xml version="1.0" encoding="UTF-8"?><Response/>`
+        `<?xml version="1.0" encoding="UTF-8"?><Response/>`,
       );
     });
 
@@ -1116,7 +1115,7 @@ describe("Lead collection enabled", async () => {
             // @ts-ignore just for this test
             create: (c) => {
               expect(c.body).toContain(
-                "Congrats, you already won. Stop by the Twilio booth to claim your prize!"
+                "Congrats, you already won. Stop by the Twilio booth to claim your prize!",
               );
             },
           },
@@ -1133,10 +1132,10 @@ describe("Lead collection enabled", async () => {
               closed: false,
             },
           },
-        }
+        },
       );
       expect(response).toContain(
-        `<?xml version="1.0" encoding="UTF-8"?><Response/>`
+        `<?xml version="1.0" encoding="UTF-8"?><Response/>`,
       );
     });
 
@@ -1161,7 +1160,7 @@ describe("Lead collection enabled", async () => {
             // @ts-ignore just for this test
             create: (c) => {
               expect(c.body).toContain(
-                "Congrats, you already guessed the right field in a previous round."
+                "Congrats, you already guessed the right field in a previous round.",
               );
             },
           },
@@ -1178,10 +1177,10 @@ describe("Lead collection enabled", async () => {
               closed: false,
             },
           },
-        }
+        },
       );
       expect(response).toContain(
-        `<?xml version="1.0" encoding="UTF-8"?><Response/>`
+        `<?xml version="1.0" encoding="UTF-8"?><Response/>`,
       );
     });
 
@@ -1204,7 +1203,7 @@ describe("Lead collection enabled", async () => {
             // @ts-ignore just for this test
             create: (c) => {
               expect(c.body).toContain(
-                "Enjoy your prize. Feel free to visit the Twilio booth"
+                "Enjoy your prize. Feel free to visit the Twilio booth",
               );
             },
           },
@@ -1221,10 +1220,10 @@ describe("Lead collection enabled", async () => {
               closed: false,
             },
           },
-        }
+        },
       );
       expect(response).toContain(
-        `<?xml version="1.0" encoding="UTF-8"?><Response/>`
+        `<?xml version="1.0" encoding="UTF-8"?><Response/>`,
       );
     });
   });
