@@ -140,25 +140,7 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
     } else {
       try {
         existingTemplate = await createWhatsAppTemplate(template);
-        const fileContent = fs.readFileSync(
-          path.join(__dirname, `../locale/${template.language}.json`),
-          "utf8",
-        );
-
-        fs.writeFileSync(
-          path.join(__dirname, `../locale/${template.language}.json`),
-          JSON.stringify(
-            {
-              ...JSON.parse(fileContent),
-              translation: {
-                ...JSON.parse(fileContent).translation,
-                [template.translationKey]: existingTemplate.sid,
-              },
-            },
-            null,
-            2,
-          ),
-        );
+   
       } catch (e) {
         console.error(`Failed to create template ${template.friendly_name}`);
         console.error(e);
