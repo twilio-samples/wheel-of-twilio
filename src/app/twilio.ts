@@ -7,6 +7,8 @@ import { getCountry } from "./api/incoming/helper";
 import { Stages } from "./types";
 import { maskNumber } from "./util";
 import Axios from "axios";
+import axios from "axios";
+import { TEMPLATE_PREFIX } from "@/scripts/contentTemplates";
 
 const en = require("../locale/en.json");
 
@@ -30,7 +32,7 @@ const client = require("twilio")(TWILIO_API_KEY, TWILIO_API_SECRET, {
 async function localizeStringForPhoneNumber(
   str: string,
   phone: string,
-  winningWedge?: string,
+  winningWedge?: string
 ) {
   await i18next.init({
     lng: getCountry(phone)?.languages[0],
@@ -54,7 +56,7 @@ export async function fetchToken() {
     TWILIO_API_SECRET,
     {
       identity: Privilege.FRONTEND,
-    },
+    }
   );
 
   token.addGrant(syncGrant);
@@ -109,7 +111,7 @@ export async function getWinners(allWinners: boolean): Promise<MaskedPlayer[]> {
       (a: any) =>
         a.stage === Stages.WINNER_UNCLAIMED ||
         (allWinners && a.stage === Stages.WINNER_CLAIMED) ||
-        (allWinners && a.stage === Stages.RAFFLE_WINNER),
+        (allWinners && a.stage === Stages.RAFFLE_WINNER)
     );
 }
 
@@ -122,7 +124,7 @@ export async function winnerPrizeClaimed(winnerKey: string) {
     client.messages.create({
       body: await localizeStringForPhoneNumber(
         "prizePickup",
-        winner.data.sender.replace("whatsapp:", ""),
+        winner.data.sender.replace("whatsapp:", "")
       ),
       messagingServiceSid: MESSAGING_SERVICE_SID,
       from: winner.data.recipient,
@@ -229,7 +231,7 @@ export async function notifyAndUpdateWinners(winners: any[]) {
         await callWinner(
           winner.data.sender.replace("whatsapp:", ""),
           winner.data.recipient.replace("whatsapp:", ""),
-          false,
+          false
         );
       }
 
@@ -240,25 +242,25 @@ export async function notifyAndUpdateWinners(winners: any[]) {
             : OFFERED_PRIZES === "big"
               ? "winnerMessageRaffleQualification"
               : "winnerMessageBothPrizes",
-          winner.data.sender.replace("whatsapp:", ""),
+          winner.data.sender.replace("whatsapp:", "")
         ),
         messagingServiceSid: MESSAGING_SERVICE_SID,
         from: winner.data.recipient,
         to: winner.data.sender,
       });
-    }),
+    })
   );
 }
 
 export async function callWinner(
   to: string,
   from: string,
-  rafflePrize: boolean,
+  rafflePrize: boolean
 ) {
   await client.calls.create({
     twiml: await localizeStringForPhoneNumber(
       rafflePrize ? "winnerCallRafflePrize" : "winnerCallSmallPrize",
-      to,
+      to
     ),
     from,
     to,
@@ -268,7 +270,7 @@ export async function callWinner(
 export async function sendRaffleWinnerMessage(
   name: string,
   to: string,
-  from: string,
+  from: string
 ) {
   await client.messages.create({
     body: await localizeStringForPhoneNumber("winnerMessageRafflePrize", to),
@@ -289,7 +291,7 @@ export async function messageOthers(unluckyBets: any[], winningWedge: string) {
         const body = await localizeStringForPhoneNumber(
           "loser",
           unluckyPlayer.data.sender,
-          winningWedge,
+          winningWedge
         );
         await client.messages.create({
           body,
@@ -304,13 +306,13 @@ export async function messageOthers(unluckyBets: any[], winningWedge: string) {
           console.error(e.message);
         }
       }
-    }),
+    })
   );
 }
 
 export async function fetchSegmentTraits(
   email: string,
-  specificTrait?: string,
+  specificTrait?: string
 ) {
   let url = `https://profiles.segment.com/v1/spaces/${SEGMENT_SPACE_ID}/collections/users/profiles/email:${email}/traits`;
   if (specificTrait) {
@@ -330,4 +332,51 @@ export async function fetchSegmentTraits(
       throw e;
     }
   }
+}
+
+export async function getAllTemplates() {
+  let matches: any[] = [];
+  try {
+    let nextUrl = "https://content.twilio.com/v1/Content?PageSize=200",
+      allTemplates: any[] = [];
+    do {
+      const res = await axios.get(nextUrl, {
+        // TODO: Page through all templates
+        headers: {
+          "Content-Type": "application/json",
+        },
+        auth: {
+          username: TWILIO_API_KEY,
+          password: TWILIO_API_SECRET,
+        },
+      });
+
+      allTemplates = allTemplates.concat(res.data.contents);
+      nextUrl = res.data.meta.next_page_url;
+    } while (nextUrl);
+
+    matches = allTemplates.filter((t: any) =>
+      t.friendly_name.includes(TEMPLATE_PREFIX)
+    );
+  } catch (err) {
+    console.error(err);
+    throw new Error("Failed to fetch Templates");
+  }
+  if (!matches) {
+    throw new Error(`No templates found for ${TEMPLATE_PREFIX}`);
+  }
+  return matches;
+}
+
+const templates = await getAllTemplates();
+
+export async function getTemplate(name: string, language?: string) {
+  debugger;
+  const rightLanguage = templates.find((t: any) =>
+    t.friendly_name.includes(`_${name}_${language}`)
+  );
+  const englishLanguage = templates.find((t: any) =>
+    t.friendly_name.includes(`_${name}_en`)
+  );
+  return rightLanguage || englishLanguage;
 }

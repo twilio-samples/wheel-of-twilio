@@ -2,13 +2,14 @@ import "dotenv/config";
 const { NEXT_PUBLIC_WEDGES = "" } = process.env;
 const wedges = NEXT_PUBLIC_WEDGES.split(",");
 
+export const TEMPLATE_PREFIX = "WheelOfTwilio";
+
 function getOptionsTemplates(): WhatsAppTemplateConfig[] {
   return [
     {
-      friendly_name: "Ask For Bets",
+      friendly_name: `${TEMPLATE_PREFIX}_AskForBets_en`,
       language: "en",
       variables: {},
-      translationKey: "betTemplateSID",
       types: {
         "twilio/list-picker": {
           body: `Please select one of the following options:\n`,
@@ -24,76 +25,15 @@ function getOptionsTemplates(): WhatsAppTemplateConfig[] {
         },
       },
     },
-    {
-      friendly_name: "Frage nach Feld",
-      language: "de",
-      variables: {},
-      translationKey: "betTemplateSID",
-      types: {
-        "twilio/list-picker": {
-          body: `Auf welches Feld möchten Sie setzen?\n`,
-          button: "Wählen",
-          items: wedges.map((wedge) => ({
-            item: wedge,
-            id: wedge,
-            description: `Wähle ${wedge}`,
-          })),
-        },
-        "twilio/text": {
-          body: `Auf welches Feld möchten Sie setzen?\n${wedges.map((wedge) => `- ${wedge}`).join("\n")}`,
-        },
-      },
-    },
-    {
-      friendly_name: "Pedir Apuestas",
-      language: "es",
-      variables: {},
-      translationKey: "betTemplateSID",
-      types: {
-        "twilio/list-picker": {
-          body: "Por favor, selecciona una de las siguientes opciones:\n",
-          button: "Seleccionar",
-          items: wedges.map((wedge) => ({
-            item: wedge,
-            id: wedge,
-            description: `Seleccionar ${wedge}`,
-          })),
-        },
-        "twilio/text": {
-          body: `Por favor, selecciona una de las siguientes opciones:\n${wedges.map((wedge) => `- ${wedge}`).join("\n")}`,
-        },
-      },
-    },
-    {
-      friendly_name: "Demander les Paris",
-      language: "fr",
-      variables: {},
-      translationKey: "betTemplateSID",
-      types: {
-        "twilio/list-picker": {
-          body: "Veuillez sélectionner l'une des options suivantes:\n",
-          button: "Sélectionner",
-          items: wedges.map((wedge) => ({
-            item: wedge,
-            id: wedge,
-            description: `Sélectionner ${wedge}`,
-          })),
-        },
-        "twilio/text": {
-          body: `Veuillez sélectionner l'une des options suivantes:\n${wedges.map((wedge) => `- ${wedge}`).join("\n")}`,
-        },
-      },
-    },
   ];
 }
 
 function getInvalidBetsTemplates(): WhatsAppTemplateConfig[] {
   return [
     {
-      friendly_name: "Invalid Bet",
+      friendly_name: `${TEMPLATE_PREFIX}_InvalidBet_en`,
       language: "en",
       variables: {},
-      translationKey: "invalidBetTemplateSID",
       types: {
         "twilio/list-picker": {
           body: `Sorry, this is not a valid bet. Please bet on one of the following options \n`,
@@ -109,66 +49,6 @@ function getInvalidBetsTemplates(): WhatsAppTemplateConfig[] {
         },
       },
     },
-    {
-      friendly_name: "Ungültige Wette",
-      language: "de",
-      variables: {},
-      translationKey: "invalidBetTemplateSID",
-      types: {
-        "twilio/list-picker": {
-          body: `Entschuldigung, dies ist keine gültige Wette. Bitte setzen Sie auf eines der folgenden Felder  \n`,
-          button: "Wählen",
-          items: wedges.map((wedge) => ({
-            item: wedge,
-            id: wedge,
-            description: `Wähle ${wedge}`,
-          })),
-        },
-        "twilio/text": {
-          body: `Entschuldigung, dies ist keine gültige Wette. Bitte setzen Sie auf eines der folgenden Felder  \n${wedges.map((wedge) => `- ${wedge}`).join("\n")}`,
-        },
-      },
-    },
-    {
-      friendly_name: "Apuesta No Válida",
-      language: "es",
-      variables: {},
-      translationKey: "invalidBetTemplateSID",
-      types: {
-        "twilio/list-picker": {
-          body: "Lo siento, esta no es una apuesta válida. Por favor, apuesta por una de las siguientes opciones \n",
-          button: "Apostar",
-          items: wedges.map((wedge) => ({
-            item: wedge,
-            id: wedge,
-            description: `Seleccionar ${wedge}`,
-          })),
-        },
-        "twilio/text": {
-          body: `Lo siento, esta no es una apuesta válida. Por favor, apuesta por una de las siguientes opciones \n${wedges.map((wedge) => `- ${wedge}`).join("\n")}`,
-        },
-      },
-    },
-    {
-      friendly_name: "Pari Non Valide",
-      language: "fr",
-      variables: {},
-      translationKey: "invalidBetTemplateSID",
-      types: {
-        "twilio/list-picker": {
-          body: "Désolé, ce n'est pas un pari valide. Veuillez parier sur l'une des options suivantes \n",
-          button: "Parier",
-          items: wedges.map((wedge) => ({
-            item: wedge,
-            id: wedge,
-            description: `Sélectionner ${wedge}`,
-          })),
-        },
-        "twilio/text": {
-          body: `Désolé, ce n'est pas un pari valide. Veuillez parier sur l'une des options suivantes \n${wedges.map((wedge) => `- ${wedge}`).join("\n")}`,
-        },
-      },
-    },
   ];
 }
 
@@ -179,7 +59,6 @@ export function getTemplates(): WhatsAppTemplateConfig[] {
 export interface WhatsAppTemplateConfig {
   friendly_name: string;
   language: string;
-  translationKey: string;
   variables: Record<string, string>;
   types: {
     "twilio/quick-reply"?: {
