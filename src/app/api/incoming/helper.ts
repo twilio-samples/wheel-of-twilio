@@ -20,9 +20,6 @@ const {
   EVENT_NAME = "",
   MESSAGING_SERVICE_SID = "",
   NEXT_PUBLIC_WEDGES = "",
-  OFFERED_PRIZES = "big",
-  MAX_BETS_PER_USER = "0",
-  DISABLE_LEAD_COLLECTION = "false",
   SEGMENT_SPACE_ID = "",
   SEGMENT_PROFILE_KEY = "",
   SEGMENT_TRAIT_CHECK = "",
@@ -74,8 +71,14 @@ export async function generateResponse(
     messageContent: string;
     attendeesMap: SyncMapContext;
     betsDoc: DocumentInstance;
-  },
+  }
 ) {
+  const {
+    OFFERED_PRIZES,
+    MAX_BETS_PER_USER = "0",
+    DISABLE_LEAD_COLLECTION,
+  } = process.env;
+
   const twimlRes = new twiml.MessagingResponse();
 
   try {
@@ -170,7 +173,7 @@ export async function generateResponse(
             ) {
               const traits = await fetchSegmentTraits(
                 verificationCheck.to,
-                SEGMENT_TRAIT_CHECK,
+                SEGMENT_TRAIT_CHECK
               );
               if (traits) {
                 foundInSegment = true;
@@ -210,8 +213,8 @@ export async function generateResponse(
           // check if one of the wedges is a substring of the capitalized messageContent
           wedges.some((wedge) =>
             capitalizeEachWord(messageContent).includes(
-              capitalizeEachWord(wedge),
-            ),
+              capitalizeEachWord(wedge)
+            )
           )
         ) {
           const bets = betsDoc.data.bets ? [...betsDoc.data.bets] : [];
@@ -220,8 +223,8 @@ export async function generateResponse(
             .sort((a, b) => b.length - a.length)
             .find((wedge) =>
               capitalizeEachWord(messageContent).includes(
-                capitalizeEachWord(wedge),
-              ),
+                capitalizeEachWord(wedge)
+              )
             );
 
           const existingBet = bets.find((bet: any) => bet[0] === hashedSender);
@@ -229,6 +232,11 @@ export async function generateResponse(
           const maxBetsReached =
             parseInt(MAX_BETS_PER_USER) > 0 &&
             currentUser.submittedBets >= parseInt(MAX_BETS_PER_USER);
+          console.log(
+            parseInt(MAX_BETS_PER_USER) > 0,
+            currentUser.submittedBets >= parseInt(MAX_BETS_PER_USER),
+            maxBetsReached
+          );
 
           if (!existingBet && maxBetsReached) {
             twimlRes.message(i18next.t("maxBetsReached"));
@@ -265,7 +273,7 @@ export async function generateResponse(
           twimlRes.message(
             i18next.t("betPlaced", {
               messageContent: selectedBet,
-            }),
+            })
           );
         } else {
           await client.messages.create({
@@ -320,9 +328,7 @@ export async function generateResponse(
         });
 
         twimlRes.message(
-          i18next.t("welcomeNoLeadCollection", {
-            senderName: senderName ? `, ${senderName}` : "",
-          }),
+          i18next.t("welcomeNoLeadCollection")
         );
 
         await sleep(1000);
@@ -333,10 +339,6 @@ export async function generateResponse(
           messagingServiceSid: MESSAGING_SERVICE_SID,
           to: senderID || "",
         });
-      } else if (betsDoc.data.temporaryBlock) {
-        twimlRes.message(i18next.t("betsNotAccepted"));
-      } else if (betsDoc.data.eventEnded) {
-        twimlRes.message(i18next.t("gameEnded"));
       } else if (currentUser.stage === Stages.WINNER_UNCLAIMED) {
         await client.messages.create({
           body:
@@ -357,11 +359,13 @@ export async function generateResponse(
           messagingServiceSid: MESSAGING_SERVICE_SID,
           to: currentUser.sender,
         });
-      } else if (
+      } else if (betsDoc.data.temporaryBlock) {
+        twimlRes.message(i18next.t("betsNotAccepted"));
+      } else if (betsDoc.data.eventEnded) {
+        twimlRes.message(i18next.t("gameEnded"));
+      }  else if (
         wedges.some((wedge) =>
-          capitalizeEachWord(messageContent).includes(
-            capitalizeEachWord(wedge),
-          ),
+          capitalizeEachWord(messageContent).includes(capitalizeEachWord(wedge))
         )
       ) {
         const bets = betsDoc.data.bets ? [...betsDoc.data.bets] : [];
@@ -369,8 +373,8 @@ export async function generateResponse(
           .sort((a, b) => b.length - a.length)
           .find((wedge) =>
             capitalizeEachWord(messageContent).includes(
-              capitalizeEachWord(wedge),
-            ),
+              capitalizeEachWord(wedge)
+            )
           );
 
         const existingBet = bets.find((bet: any) => bet[0] === hashedSender);
@@ -410,7 +414,7 @@ export async function generateResponse(
           i18next.t("betPlaced", {
             senderName,
             messageContent: selectedBet,
-          }),
+          })
         );
       } else {
         await client.messages.create({

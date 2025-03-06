@@ -16,7 +16,6 @@ const {
   TWILIO_ACCOUNT_SID = "",
   MESSAGING_SERVICE_SID = "",
   SYNC_SERVICE_SID = "",
-  OFFERED_PRIZES = "big",
   SEGMENT_SPACE_ID = "",
   SEGMENT_PROFILE_KEY = "",
 } = process.env;
@@ -204,6 +203,8 @@ export async function changeGameLock(severity: "running" | "break" | "end") {
 export async function notifyAndUpdateWinners(winners: any[]) {
   const syncService = await client.sync.v1.services(SYNC_SERVICE_SID).fetch();
   const attendeesMap = syncService.syncMaps()("attendees");
+
+  const { OFFERED_PRIZES } = process.env;
 
   await Promise.all(
     winners.map(async (winningBet) => {
