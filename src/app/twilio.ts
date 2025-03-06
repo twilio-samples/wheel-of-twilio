@@ -32,7 +32,7 @@ const client = require("twilio")(TWILIO_API_KEY, TWILIO_API_SECRET, {
 async function localizeStringForPhoneNumber(
   str: string,
   phone: string,
-  winningWedge?: string
+  winningWedge?: string,
 ) {
   await i18next.init({
     lng: getCountry(phone)?.languages[0],
@@ -56,7 +56,7 @@ export async function fetchToken() {
     TWILIO_API_SECRET,
     {
       identity: Privilege.FRONTEND,
-    }
+    },
   );
 
   token.addGrant(syncGrant);
@@ -111,7 +111,7 @@ export async function getWinners(allWinners: boolean): Promise<MaskedPlayer[]> {
       (a: any) =>
         a.stage === Stages.WINNER_UNCLAIMED ||
         (allWinners && a.stage === Stages.WINNER_CLAIMED) ||
-        (allWinners && a.stage === Stages.RAFFLE_WINNER)
+        (allWinners && a.stage === Stages.RAFFLE_WINNER),
     );
 }
 
@@ -124,7 +124,7 @@ export async function winnerPrizeClaimed(winnerKey: string) {
     client.messages.create({
       body: await localizeStringForPhoneNumber(
         "prizePickup",
-        winner.data.sender.replace("whatsapp:", "")
+        winner.data.sender.replace("whatsapp:", ""),
       ),
       messagingServiceSid: MESSAGING_SERVICE_SID,
       from: winner.data.recipient,
@@ -231,7 +231,7 @@ export async function notifyAndUpdateWinners(winners: any[]) {
         await callWinner(
           winner.data.sender.replace("whatsapp:", ""),
           winner.data.recipient.replace("whatsapp:", ""),
-          false
+          false,
         );
       }
 
@@ -242,25 +242,25 @@ export async function notifyAndUpdateWinners(winners: any[]) {
             : OFFERED_PRIZES === "big"
               ? "winnerMessageRaffleQualification"
               : "winnerMessageBothPrizes",
-          winner.data.sender.replace("whatsapp:", "")
+          winner.data.sender.replace("whatsapp:", ""),
         ),
         messagingServiceSid: MESSAGING_SERVICE_SID,
         from: winner.data.recipient,
         to: winner.data.sender,
       });
-    })
+    }),
   );
 }
 
 export async function callWinner(
   to: string,
   from: string,
-  rafflePrize: boolean
+  rafflePrize: boolean,
 ) {
   await client.calls.create({
     twiml: await localizeStringForPhoneNumber(
       rafflePrize ? "winnerCallRafflePrize" : "winnerCallSmallPrize",
-      to
+      to,
     ),
     from,
     to,
@@ -270,7 +270,7 @@ export async function callWinner(
 export async function sendRaffleWinnerMessage(
   name: string,
   to: string,
-  from: string
+  from: string,
 ) {
   await client.messages.create({
     body: await localizeStringForPhoneNumber("winnerMessageRafflePrize", to),
@@ -291,7 +291,7 @@ export async function messageOthers(unluckyBets: any[], winningWedge: string) {
         const body = await localizeStringForPhoneNumber(
           "loser",
           unluckyPlayer.data.sender,
-          winningWedge
+          winningWedge,
         );
         await client.messages.create({
           body,
@@ -306,13 +306,13 @@ export async function messageOthers(unluckyBets: any[], winningWedge: string) {
           console.error(e.message);
         }
       }
-    })
+    }),
   );
 }
 
 export async function fetchSegmentTraits(
   email: string,
-  specificTrait?: string
+  specificTrait?: string,
 ) {
   let url = `https://profiles.segment.com/v1/spaces/${SEGMENT_SPACE_ID}/collections/users/profiles/email:${email}/traits`;
   if (specificTrait) {
@@ -356,7 +356,7 @@ export async function getAllTemplates() {
     } while (nextUrl);
 
     matches = allTemplates.filter((t: any) =>
-      t.friendly_name.includes(TEMPLATE_PREFIX)
+      t.friendly_name.includes(TEMPLATE_PREFIX),
     );
   } catch (err) {
     console.error(err);
@@ -371,12 +371,11 @@ export async function getAllTemplates() {
 const templates = await getAllTemplates();
 
 export async function getTemplate(name: string, language?: string) {
-  debugger;
   const rightLanguage = templates.find((t: any) =>
-    t.friendly_name.includes(`_${name}_${language}`)
+    t.friendly_name.includes(`_${name}_${language}`),
   );
   const englishLanguage = templates.find((t: any) =>
-    t.friendly_name.includes(`_${name}_en`)
+    t.friendly_name.includes(`_${name}_en`),
   );
   return rightLanguage || englishLanguage;
 }
