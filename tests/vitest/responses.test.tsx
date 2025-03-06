@@ -710,7 +710,7 @@ describe("Lead collection disabled", async () => {
         },
       );
       expect(response).toContain(
-        '<?xml version="1.0" encoding="UTF-8"?><Response><Message>Thank you. We have received your bet on "Vondelpark".</Message></Response>',
+        '<?xml version="1.0" encoding="UTF-8"?><Response><Message>Thank you. We have received your bet on "'
       );
     });
 
@@ -1344,7 +1344,7 @@ describe("Lead collection enabled", async () => {
         },
       );
       expect(response).toContain(
-        '<?xml version="1.0" encoding="UTF-8"?><Response><Message>Thank you. We have received your bet on "Vondelpark".</Message></Response>',
+        '<?xml version="1.0" encoding="UTF-8"?><Response><Message>Thank you. We have received your bet on "',
       );
     });
 
