@@ -2,7 +2,7 @@ import { expect, test, describe, vi } from "vitest";
 import { generateResponse, getCountry } from "@/app/api/incoming/helper";
 import { Stages } from "@/app/types";
 
-vi.stubEnv("OFFERED_PRIZES", "both"); // TODO also cover other cases
+vi.stubEnv("OFFERED_PRIZES", "big"); // TODO also cover other cases
 vi.stubEnv("DISABLE_LEAD_COLLECTION", "false"); // TODO also cover other cases
 
 describe("For known user, get country", async () => {
@@ -436,7 +436,7 @@ describe("For winner user, generate response", async () => {
           // @ts-ignore just for this test
           create: (c) => {
             expect(c.body).toContain(
-              "Congrats, you already won. Stop by the Twilio booth to claim your prize!",
+              "Congrats, you already guessed the right field in a previous round.",
             );
           },
         },
