@@ -62,7 +62,7 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
 
   const completedBetsDoc = client.sync.v1
     .services(SYNC_SERVICE_SID)
-    .documents("completedBets");
+    .documents("stats");
 
   await completedBetsDoc.update({
     data: {},
