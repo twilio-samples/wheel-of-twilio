@@ -39,7 +39,7 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
   });
 
   await createSyncDocIfNotExists("bets");
-  await createSyncDocIfNotExists("completedBets");
+  await createSyncDocIfNotExists("stats");
   await createSyncMapIfNotExists("attendees");
 
   async function createSyncDocIfNotExists(uniqueName: string) {
