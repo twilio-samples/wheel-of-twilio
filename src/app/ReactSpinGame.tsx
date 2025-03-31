@@ -84,7 +84,7 @@ export default function SpinAndWin({
 
       wheel.fillStyle = i % 2 === 0 ? "#FDF7F4" : "#121C2D";
       wheel.textAlign = "end";
-      wheel.font = "2.5rem sans-serif";
+      wheel.font = "2.3rem sans-serif";
       wheel.transform = "translate(50px, 100px)";
       wheel.rotate(-1.57);
       wheel.fillStyle = "white";
