@@ -19,7 +19,7 @@ export default function SpinAndWin({
   onAfterFinished,
   onAfterStarted,
 }: SpinGameData) {
-  const wheelRef = useRef<any>();
+  const wheelRef = useRef<any>(undefined);
   const [state] = useState({ winnerAngle: 0 });
 
   useLayoutEffect(() => {

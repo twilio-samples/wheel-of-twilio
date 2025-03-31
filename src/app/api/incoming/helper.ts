@@ -376,6 +376,7 @@ export async function generateResponse(
           ),
         )
       ) {
+        // @ts-expect-error  is not an object but an array
         const bets = betsDoc.data.bets ? [...betsDoc.data.bets] : [];
         const selectedBet = wedges
           .sort((a, b) => b.length - a.length)
