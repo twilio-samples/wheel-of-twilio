@@ -26,6 +26,7 @@ async function getUser(attendeesMap: SyncMapContext, hashedSender: string) {
   let currentUser: Player | undefined;
   try {
     const syncItem = await attendeesMap.syncMapItems(hashedSender).fetch();
+    // @ts-expect-error  is not an object
     currentUser = syncItem.data as UserData;
   } catch (e: any) {
     if (e.status !== 404) {
@@ -38,7 +39,8 @@ async function getUser(attendeesMap: SyncMapContext, hashedSender: string) {
 async function addDemoBet(betsDoc: DocumentInstance, messageContent: string) {
   if (process.env.demoBet) {
     const bets = betsDoc.data.bets || [];
-
+    
+    // @ts-expect-error  is not an object but an array
     bets.push([
       "test-better",
       wedges.find((wedge) =>
