@@ -219,7 +219,8 @@ export async function generateResponse(
           )
         ) {
           const { MAX_BETS_PER_USER = "0" } = process.env;
-          const bets = betsDoc.data.bets ? [...betsDoc.data.bets] : [];
+          // @ts-ignore
+          const bets = betsDoc.data.bets  ? [...betsDoc.data.bets] : [];
           //sort longest to shortest first
           const selectedBet = wedges
             .sort((a, b) => b.length - a.length)
