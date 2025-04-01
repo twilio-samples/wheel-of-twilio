@@ -151,7 +151,7 @@ export async function tempLockGame() {
   }
 
   const completedBets = await completedBetsDoc.fetch();
-  const actualBets = bets.data.bets;
+  const actualBets = bets.data.bets || {};
 
   completedBets.data.distribution = completedBets.data.distribution || {};
   completedBets.data.uniques = completedBets.data.uniques || {};
@@ -386,6 +386,14 @@ export async function getTemplate(name: string, language?: string) {
 }
 
 export const raffleWinner = async () => {
+  const { OFFERED_PRIZES } = process.env;
+  if (OFFERED_PRIZES !== "big" && OFFERED_PRIZES !== "both") {
+    console.log("No raffle prize offered");
+    return {
+      message: "No raffle prize offered",
+    };
+  }
+
   const attendeesMap = await client.sync.v1
     .services(SYNC_SERVICE_SID)
     .syncMaps("attendees");
