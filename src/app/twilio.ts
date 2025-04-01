@@ -159,7 +159,7 @@ export async function tempLockGame() {
   Object.values(actualBets).forEach((bet: any) => {
     completedBets.data.distribution[bet[1]] =
       completedBets.data.distribution[bet[1]] + 1 || 1;
-    completedBets.data.uniques[bet[0]] = true;  
+    completedBets.data.uniques[bet[0]] = true;
   });
 
   await Promise.all([
@@ -384,3 +384,61 @@ export async function getTemplate(name: string, language?: string) {
   );
   return rightLanguage || englishLanguage;
 }
+
+export const raffleWinner = async () => {
+  const attendeesMap = await client.sync.v1
+    .services(SYNC_SERVICE_SID)
+    .syncMaps("attendees");
+
+  let res: any = await attendeesMap.syncMapItems.page({
+    pageSize: 1000,
+  });
+
+  const mapItems = [...res.instances];
+  while (res.nextPageUrl) {
+    res = await res.nextPage();
+    mapItems.push(...res.instances);
+  }
+
+  const potentialWinners = mapItems.filter(
+    (attendee) =>
+      attendee.data.stage === Stages.WINNER_UNCLAIMED ||
+      attendee.data.stage === Stages.WINNER_CLAIMED
+  );
+
+  if (potentialWinners.length === 0) {
+    console.log("No potential winners found because no one has won yet.");
+    return {
+      message: "No potential winners found because no one has won yet.",
+    };
+  }
+
+  const winner =
+    potentialWinners[Math.floor(Math.random() * potentialWinners.length)];
+
+  await client.sync.v1
+    .services(SYNC_SERVICE_SID)
+    .syncMaps("attendees")
+    .syncMapItems(winner.key)
+    .update({
+      data: {
+        ...winner.data,
+        stage: Stages.RAFFLE_WINNER,
+      },
+    });
+
+  await sendRaffleWinnerMessage(
+    winner.data.fullName,
+    winner.data.sender,
+    winner.data.recipient
+  );
+
+  await callWinner(
+    winner.data.sender.replace("whatsapp:", ""),
+    winner.data.recipient.replace("whatsapp:", ""),
+    true
+  );
+
+  console.log("Found winner and called them");
+  return { message: "Found winner and called them" };
+};

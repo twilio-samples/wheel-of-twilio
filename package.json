@@ -14,8 +14,7 @@
     "prettier": "prettier . --write",
     "download": "tsx -r dotenv/config src/scripts/download dotenv_config_path=.env.local",
     "clear": "tsx -r dotenv/config src/scripts/clear dotenv_config_path=.env.local",
-    "setup": "tsx -r dotenv/config src/scripts/setup dotenv_config_path=.env.local",
-    "raffle": "tsx -r dotenv/config src/scripts/raffleAmongWinners dotenv_config_path=.env.local"
+    "setup": "tsx -r dotenv/config src/scripts/setup dotenv_config_path=.env.local"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.1.2",
