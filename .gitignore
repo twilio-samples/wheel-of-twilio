@@ -47,4 +47,3 @@ attendees.csv
 /playwright-report/
 /blob-report/
 /playwright/.cache/
-/src/scripts/raffle.ts
