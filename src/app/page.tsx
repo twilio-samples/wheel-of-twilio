@@ -66,9 +66,9 @@ function App() {
           {/* <img src="/images/twilio_devs.png" alt="logo" className="w-2/3 mb-10" />*/}
 
           <img src="/images/twilio.png" alt="logo" className="w-1/3 mb-16" />
-          <h1 className="text-[#EF223A] text-5xl">Better communication</h1>
+          <h1 className="text-[#EF223A] text-5xl">Build amazing</h1>
           {/* TODO change font here */}
-          <h1 className="text-[#FDF7F4]">in the blink of an API</h1>
+          <h1 className="text-[#FDF7F4] text-5xl">customer experiences</h1>
         </div>
         <div className="w-4/5 mx-auto grid grid-cols-2 pb-8  gap-4 space-around text-center text-xl font-semibold ">
           {wedges.map((wedge) => {
