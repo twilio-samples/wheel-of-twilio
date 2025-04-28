@@ -13,6 +13,11 @@ import {
 } from "./twilio";
 import SpinAndWin from "./ReactSpinGame";
 import QRCode from "react-qr-code";
+import localFont from "next/font/local";
+
+const myFont = localFont({
+  src: "../../public/fonts/BFBuffalo-Black.otf",
+});
 
 function App() {
   const [bets, setBets] = useState<any[]>([]);
@@ -66,18 +71,22 @@ function App() {
           {/* <img src="/images/twilio_devs.png" alt="logo" className="w-2/3 mb-10" />*/}
 
           <img src="/images/twilio.png" alt="logo" className="w-1/3 mb-16" />
-          <h1 className="text-[#EF223A] text-5xl">Build amazing</h1>
+          <h1 className={`text-[#EF223A] text-5xl ${myFont.className} `}>
+            Builder is a mindset
+          </h1>
           {/* TODO change font here */}
-          <h1 className="text-[#FDF7F4] text-5xl">customer experiences</h1>
+          <h1 className="text-[#FDF7F4] text-5xl font-medium mt-1">
+            not a job title
+          </h1>
         </div>
-        <div className="w-4/5 mx-auto grid grid-cols-2 pb-8  gap-4 space-around text-center text-xl font-semibold ">
+        <div className="w-4/5 mx-auto grid grid-cols-2 pb-8  gap-7 space-around text-center text-xl font-semibold ">
           {wedges.map((wedge) => {
             return (
               <div
                 key={wedge}
-                className={`relative text-[#FDF7F4] border-2 border-solid border-[#EF223A]  py-5 rounded-lg w-full`}
+                className={`relative text-[#FDF7F4]  py-3 rounded-full w-full ring-[#FFF1F3] ring-2 shadow-[0px_0px_15px_1px]  shadow-[#FFF1F3]`}
               >
-                <span className="text-[6px] absolute bottom-0 left-1">
+                <span className="text-[6px] absolute bottom-3 left-5">
                   {bets.filter((bet) => bet[1] === wedge).length}
                 </span>
                 {bets
@@ -111,7 +120,9 @@ function App() {
                     alt="bet chip"
                     className="absolute scale-[0.25] z-10 translate-x-[110px]  translate-y-[-140px]"
                   /> */}
-                {wedge}
+                <span className="text-base ">
+                  {wedge}
+                </span>
               </div>
             );
           })}
@@ -144,11 +155,11 @@ function App() {
             onAfterFinished={(selectedWedge: string) => {
               // selectedWedge = "Java" to test the winning condition
               notifyAndUpdateWinners(
-                bets.filter((bet) => bet[1] === selectedWedge),
+                bets.filter((bet) => bet[1] === selectedWedge)
               );
               messageOthers(
                 bets.filter((bet) => bet[1] !== selectedWedge),
-                selectedWedge,
+                selectedWedge
               );
               tempUnlockGame();
             }}
