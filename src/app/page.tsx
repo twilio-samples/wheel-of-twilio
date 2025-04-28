@@ -74,7 +74,6 @@ function App() {
           <h1 className={`text-[#EF223A] text-5xl ${myFont.className} `}>
             Builder is a mindset
           </h1>
-          {/* TODO change font here */}
           <h1 className="text-[#FDF7F4] text-5xl font-medium mt-1">
             not a job title
           </h1>
