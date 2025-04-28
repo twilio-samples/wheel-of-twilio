@@ -28,14 +28,11 @@ export default function SpinAndWin({
         var wheelCanvas = document.getElementById("wheel");
         if (wheelCanvas && isCanvas(wheelCanvas)) {
           var wheel = wheelCanvas.getContext("2d");
+          wheel?.reset();
           var wheelX = wheelCanvas.width / 2;
-          // wheelCanvas.style.width = wheelCanvas.width + "px";
           var wheelY = wheelCanvas.height / 2;
 
-          // wheelCanvas.style.height = wheelCanvas.height + "px";
-          var wheelRadius = Math.min(wheelX, wheelY);
-
-          drawWheel(wedges, wheel, wheelX, wheelY, wheelRadius);
+          drawWheel(wedges, wheel, wheelX, wheelY);
         }
       }
     };
@@ -45,7 +42,7 @@ export default function SpinAndWin({
     return () => document.removeEventListener("visibilitychange", renderWheel);
   }, [wedges]);
   function isCanvas(
-    obj: HTMLCanvasElement | HTMLElement,
+    obj: HTMLCanvasElement | HTMLElement
   ): obj is HTMLCanvasElement {
     return obj.tagName === "CANVAS";
   }
@@ -56,39 +53,33 @@ export default function SpinAndWin({
     list: string[],
     wheel: any,
     wheelX: number,
-    wheelY: number,
-    wheelRadius: number,
+    wheelY: number
   ) => {
-    var segment = 360 / list.length;
+    wheel.fillStyle = "#000D25";
+    wheel.strokeStyle = "#FFF";
+    wheel.lineWidth = 3;
 
-    list.map((el: string, i: number) => {
+    var segment = 360 / list.length;
+    list.forEach((el: string, i: number) => {
       wheel.save();
       wheel.translate(wheelX, wheelY);
+
+      // Rotate the canvas to the correct segment position
       wheel.rotate(degToRad(segment * i));
       wheel.translate(-wheelX, -wheelY);
 
-      wheel.fillStyle = i % 2 === 0 ? "#ea4638" : "#5e1718";
+      wheel.lineTo(wheelX, wheelY);
+      wheel.lineTo(-wheelX, 0);
+      wheel.stroke();
 
-      wheel.beginPath();
-      wheel.moveTo(wheelX, wheelY);
-      wheel.arc(
-        wheelX,
-        wheelY,
-        wheelRadius,
-        0 - degToRad(90) - degToRad(segment / 2),
-        degToRad(segment) - degToRad(90) - degToRad(segment / 2),
-        false,
-      );
-      wheel.moveTo(wheelX, wheelY);
-      wheel.fill();
-
-      wheel.fillStyle = i % 2 === 0 ? "#FDF7F4" : "#121C2D";
+      // Fill the segment with alternating colors
       wheel.textAlign = "end";
       wheel.font = "2.3rem sans-serif";
       wheel.transform = "translate(50px, 100px)";
       wheel.rotate(-1.57);
+
       wheel.fillStyle = "white";
-      wheel.fillText(el, -25, wheelY + 10);
+      wheel.fillText(el, -45, wheelY + 10);
 
       wheel.restore();
     });
@@ -123,18 +114,18 @@ export default function SpinAndWin({
           <canvas
             ref={wheelRef}
             id="wheel"
-            className="rounded-full p-1  h-[550px] w-[550px]  m-[6px] absolute "
+            className="rounded-full  h-[550px] w-[550px]  m-[6px] absolute   shadow-[0px_0px_30px_5px]  shadow-[#EF223A] "
             width="840px"
             height="840px"
           />
           <span
             id="spinButton"
-            className="absolute flex top-[50%] left-[50%] z-10 bg-[#000D25] w-[120px] h-[120px] cursor-pointer p-2 border-solid border-4 border-black rounded-full -translate-x-1/2 -translate-y-1/2"
+            className="absolute flex top-[50%] left-[50%] z-10 bg-[#EF223A] shadow-[0px_0px_33px_30px]  shadow-[#EF223A] w-[70px] h-[70px] cursor-pointer p-2  rounded-full -translate-x-1/2 -translate-y-1/2"
             onClick={handleSpin}
           >
             <img
               src="/images/twilio-bug-white.png"
-              className="pl-0.5 pt-0.5"
+              className="pl-0.5 pt-0.5 rounded-full bg-green "
               alt="twilio"
             />
           </span>
