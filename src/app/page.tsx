@@ -93,17 +93,15 @@ function App() {
                   .map((bet, index) => {
                     const randomNumberBetween70And110InStepsOf5 =
                       70 + Math.floor(Math.random() * ((110 - 70) / 5 + 1)) * 5;
-                    const randomNumberBetweenMinus100AndMinus140InStepsOf5 =
-                      -100 -
-                      Math.floor(Math.random() * ((140 - 100) / 5 + 1)) * 5;
-
+                    const randomNumberBetweenMinus120AndMinus160InStepsOf5 =
+                      -120 - Math.floor(Math.random() * (40 / 5 + 1)) * 5;
                     return (
                       <img
                         key={`bet-${bet[1]}-${index}`}
                         src="/images/chip.png"
                         alt={`${bet[2]} bet chip on ${bet[1]}`}
                         title={`${bet[2]} bets on ${bet[1]}`}
-                        className={`absolute scale-[0.25] z-10 translate-x-[${randomNumberBetween70And110InStepsOf5}px]  translate-y-[${randomNumberBetweenMinus100AndMinus140InStepsOf5}px]`}
+                        className={`absolute scale-[0.15] z-10 translate-x-[${randomNumberBetween70And110InStepsOf5}px]  translate-y-[${randomNumberBetweenMinus120AndMinus160InStepsOf5}px]`}
                       />
                     );
                   })}
@@ -111,17 +109,15 @@ function App() {
                 {/* <img
                     src="/images/chip.png"
                     alt="bet chip"
-                    className="absolute scale-[0.25] z-10 translate-x-[70px]  translate-y-[-100px]"
+                    className="absolute scale-[0.15] z-10 translate-x-[70px]  translate-y-[-120px]"
                   /> */}
                 {/* // Test Chip, top-right  */}
                 {/* <img
                     src="/images/chip.png"
                     alt="bet chip"
-                    className="absolute scale-[0.25] z-10 translate-x-[110px]  translate-y-[-140px]"
+                    className="absolute scale-[0.15] z-10 translate-x-[110px]  translate-y-[-160px]"
                   /> */}
-                <span className="text-base ">
-                  {wedge}
-                </span>
+                <span className="text-base ">{wedge}</span>
               </div>
             );
           })}
