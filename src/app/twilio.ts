@@ -32,7 +32,10 @@ const client = require("twilio")(TWILIO_API_KEY, TWILIO_API_SECRET, {
 async function localizeStringForPhoneNumber(
   str: string,
   phone: string,
-  winningWedge?: string
+  params: {
+    winningWedge?: string;
+    smallPrize?: string;
+  }
 ) {
   await i18next.init({
     lng: getCountry(phone)?.languages[0],
@@ -42,7 +45,10 @@ async function localizeStringForPhoneNumber(
     },
   });
 
-  return i18next.t(str, { winningWedge });
+  return i18next.t(str, {
+    winningWedge: params.winningWedge,
+    smallPrize: params.smallPrize,
+  });
 }
 
 export async function fetchToken() {
@@ -103,6 +109,7 @@ export async function getWinners(allWinners: boolean): Promise<MaskedPlayer[]> {
       return {
         key: w.key,
         name: w.data.fullName,
+        smallPrize: w.data.smallPrize,
         stage: w.data.stage,
         sender: maskNumber(w.data.sender),
       };
@@ -124,7 +131,8 @@ export async function winnerPrizeClaimed(winnerKey: string) {
     client.messages.create({
       body: await localizeStringForPhoneNumber(
         "prizePickup",
-        winner.data.sender.replace("whatsapp:", "")
+        winner.data.sender.replace("whatsapp:", ""),
+        {}
       ),
       messagingServiceSid: MESSAGING_SERVICE_SID,
       from: winner.data.recipient,
@@ -211,17 +219,24 @@ export async function notifyAndUpdateWinners(winners: any[]) {
   const syncService = await client.sync.v1.services(SYNC_SERVICE_SID).fetch();
   const attendeesMap = syncService.syncMaps()("attendees");
 
-  const { OFFERED_PRIZES } = process.env;
+  const { OFFERED_PRIZES, SMALL_PRIZES } = process.env;
+
+  const availablePrizes = SMALL_PRIZES?.split(",") || [];
 
   await Promise.all(
     winners.map(async (winningBet) => {
       const winner = await attendeesMap.syncMapItems(winningBet[0]).fetch();
+
+      const randomPrize =
+        `a *${availablePrizes[Math.floor(Math.random() * availablePrizes.length)]}*` ||
+        "";
 
       try {
         await attendeesMap.syncMapItems(winningBet[0]).update({
           data: {
             ...winner.data,
             stage: Stages.WINNER_UNCLAIMED,
+            smallPrize: randomPrize,
           },
         });
       } catch (e: any) {
@@ -240,15 +255,33 @@ export async function notifyAndUpdateWinners(winners: any[]) {
         );
       }
 
+      let message;
+      if (OFFERED_PRIZES === "big") {
+        message = await localizeStringForPhoneNumber(
+          "winnerMessageRaffleQualification",
+          winner.data.sender.replace("whatsapp:", ""),
+          {}
+        );
+      } else {
+        message =
+          (await localizeStringForPhoneNumber(
+            "winnerMessageSmallPrizeStart",
+            winner.data.sender.replace("whatsapp:", ""),
+            { smallPrize: randomPrize }
+          )) +
+          (await localizeStringForPhoneNumber(
+            OFFERED_PRIZES === "both"
+              ? "winnerMessageBothPrizesEnd"
+              : "winnerMessageSmallPrizeEnd",
+            winner.data.sender.replace("whatsapp:", ""),
+            {}
+          ));
+      }
+
+      console.log(message);
+
       await client.messages.create({
-        body: await localizeStringForPhoneNumber(
-          OFFERED_PRIZES === "small"
-            ? "winnerMessageSmallPrize"
-            : OFFERED_PRIZES === "big"
-              ? "winnerMessageRaffleQualification"
-              : "winnerMessageBothPrizes",
-          winner.data.sender.replace("whatsapp:", "")
-        ),
+        body: message,
         messagingServiceSid: MESSAGING_SERVICE_SID,
         from: winner.data.recipient,
         to: winner.data.sender,
@@ -265,7 +298,8 @@ export async function callWinner(
   await client.calls.create({
     twiml: await localizeStringForPhoneNumber(
       rafflePrize ? "winnerCallRafflePrize" : "winnerCallSmallPrize",
-      to
+      to,
+      {}
     ),
     from,
     to,
@@ -278,7 +312,11 @@ export async function sendRaffleWinnerMessage(
   from: string
 ) {
   await client.messages.create({
-    body: await localizeStringForPhoneNumber("winnerMessageRafflePrize", to),
+    body: await localizeStringForPhoneNumber(
+      "winnerMessageRafflePrize",
+      to,
+      {}
+    ),
     from,
     to,
   });
@@ -296,7 +334,7 @@ export async function messageOthers(unluckyBets: any[], winningWedge: string) {
         const body = await localizeStringForPhoneNumber(
           "loser",
           unluckyPlayer.data.sender,
-          winningWedge
+          { winningWedge }
         );
         await client.messages.create({
           body,
