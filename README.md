@@ -54,6 +54,7 @@ This project is Twilio's innovative booth activation designed to motivate people
 
      > The flag `OFFERED_PRIZES` influences the message the winners get. If set the `small`, winners who bet on the right field are informed that they won and can collect a small prize at the Twilio booth. If set to `big`, they are notified that they qualified for a larger prize. You can also set the value to `both`, so winners can pick up a small prize and are qualified for the raffle prize at the same time.
      > The option `MAX_BETS_PER_USER` limits how often one user can submit a bet. If 0, the users can enter as many bets as they want.
+     > With `SMALL_PRIZES`, you can list the small prizes that are available for the winners. If someone wins a small prize, it will be randomly selected from the list and tell the user what they won.
 
 4. **Run the setup script:**
 

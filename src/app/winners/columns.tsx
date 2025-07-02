@@ -17,6 +17,7 @@ export const columns: ColumnDef<MaskedPlayer>[] = [
     accessorKey: "sender",
     header: "Sender",
   },
+  { accessorKey: "smallPrize", header: "Small Prize" },
   {
     accessorKey: "stage",
     header: "State",
