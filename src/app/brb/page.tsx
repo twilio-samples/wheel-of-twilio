@@ -18,8 +18,8 @@ export default async function WinnerPage(props: {
     subheading = "The Wheel of Twilio will return after a break";
     changeGameLock(kind);
   } else if (kind === "end") {
-    heading = "Game has ended";
-    subheading = "The Wheel of Twilio has ended";
+    heading = "The game has ended";
+    subheading = "No more bets can be placed";
     changeGameLock(kind);
   } else {
     heading = "Unknown state";
