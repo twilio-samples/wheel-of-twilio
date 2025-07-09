@@ -110,13 +110,13 @@ export default function SpinAndWin({
   return (
     <div>
       <div className="m-0 p-0 flex justify-center items-center h-full relative">
-        <div className="rounded-full min-h-[562.5px]  min-w-[562.5px] overflow-hidden relative">
+        <div className="rounded-full min-h-[750px]  min-w-[750px] overflow-hidden relative">
           <canvas
             ref={wheelRef}
             id="wheel"
-            className="rounded-full  h-[550px] w-[550px]  m-[6px] absolute   shadow-[0px_0px_30px_5px]  shadow-[#EF223A] "
-            width="840px"
-            height="840px"
+            className="rounded-full  h-[737px] w-[737px]  m-[6px] absolute   shadow-[0px_0px_30px_5px]  shadow-[#EF223A] "
+            width="1000px"
+            height="1000px"
           />
           <span
             id="spinButton"
@@ -130,7 +130,7 @@ export default function SpinAndWin({
             />
           </span>
         </div>
-        <span className="absolute left-[50%] translate-x-[-50%] translate-y-[-400%] ">
+        <span className="absolute left-[50%] translate-x-[-50%] translate-y-[-530%] ">
           <img src="/images/stopper.png" alt="stopper" height="50px" />
         </span>
       </div>
