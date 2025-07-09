@@ -12,7 +12,7 @@ export default async function WinnerPage(props: {
 
   return (
     <div className="vh-full flex h-full item justify-center relative">
-      <RaffleButton />
+      {/* <RaffleButton /> */}
       <DataTable columns={columns} data={winners} />
     </div>
   );
