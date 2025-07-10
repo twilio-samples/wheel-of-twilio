@@ -74,7 +74,7 @@ export default function SpinAndWin({
 
       // Fill the segment with alternating colors
       wheel.textAlign = "end";
-      wheel.font = "2.3rem sans-serif";
+      wheel.font = "3.2rem sans-serif";
       wheel.transform = "translate(50px, 100px)";
       wheel.rotate(-1.57);
 
@@ -110,11 +110,11 @@ export default function SpinAndWin({
   return (
     <div>
       <div className="m-0 p-0 flex justify-center items-center h-full relative">
-        <div className="rounded-full min-h-[750px]  min-w-[750px] overflow-hidden relative">
+        <div className="rounded-full min-h-[720px]  min-w-[720px] overflow-hidden relative">
           <canvas
             ref={wheelRef}
             id="wheel"
-            className="rounded-full  h-[737px] w-[737px]  m-[6px] absolute   shadow-[0px_0px_30px_5px]  shadow-[#EF223A] "
+            className="rounded-full  h-[709px] w-[709px]  m-[6px] absolute   shadow-[0px_0px_30px_5px]  shadow-[#EF223A] "
             width="1000px"
             height="1000px"
           />
@@ -130,7 +130,7 @@ export default function SpinAndWin({
             />
           </span>
         </div>
-        <span className="absolute left-[50%] translate-x-[-50%] translate-y-[-530%] ">
+        <span className="absolute left-[50%] translate-x-[-50%] translate-y-[-510%] ">
           <img src="/images/stopper.png" alt="stopper" height="50px" />
         </span>
       </div>

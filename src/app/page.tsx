@@ -104,7 +104,7 @@ function App() {
       </p>
       <div>
         <QRCode
-          className="mx-auto w-65 h-65 p-1 bg-[#FDF7F4]"
+          className="mx-auto w-62 h-62 p-1 bg-[#FDF7F4]"
           value={`https://wa.me/${process.env.NEXT_PUBLIC_TWILIO_PHONE_NUMBER}?text=Hit%20send%20to%20start!`}
         />
         <p className="text-center text-lg text-gray-500">
@@ -117,7 +117,7 @@ function App() {
   const logoAndHeading = (
     <>
       {/* <img src="/images/twilio_devs.png" alt="logo" className="w-2/3 mb-10" />*/}
-      <img src="/images/twilio.png" alt="logo" className="w-1/3 mb-16" />
+      <img src="/images/twilio.png" alt="logo" className="w-1/3 mb-10" />
       <h1 className={`text-[#EF223A] text-7xl ${myFont.className} `}>
         Builder is a mindset
       </h1>
