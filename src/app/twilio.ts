@@ -248,11 +248,15 @@ export async function notifyAndUpdateWinners(winners: any[]) {
       }
 
       if (OFFERED_PRIZES === "small" || OFFERED_PRIZES === "both") {
-        await callWinner(
-          winner.data.sender.replace("whatsapp:", ""),
-          winner.data.recipient.replace("whatsapp:", ""),
-          false
-        );
+        try {
+          await callWinner(
+            winner.data.sender.replace("whatsapp:", ""),
+            winner.data.recipient.replace("whatsapp:", ""),
+            false
+          );
+        } catch (e: any) {
+          console.error(e.message);
+        }
       }
 
       let message;
@@ -280,12 +284,18 @@ export async function notifyAndUpdateWinners(winners: any[]) {
 
       console.log(message);
 
-      await client.messages.create({
-        body: message,
-        messagingServiceSid: MESSAGING_SERVICE_SID,
-        from: winner.data.recipient,
-        to: winner.data.sender,
-      });
+      try {
+        await client.messages.create({
+          body: message,
+          messagingServiceSid: MESSAGING_SERVICE_SID,
+          from: winner.data.recipient,
+          to: winner.data.sender,
+        });
+      } catch (e: any) {
+        console.error(
+          `Failed to send message to ${winner.data.sender}: ${e.message}`
+        );
+      }
     })
   );
 }
