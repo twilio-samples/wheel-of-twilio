@@ -71,7 +71,7 @@ export async function generateResponse(
     messageContent: string;
     attendeesMap: SyncMapContext;
     betsDoc: DocumentInstance;
-  },
+  }
 ) {
   const { OFFERED_PRIZES, DISABLE_LEAD_COLLECTION } = process.env;
 
@@ -105,7 +105,7 @@ export async function generateResponse(
         await attendeesMap.syncMapItems(hashedSender).update({
           data: {
             ...currentUser,
-            fullName: messageContent.trim(),
+            fullName: sanitizeFullName(senderName || ""),
             stage: Stages.NAME_CONFIRMED,
           },
         });
@@ -169,7 +169,7 @@ export async function generateResponse(
             ) {
               const traits = await fetchSegmentTraits(
                 verificationCheck.to,
-                SEGMENT_TRAIT_CHECK,
+                SEGMENT_TRAIT_CHECK
               );
               if (traits) {
                 foundInSegment = true;
@@ -179,7 +179,7 @@ export async function generateResponse(
 
             const contentTemplate = await getTemplate(
               "AskForBets",
-              country?.languages[0],
+              country?.languages[0]
             );
 
             await Promise.all([
@@ -214,20 +214,20 @@ export async function generateResponse(
           // check if one of the wedges is a substring of the capitalized messageContent
           wedges.some((wedge) =>
             capitalizeEachWord(messageContent).includes(
-              capitalizeEachWord(wedge),
-            ),
+              capitalizeEachWord(wedge)
+            )
           )
         ) {
           const { MAX_BETS_PER_USER = "0" } = process.env;
           // @ts-ignore
-          const bets = betsDoc.data.bets  ? [...betsDoc.data.bets] : [];
+          const bets = betsDoc.data.bets ? [...betsDoc.data.bets] : [];
           //sort longest to shortest first
           const selectedBet = wedges
             .sort((a, b) => b.length - a.length)
             .find((wedge) =>
               capitalizeEachWord(messageContent).includes(
-                capitalizeEachWord(wedge),
-              ),
+                capitalizeEachWord(wedge)
+              )
             );
 
           const existingBet = bets.find((bet: any) => bet[0] === hashedSender);
@@ -271,12 +271,12 @@ export async function generateResponse(
           twimlRes.message(
             i18next.t("betPlaced", {
               messageContent: selectedBet,
-            }),
+            })
           );
         } else {
           const contentTemplate = await getTemplate(
             "InvalidBet",
-            country?.languages[0],
+            country?.languages[0]
           );
 
           await client.messages.create({
@@ -336,7 +336,7 @@ export async function generateResponse(
 
         const contentTemplate = await getTemplate(
           "AskForBets",
-          country?.languages[0],
+          country?.languages[0]
         );
 
         await client.messages.create({
@@ -371,9 +371,7 @@ export async function generateResponse(
         twimlRes.message(i18next.t("gameEnded"));
       } else if (
         wedges.some((wedge) =>
-          capitalizeEachWord(messageContent).includes(
-            capitalizeEachWord(wedge),
-          ),
+          capitalizeEachWord(messageContent).includes(capitalizeEachWord(wedge))
         )
       ) {
         // @ts-expect-error  is not an object but an array
@@ -382,8 +380,8 @@ export async function generateResponse(
           .sort((a, b) => b.length - a.length)
           .find((wedge) =>
             capitalizeEachWord(messageContent).includes(
-              capitalizeEachWord(wedge),
-            ),
+              capitalizeEachWord(wedge)
+            )
           );
         const { MAX_BETS_PER_USER = "0" } = process.env;
         const existingBet = bets.find((bet: any) => bet[0] === hashedSender);
@@ -423,12 +421,12 @@ export async function generateResponse(
           i18next.t("betPlaced", {
             senderName,
             messageContent: selectedBet,
-          }),
+          })
         );
       } else {
         const contentTemplate = await getTemplate(
           "InvalidBet",
-          country?.languages[0],
+          country?.languages[0]
         );
 
         await client.messages.create({
@@ -477,4 +475,12 @@ export function capitalizeEachWord(str: string) {
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function sanitizeFullName(fullName: string) {
+  return fullName
+    .replace(/[^a-zA-Z\s]/g, "") // remove non-alphabetic characters
+    .replace(/\s/g, " ") // replace all whitespace characters with a single space
+    .replace(/\s+/g, " ") // replace multiple spaces with a single space
+    .trim(); // trim leading and trailing spaces
 }
