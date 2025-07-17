@@ -167,13 +167,17 @@ export async function generateResponse(
               SEGMENT_TRAIT_CHECK &&
               verificationCheck.to // skip in the tests
             ) {
-              const traits = await fetchSegmentTraits(
-                verificationCheck.to,
-                SEGMENT_TRAIT_CHECK
-              );
-              if (traits) {
-                foundInSegment = true;
-                checkedTrait = traits[SEGMENT_TRAIT_CHECK];
+              try {
+                const traits = await fetchSegmentTraits(
+                  verificationCheck.to,
+                  SEGMENT_TRAIT_CHECK
+                );
+                if (traits) {
+                  foundInSegment = true;
+                  checkedTrait = traits[SEGMENT_TRAIT_CHECK];
+                }
+              } catch (e) {
+                console.error("Error fetching segment traits:", e);
               }
             }
 
@@ -479,7 +483,7 @@ function sleep(ms: number) {
 
 function sanitizeFullName(fullName: string) {
   return fullName
-    .replace(/[^a-zA-Z\s]/g, "") // remove non-alphabetic characters
+    .replace(/[^a-zA-Z\s-]/g, "") // remove non-alphabetic characters, except dashes
     .replace(/\s/g, " ") // replace all whitespace characters with a single space
     .replace(/\s+/g, " ") // replace multiple spaces with a single space
     .trim(); // trim leading and trailing spaces
