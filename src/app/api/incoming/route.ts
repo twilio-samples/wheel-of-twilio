@@ -39,7 +39,7 @@ async function getUser(attendeesMap: SyncMapContext, hashedSender: string) {
 async function addDemoBet(betsDoc: DocumentInstance, messageContent: string) {
   if (process.env.demoBet) {
     const bets = betsDoc.data.bets || [];
-    
+
     // @ts-expect-error  is not an object but an array
     bets.push([
       "test-better",

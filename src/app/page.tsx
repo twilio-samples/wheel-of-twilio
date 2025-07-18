@@ -71,7 +71,7 @@ function App() {
         notifyAndUpdateWinners(bets.filter((bet) => bet[1] === selectedWedge));
         messageOthers(
           bets.filter((bet) => bet[1] !== selectedWedge),
-          selectedWedge
+          selectedWedge,
         );
         tempUnlockGame();
       }}
