@@ -335,14 +335,20 @@ export async function sendRaffleWinnerMessage(
 export async function messageOthers(unluckyBets: any[], winningWedge: string) {
   const syncService = await client.sync.v1.services(SYNC_SERVICE_SID).fetch();
   const attendeesMap = syncService.syncMaps()("attendees");
+  const { MAX_BETS_PER_USER = "0" } = process.env;
+
   await Promise.all(
     unluckyBets.map(async (unluckyBet) => {
       try {
         const unluckyPlayer = await attendeesMap
           .syncMapItems(unluckyBet[0])
           .fetch();
+        const hasMoreBetsLeft =
+          parseInt(MAX_BETS_PER_USER) > 0 &&
+          unluckyPlayer.data?.submittedBets + 1 <= parseInt(MAX_BETS_PER_USER);
+
         const body = await localizeStringForPhoneNumber(
-          "loser",
+          hasMoreBetsLeft ? "loserHasMoreTries" : "loserLastTry",
           unluckyPlayer.data.sender,
           { winningWedge }
         );
