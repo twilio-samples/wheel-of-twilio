@@ -18,7 +18,7 @@ const throttle = throttledQueue({
   evenlySpaced: true,
   maxRetries: 3,
   maxRetriesWithPauses: 2,
-}); // at most 5 requests per second.
+}); // at most 10 requests per second.
 
 (async () => {
   const attendeesMap = await client.sync.v1
