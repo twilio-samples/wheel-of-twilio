@@ -227,9 +227,9 @@ export async function notifyAndUpdateWinners(winners: any[]) {
     winners.map(async (winningBet) => {
       const winner = await attendeesMap.syncMapItems(winningBet[0]).fetch();
 
-      const randomPrize =
-        ` a *${availablePrizes[Math.floor(Math.random() * availablePrizes.length)]}*` ||
-        "";
+      const randomPrize = availablePrizes.length > 0
+        ? ` a *${availablePrizes[Math.floor(Math.random() * availablePrizes.length)]}*`
+        : "";
 
       try {
         await attendeesMap.syncMapItems(winningBet[0]).update({
