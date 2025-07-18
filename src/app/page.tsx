@@ -71,7 +71,7 @@ function App() {
         notifyAndUpdateWinners(bets.filter((bet) => bet[1] === selectedWedge));
         messageOthers(
           bets.filter((bet) => bet[1] !== selectedWedge),
-          selectedWedge,
+          selectedWedge
         );
         tempUnlockGame();
       }}
@@ -97,22 +97,8 @@ function App() {
     </>
   );
 
-  const ctaAndQrCode = (
-    <>
-      <p className="ml-auto my-auto text-right col-span-2 font-extrabold text-4xl text-[#FDF7F4]">
-        Scan the code and win prizes
-      </p>
-      <div>
-        <QRCode
-          className="mx-auto w-62 h-62 p-1 bg-[#FDF7F4]"
-          value={`https://wa.me/${process.env.NEXT_PUBLIC_TWILIO_PHONE_NUMBER}?text=Hit%20send%20to%20start!`}
-        />
-        <p className="text-center text-lg text-gray-500">
-          {process.env.NEXT_PUBLIC_TWILIO_PHONE_NUMBER}
-        </p>
-      </div>
-    </>
-  );
+  const CTA = "Scan the code and win prizes";
+  const QR_LINK_URL = `https://wa.me/${process.env.NEXT_PUBLIC_TWILIO_PHONE_NUMBER}?text=Hit%20send%20to%20start!`;
 
   const logoAndHeading = (
     <>
@@ -184,7 +170,18 @@ function App() {
 
       <div className="absolute bottom-5  text-gray-500 text-xs mb-2">
         <div className="mx-auto grid grid-cols-3 gap-6 mb-5 mr-12 ">
-          {ctaAndQrCode}
+          <p className="ml-auto my-auto text-right col-span-2 font-extrabold text-4xl text-[#FDF7F4]">
+            {CTA}
+          </p>
+          <div>
+            <QRCode
+              className="mx-auto w-62 h-62 p-1 bg-[#FDF7F4]"
+              value={QR_LINK_URL}
+            />
+            <p className="text-center text-lg text-gray-500">
+              {process.env.NEXT_PUBLIC_TWILIO_PHONE_NUMBER}
+            </p>
+          </div>
         </div>
         <div className="mx-12">{legalText}</div>
       </div>
@@ -194,10 +191,10 @@ function App() {
   const horizontalLayout = (
     <>
       <div className="w-1/2 flex flex-col mt-24 relative">
-        <div className="flex flex-col text-3xl font-extrabold pb-8 w-4/5 mx-auto">
+        <div className="flex flex-col text-3xl font-extrabold pb-8 w-9/10 mx-auto">
           {logoAndHeading}
         </div>
-        <div className="w-4/5 mx-auto grid grid-cols-2 pb-8  gap-7 space-around text-center text-xl font-semibold ">
+        <div className="w-9/10 mx-auto grid grid-cols-2 py-8  gap-7 space-around text-center text-xl font-semibold ">
           {fieldsWithBets}
         </div>
         <div className="absolute bottom-3  text-gray-500 text-xs ml-16 mb-2">
@@ -208,7 +205,18 @@ function App() {
         <div className="absolute pt-14 my-auto w-1/2">
           {spinner}
           <div className="w-2/3 mx-auto grid grid-cols-3 gap-6 ">
-            {ctaAndQrCode}
+            <p className="ml-auto my-auto text-right col-span-2 font-extrabold text-2xl text-[#FDF7F4]">
+              {CTA}
+            </p>
+            <div>
+              <QRCode
+                className="mx-auto w-36 h-36 p-1 bg-[#FDF7F4]"
+                value={QR_LINK_URL}
+              />
+              <p className="text-center text-lg text-gray-500">
+                {process.env.NEXT_PUBLIC_TWILIO_PHONE_NUMBER}
+              </p>
+            </div>
           </div>
         </div>
       </div>
