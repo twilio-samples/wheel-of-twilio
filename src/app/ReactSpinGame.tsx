@@ -42,7 +42,7 @@ export default function SpinAndWin({
     return () => document.removeEventListener("visibilitychange", renderWheel);
   }, [wedges]);
   function isCanvas(
-    obj: HTMLCanvasElement | HTMLElement
+    obj: HTMLCanvasElement | HTMLElement,
   ): obj is HTMLCanvasElement {
     return obj.tagName === "CANVAS";
   }
@@ -53,7 +53,7 @@ export default function SpinAndWin({
     list: string[],
     wheel: any,
     wheelX: number,
-    wheelY: number
+    wheelY: number,
   ) => {
     wheel.fillStyle = "#000D25";
     wheel.strokeStyle = "#FFF";
@@ -74,7 +74,7 @@ export default function SpinAndWin({
 
       // Fill the segment with alternating colors
       wheel.textAlign = "end";
-      wheel.font = "2.3rem sans-serif";
+      wheel.font = "3.2rem sans-serif";
       wheel.transform = "translate(50px, 100px)";
       wheel.rotate(-1.57);
 
@@ -110,13 +110,13 @@ export default function SpinAndWin({
   return (
     <div>
       <div className="m-0 p-0 flex justify-center items-center h-full relative">
-        <div className="rounded-full min-h-[562.5px]  min-w-[562.5px] overflow-hidden relative">
+        <div className="rounded-full min-h-[720px]  min-w-[720px] overflow-hidden relative">
           <canvas
             ref={wheelRef}
             id="wheel"
-            className="rounded-full  h-[550px] w-[550px]  m-[6px] absolute   shadow-[0px_0px_30px_5px]  shadow-[#EF223A] "
-            width="840px"
-            height="840px"
+            className="rounded-full  h-[709px] w-[709px]  m-[6px] absolute   shadow-[0px_0px_30px_5px]  shadow-[#EF223A] "
+            width="1000px"
+            height="1000px"
           />
           <span
             id="spinButton"
@@ -130,7 +130,7 @@ export default function SpinAndWin({
             />
           </span>
         </div>
-        <span className="absolute left-[50%] translate-x-[-50%] translate-y-[-400%] ">
+        <span className="absolute left-[50%] translate-x-[-50%] translate-y-[-510%] ">
           <img src="/images/stopper.png" alt="stopper" height="50px" />
         </span>
       </div>

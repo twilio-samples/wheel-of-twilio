@@ -11,6 +11,15 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
   accountSid: TWILIO_ACCOUNT_SID,
 });
 
+import { throttledQueue } from "throttled-queue";
+const throttle = throttledQueue({
+  maxPerInterval: 10,
+  interval: 1000, // 1 second
+  evenlySpaced: true,
+  maxRetries: 3,
+  maxRetriesWithPauses: 2,
+}); // at most 10 requests per second.
+
 (async () => {
   const attendeesMap = await client.sync.v1
     .services(SYNC_SERVICE_SID)
@@ -20,28 +29,34 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
     pageSize: 500,
   });
 
-  await Promise.all(
-    res.instances.map(async (item: any) => {
-      await client.sync.v1
+  res.instances.map(async (item: any) => {
+    // Throttle the removal of each item
+    throttle(async () => {
+      console.log(`Removing attendee: ${item.key}`);
+      return client.sync.v1
         .services(SYNC_SERVICE_SID)
         .syncMaps("attendees")
         .syncMapItems(item.key)
         .remove();
-    }),
-  );
+    });
+  });
+  await throttle;
   let counter = res.instances.length;
 
   while (res.nextPageUrl) {
     res = await res.nextPage();
-    await Promise.all(
-      res.instances.map(async (item: any) => {
-        await client.sync.v1
+    res.instances.map(async (item: any) => {
+      // Throttle the removal of each item
+      throttle(async () => {
+        console.log(`Removing attendee: ${item.key}`);
+        return client.sync.v1
           .services(SYNC_SERVICE_SID)
           .syncMaps("attendees")
           .syncMapItems(item.key)
           .remove();
-      }),
-    );
+      });
+    });
+    await throttle;
     counter += res.instances.length;
   }
 

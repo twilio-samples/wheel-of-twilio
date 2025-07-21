@@ -33,6 +33,7 @@
     "react-qr-code": "^2.0.15",
     "tailwind-merge": "^3.0.2",
     "tailwindcss-animate": "^1.0.7",
+    "throttled-queue": "^3.0.0",
     "twilio": "^5.5.1",
     "twilio-sync": "^3.3.7",
     "utf-8-validate": "^6.0.5",

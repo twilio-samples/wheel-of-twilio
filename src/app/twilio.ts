@@ -35,7 +35,7 @@ async function localizeStringForPhoneNumber(
   params: {
     winningWedge?: string;
     smallPrize?: string;
-  }
+  },
 ) {
   await i18next.init({
     lng: getCountry(phone)?.languages[0],
@@ -62,7 +62,7 @@ export async function fetchToken() {
     TWILIO_API_SECRET,
     {
       identity: Privilege.FRONTEND,
-    }
+    },
   );
 
   token.addGrant(syncGrant);
@@ -118,7 +118,7 @@ export async function getWinners(allWinners: boolean): Promise<MaskedPlayer[]> {
       (a: any) =>
         a.stage === Stages.WINNER_UNCLAIMED ||
         (allWinners && a.stage === Stages.WINNER_CLAIMED) ||
-        (allWinners && a.stage === Stages.RAFFLE_WINNER)
+        (allWinners && a.stage === Stages.RAFFLE_WINNER),
     );
 }
 
@@ -132,7 +132,7 @@ export async function winnerPrizeClaimed(winnerKey: string) {
       body: await localizeStringForPhoneNumber(
         "prizePickup",
         winner.data.sender.replace("whatsapp:", ""),
-        {}
+        {},
       ),
       messagingServiceSid: MESSAGING_SERVICE_SID,
       from: winner.data.recipient,
@@ -227,9 +227,9 @@ export async function notifyAndUpdateWinners(winners: any[]) {
     winners.map(async (winningBet) => {
       const winner = await attendeesMap.syncMapItems(winningBet[0]).fetch();
 
-      const randomPrize =
-        ` a *${availablePrizes[Math.floor(Math.random() * availablePrizes.length)]}*` ||
-        "";
+      const randomPrize = availablePrizes.length > 0
+        ? ` a *${availablePrizes[Math.floor(Math.random() * availablePrizes.length)]}*`
+        : "";
 
       try {
         await attendeesMap.syncMapItems(winningBet[0]).update({
@@ -248,11 +248,15 @@ export async function notifyAndUpdateWinners(winners: any[]) {
       }
 
       if (OFFERED_PRIZES === "small" || OFFERED_PRIZES === "both") {
-        await callWinner(
-          winner.data.sender.replace("whatsapp:", ""),
-          winner.data.recipient.replace("whatsapp:", ""),
-          false
-        );
+        try {
+          await callWinner(
+            winner.data.sender.replace("whatsapp:", ""),
+            winner.data.recipient.replace("whatsapp:", ""),
+            false,
+          );
+        } catch (e: any) {
+          console.error(e.message);
+        }
       }
 
       let message;
@@ -260,46 +264,52 @@ export async function notifyAndUpdateWinners(winners: any[]) {
         message = await localizeStringForPhoneNumber(
           "winnerMessageRaffleQualification",
           winner.data.sender.replace("whatsapp:", ""),
-          {}
+          {},
         );
       } else {
         message =
           (await localizeStringForPhoneNumber(
             "winnerMessageSmallPrizeStart",
             winner.data.sender.replace("whatsapp:", ""),
-            { smallPrize: randomPrize }
+            { smallPrize: randomPrize },
           )) +
           (await localizeStringForPhoneNumber(
             OFFERED_PRIZES === "both"
               ? "winnerMessageBothPrizesEnd"
               : "winnerMessageSmallPrizeEnd",
             winner.data.sender.replace("whatsapp:", ""),
-            {}
+            {},
           ));
       }
 
       console.log(message);
 
-      await client.messages.create({
-        body: message,
-        messagingServiceSid: MESSAGING_SERVICE_SID,
-        from: winner.data.recipient,
-        to: winner.data.sender,
-      });
-    })
+      try {
+        await client.messages.create({
+          body: message,
+          messagingServiceSid: MESSAGING_SERVICE_SID,
+          from: winner.data.recipient,
+          to: winner.data.sender,
+        });
+      } catch (e: any) {
+        console.error(
+          `Failed to send message to ${winner.data.sender}: ${e.message}`,
+        );
+      }
+    }),
   );
 }
 
 export async function callWinner(
   to: string,
   from: string,
-  rafflePrize: boolean
+  rafflePrize: boolean,
 ) {
   await client.calls.create({
     twiml: await localizeStringForPhoneNumber(
       rafflePrize ? "winnerCallRafflePrize" : "winnerCallSmallPrize",
       to,
-      {}
+      {},
     ),
     from,
     to,
@@ -309,13 +319,13 @@ export async function callWinner(
 export async function sendRaffleWinnerMessage(
   name: string,
   to: string,
-  from: string
+  from: string,
 ) {
   await client.messages.create({
     body: await localizeStringForPhoneNumber(
       "winnerMessageRafflePrize",
       to,
-      {}
+      {},
     ),
     from,
     to,
@@ -325,16 +335,22 @@ export async function sendRaffleWinnerMessage(
 export async function messageOthers(unluckyBets: any[], winningWedge: string) {
   const syncService = await client.sync.v1.services(SYNC_SERVICE_SID).fetch();
   const attendeesMap = syncService.syncMaps()("attendees");
+  const { MAX_BETS_PER_USER = "0" } = process.env;
+
   await Promise.all(
     unluckyBets.map(async (unluckyBet) => {
       try {
         const unluckyPlayer = await attendeesMap
           .syncMapItems(unluckyBet[0])
           .fetch();
+        const hasMoreBetsLeft =
+          parseInt(MAX_BETS_PER_USER) > 0 &&
+          unluckyPlayer.data?.submittedBets + 1 <= parseInt(MAX_BETS_PER_USER);
+
         const body = await localizeStringForPhoneNumber(
-          "loser",
+          hasMoreBetsLeft ? "loserHasMoreTries" : "loserLastTry",
           unluckyPlayer.data.sender,
-          { winningWedge }
+          { winningWedge },
         );
         await client.messages.create({
           body,
@@ -349,13 +365,13 @@ export async function messageOthers(unluckyBets: any[], winningWedge: string) {
           console.error(e.message);
         }
       }
-    })
+    }),
   );
 }
 
 export async function fetchSegmentTraits(
   email: string,
-  specificTrait?: string
+  specificTrait?: string,
 ) {
   let url = `https://profiles.segment.com/v1/spaces/${SEGMENT_SPACE_ID}/collections/users/profiles/email:${email}/traits`;
   if (specificTrait) {
@@ -399,7 +415,7 @@ export async function getAllTemplates() {
     } while (nextUrl);
 
     matches = allTemplates.filter((t: any) =>
-      t.friendly_name.includes(TEMPLATE_PREFIX)
+      t.friendly_name.includes(TEMPLATE_PREFIX),
     );
   } catch (err) {
     console.error(err);
@@ -415,10 +431,10 @@ const templates = await getAllTemplates();
 
 export async function getTemplate(name: string, language?: string) {
   const rightLanguage = templates.find((t: any) =>
-    t.friendly_name.includes(`_${name}_${language}`)
+    t.friendly_name.includes(`_${name}_${language}`),
   );
   const englishLanguage = templates.find((t: any) =>
-    t.friendly_name.includes(`_${name}_en`)
+    t.friendly_name.includes(`_${name}_en`),
   );
   return rightLanguage || englishLanguage;
 }
@@ -449,7 +465,7 @@ export const raffleWinner = async () => {
   const potentialWinners = mapItems.filter(
     (attendee) =>
       attendee.data.stage === Stages.WINNER_UNCLAIMED ||
-      attendee.data.stage === Stages.WINNER_CLAIMED
+      attendee.data.stage === Stages.WINNER_CLAIMED,
   );
 
   if (potentialWinners.length === 0) {
@@ -476,13 +492,13 @@ export const raffleWinner = async () => {
   await sendRaffleWinnerMessage(
     winner.data.fullName,
     winner.data.sender,
-    winner.data.recipient
+    winner.data.recipient,
   );
 
   await callWinner(
     winner.data.sender.replace("whatsapp:", ""),
     winner.data.recipient.replace("whatsapp:", ""),
-    true
+    true,
   );
 
   console.log("Found winner and called them");

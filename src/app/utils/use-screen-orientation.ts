@@ -17,10 +17,7 @@ export const useScreenOrientation = () => {
     screen.orientation.addEventListener("change", handleOrientationChange);
 
     return () =>
-      screen.orientation.removeEventListener(
-        "change",
-        handleOrientationChange
-      );
+      screen.orientation.removeEventListener("change", handleOrientationChange);
   }, []);
 
   return orientation;
