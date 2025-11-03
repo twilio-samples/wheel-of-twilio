@@ -42,6 +42,41 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
   await createSyncDocIfNotExists("stats");
   await createSyncMapIfNotExists("attendees");
 
+  // Initialize prize wins tracking if NEXT_PUBLIC_PRIZES_PER_FIELD is set
+  await initializePrizeWins();
+
+  async function initializePrizeWins() {
+    const { NEXT_PUBLIC_WEDGES, NEXT_PUBLIC_PRIZES_PER_FIELD } = process.env;
+    const prizesPerField = parseInt(NEXT_PUBLIC_PRIZES_PER_FIELD || "0");
+    
+    if (prizesPerField <= 0) {
+      console.log("No prize tracking enabled (NEXT_PUBLIC_PRIZES_PER_FIELD not set or 0)");
+      return; // No prize tracking needed
+    }
+
+    const wedges = (NEXT_PUBLIC_WEDGES || "").split(",");
+    const betsDoc = syncService.documents()("bets");
+
+    // Initialize prize wins to 0 for each wedge
+    const prizeWins: Record<string, number> = {};
+    wedges.forEach(wedge => {
+      prizeWins[wedge] = 0;
+    });
+
+    try {
+      const doc = await betsDoc.fetch();
+      await betsDoc.update({
+        data: {
+          ...doc.data,
+          prizeWins,
+        },
+      });
+      console.log(`Prize wins tracking initialized with 0 wins per field (max ${prizesPerField} prizes per field)`);
+    } catch (err) {
+      console.log("Bets document not yet created, prize wins tracking will be initialized on first use");
+    }
+  }
+
   async function createSyncDocIfNotExists(uniqueName: string) {
     let syncDoc;
     try {

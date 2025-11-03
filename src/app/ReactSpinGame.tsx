@@ -42,7 +42,7 @@ export default function SpinAndWin({
     return () => document.removeEventListener("visibilitychange", renderWheel);
   }, [wedges]);
   function isCanvas(
-    obj: HTMLCanvasElement | HTMLElement,
+    obj: HTMLCanvasElement | HTMLElement
   ): obj is HTMLCanvasElement {
     return obj.tagName === "CANVAS";
   }
@@ -53,7 +53,7 @@ export default function SpinAndWin({
     list: string[],
     wheel: any,
     wheelX: number,
-    wheelY: number,
+    wheelY: number
   ) => {
     wheel.fillStyle = "#000D25";
     wheel.strokeStyle = "#FFF";

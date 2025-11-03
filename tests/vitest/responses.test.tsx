@@ -636,7 +636,6 @@ describe("Lead collection disabled", async () => {
           messages: {
             // @ts-ignore just for this test
             create: (c) => {
-              debugger;
               expect(c.body).toContain("");
             },
           },
@@ -1266,7 +1265,6 @@ describe("Lead collection enabled", async () => {
           messages: {
             // @ts-ignore just for this test
             create: (c) => {
-              debugger;
               expect(c.body).toContain("");
             },
           },

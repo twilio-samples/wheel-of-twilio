@@ -71,7 +71,7 @@ export async function generateResponse(
     messageContent: string;
     attendeesMap: SyncMapContext;
     betsDoc: DocumentInstance;
-  },
+  }
 ) {
   const { OFFERED_PRIZES, DISABLE_LEAD_COLLECTION } = process.env;
 
@@ -170,7 +170,7 @@ export async function generateResponse(
               try {
                 const traits = await fetchSegmentTraits(
                   verificationCheck.to,
-                  SEGMENT_TRAIT_CHECK,
+                  SEGMENT_TRAIT_CHECK
                 );
                 if (traits) {
                   foundInSegment = true;
@@ -183,7 +183,7 @@ export async function generateResponse(
 
             const contentTemplate = await getTemplate(
               "AskForBets",
-              country?.languages[0],
+              country?.languages[0]
             );
 
             await Promise.all([
@@ -218,8 +218,8 @@ export async function generateResponse(
           // check if one of the wedges is a substring of the capitalized messageContent
           wedges.some((wedge) =>
             capitalizeEachWord(messageContent).includes(
-              capitalizeEachWord(wedge),
-            ),
+              capitalizeEachWord(wedge)
+            )
           )
         ) {
           const { MAX_BETS_PER_USER = "0" } = process.env;
@@ -230,8 +230,8 @@ export async function generateResponse(
             .sort((a, b) => b.length - a.length)
             .find((wedge) =>
               capitalizeEachWord(messageContent).includes(
-                capitalizeEachWord(wedge),
-              ),
+                capitalizeEachWord(wedge)
+              )
             );
 
           const existingBet = bets.find((bet: any) => bet[0] === hashedSender);
@@ -275,12 +275,12 @@ export async function generateResponse(
           twimlRes.message(
             i18next.t("betPlaced", {
               messageContent: selectedBet,
-            }),
+            })
           );
         } else {
           const contentTemplate = await getTemplate(
             "InvalidBet",
-            country?.languages[0],
+            country?.languages[0]
           );
 
           await client.messages.create({
@@ -340,7 +340,7 @@ export async function generateResponse(
 
         const contentTemplate = await getTemplate(
           "AskForBets",
-          country?.languages[0],
+          country?.languages[0]
         );
 
         await client.messages.create({
@@ -375,21 +375,20 @@ export async function generateResponse(
         twimlRes.message(i18next.t("gameEnded"));
       } else if (
         wedges.some((wedge) =>
-          capitalizeEachWord(messageContent).includes(
-            capitalizeEachWord(wedge),
-          ),
+          capitalizeEachWord(messageContent).includes(capitalizeEachWord(wedge))
         )
       ) {
-        // @ts-expect-error  is not an object but an array
         const bets = betsDoc.data.bets ? [...betsDoc.data.bets] : [];
         const selectedBet = wedges
           .sort((a, b) => b.length - a.length)
           .find((wedge) =>
             capitalizeEachWord(messageContent).includes(
-              capitalizeEachWord(wedge),
-            ),
+              capitalizeEachWord(wedge)
+            )
           );
-        const { MAX_BETS_PER_USER = "0" } = process.env;
+        const { MAX_BETS_PER_USER = "0", NEXT_PUBLIC_PRIZES_PER_FIELD = "0" } =
+          process.env;
+        const prizesPerField = parseInt(NEXT_PUBLIC_PRIZES_PER_FIELD);
         const existingBet = bets.find((bet: any) => bet[0] === hashedSender);
 
         const maxBetsReached =
@@ -400,6 +399,15 @@ export async function generateResponse(
           twimlRes.message(i18next.t("maxBetsReached"));
           return twimlRes.toString();
         }
+
+        // Check if prizes are available for this field
+        const prizeWins = betsDoc.data.prizeWins || {};
+        const currentWins = selectedBet ? prizeWins[selectedBet] || 0 : 0;
+        const prizesLeft =
+          prizesPerField > 0 && selectedBet
+            ? Math.max(0, prizesPerField - currentWins)
+            : Number.MAX_SAFE_INTEGER;
+        const noPrizesLeft = prizesPerField > 0 && prizesLeft <= 0;
 
         if (existingBet) {
           existingBet[1] = selectedBet;
@@ -423,16 +431,26 @@ export async function generateResponse(
           });
         }
 
-        twimlRes.message(
-          i18next.t("betPlaced", {
-            senderName,
-            messageContent: selectedBet,
-          }),
-        );
+        // Send different message based on prize availability
+        if (noPrizesLeft) {
+          twimlRes.message(
+            i18next.t("betPlacedNoPrizes", {
+              senderName,
+              messageContent: selectedBet,
+            })
+          );
+        } else {
+          twimlRes.message(
+            i18next.t("betPlaced", {
+              senderName,
+              messageContent: selectedBet,
+            })
+          );
+        }
       } else {
         const contentTemplate = await getTemplate(
           "InvalidBet",
-          country?.languages[0],
+          country?.languages[0]
         );
 
         await client.messages.create({
