@@ -26,6 +26,7 @@ function App() {
   const screenOrientation = useScreenOrientation();
 
   let wedges = (process.env.NEXT_PUBLIC_WEDGES || "").split(",");
+  const hideQrCode = process.env.NEXT_PUBLIC_HIDE_QR_CODE === "true";
 
   useEffect(() => {
     let syncClient: SyncClient;
@@ -80,11 +81,13 @@ function App() {
 
   const legalText = (
     <>
-      <p className="">
-        Please note that by scanning the QR code a WhatsApp conversation will be
-        prompted and your WhatsApp profile and phone number will be accessible
-        by Twilio.
-      </p>
+      {!hideQrCode && (
+        <p className="">
+          Please note that by scanning the QR code a WhatsApp conversation will be
+          prompted and your WhatsApp profile and phone number will be accessible
+          by Twilio.
+        </p>
+      )}
       <p className="">
         Your WhatsApp profile and phone number is necessary for you to play the
         game and will be deleted at the end of the event. Your personal data
@@ -169,20 +172,22 @@ function App() {
       </div>
 
       <div className="absolute bottom-5  text-gray-500 text-xs mb-2">
-        <div className="mx-auto grid grid-cols-3 gap-6 mb-5 mr-12 ">
-          <p className="ml-auto my-auto text-right col-span-2 font-extrabold text-4xl text-[#FDF7F4]">
-            {CTA}
-          </p>
-          <div>
-            <QRCode
-              className="mx-auto w-62 h-62 p-1 bg-[#FDF7F4]"
-              value={QR_LINK_URL}
-            />
-            <p className="text-center text-lg text-gray-500">
-              {process.env.NEXT_PUBLIC_TWILIO_PHONE_NUMBER}
+        {!hideQrCode && (
+          <div className="mx-auto grid grid-cols-3 gap-6 mb-5 mr-12 ">
+            <p className="ml-auto my-auto text-right col-span-2 font-extrabold text-4xl text-[#FDF7F4]">
+              {CTA}
             </p>
+            <div>
+              <QRCode
+                className="mx-auto w-62 h-62 p-1 bg-[#FDF7F4]"
+                value={QR_LINK_URL}
+              />
+              <p className="text-center text-lg text-gray-500">
+                {process.env.NEXT_PUBLIC_TWILIO_PHONE_NUMBER}
+              </p>
+            </div>
           </div>
-        </div>
+        )}
         <div className="mx-12">{legalText}</div>
       </div>
     </div>
@@ -204,20 +209,22 @@ function App() {
       <div className="w-1/2 flex items-center justify-center">
         <div className="absolute pt-14 my-auto w-1/2">
           {spinner}
-          <div className="w-2/3 mx-auto grid grid-cols-3 gap-6 ">
-            <p className="ml-auto my-auto text-right col-span-2 font-extrabold text-2xl text-[#FDF7F4]">
-              {CTA}
-            </p>
-            <div>
-              <QRCode
-                className="mx-auto w-36 h-36 p-1 bg-[#FDF7F4]"
-                value={QR_LINK_URL}
-              />
-              <p className="text-center text-lg text-gray-500">
-                {process.env.NEXT_PUBLIC_TWILIO_PHONE_NUMBER}
+          {!hideQrCode && (
+            <div className="w-2/3 mx-auto grid grid-cols-3 gap-6 ">
+              <p className="ml-auto my-auto text-right col-span-2 font-extrabold text-2xl text-[#FDF7F4]">
+                {CTA}
               </p>
+              <div>
+                <QRCode
+                  className="mx-auto w-36 h-36 p-1 bg-[#FDF7F4]"
+                  value={QR_LINK_URL}
+                />
+                <p className="text-center text-lg text-gray-500">
+                  {process.env.NEXT_PUBLIC_TWILIO_PHONE_NUMBER}
+                </p>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </>
