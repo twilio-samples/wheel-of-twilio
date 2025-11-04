@@ -77,6 +77,7 @@ export async function tempUnlockGame() {
   await betsDoc.update({
     data: {
       ...betsDoc.data,
+      bets: [],
       temporaryBlock: false,
     },
   });
@@ -251,7 +252,10 @@ export async function notifyAndUpdateWinners(winners: any[]) {
     process.env;
   const prizesPerField = parseInt(NEXT_PUBLIC_PRIZES_PER_FIELD || "0");
 
-  const availablePrizes = SMALL_PRIZES?.split(",").map(prize => prize.trim()).filter(prize => prize !== "") || [];
+  const availablePrizes =
+    SMALL_PRIZES?.split(",")
+      .map((prize) => prize.trim())
+      .filter((prize) => prize !== "") || [];
 
   // Check if prizes are available for the winning field
   let prizesAvailable = true;
@@ -269,7 +273,6 @@ export async function notifyAndUpdateWinners(winners: any[]) {
     await betsDoc.update({
       data: {
         ...betsDoc.data,
-        bets: [],
         prizeWins: updatedWins,
       },
     });
