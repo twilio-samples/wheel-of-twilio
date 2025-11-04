@@ -293,16 +293,6 @@ describe("Prize Inventory Logic", () => {
       };
 
       // Mock the client sync service
-      const mockClientForInit = {
-        sync: {
-          v1: {
-            services: vi.fn(() => ({
-              fetch: vi.fn(() => Promise.resolve(mockSyncService)),
-            })),
-          },
-        },
-      };
-
       // Mock the initializePrizeInventory function behavior
       const expectedInventory = {
         Red: 10,
