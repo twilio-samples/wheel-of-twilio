@@ -359,11 +359,6 @@ describe("Prize Inventory Logic", () => {
         },
       };
 
-      const winners = [
-        ["hashedSender1", "JavaScript", "User1"],
-        ["hashedSender2", "JavaScript", "User2"],
-      ];
-
       // Mock the behavior that should happen
       const expectedUpdatedInventory = {
         "JavaScript": 3, // 5 - 2 winners
