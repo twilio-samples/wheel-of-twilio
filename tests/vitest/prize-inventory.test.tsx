@@ -352,19 +352,6 @@ describe("Prize Inventory Logic", () => {
         })),
       };
 
-      const mockClientForWinners = {
-        sync: {
-          v1: {
-            services: vi.fn(() => ({
-              fetch: vi.fn(() => Promise.resolve(mockSyncService)),
-            })),
-          },
-        },
-        messages: {
-          create: vi.fn(),
-        },
-      };
-
       // Mock the behavior that should happen
       const expectedUpdatedInventory = {
         JavaScript: 3, // 5 - 2 winners
