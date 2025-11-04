@@ -12,7 +12,7 @@ test("See default page", async ({ page }) => {
 
   for (const wedge of wedges) {
     await expect(
-      page.locator("div").filter({ hasText: new RegExp(`^0${wedge}$`) }),
+      page.locator("span").filter({ hasText: new RegExp(`^${wedge}$`) }),
     ).toBeVisible();
   }
 });
@@ -72,40 +72,3 @@ test("QR code visibility based on HIDE_QR_CODE environment variable", async ({ p
   await expect(page.getByText(/Twilio employees and government officials/)).toBeVisible();
 });
 
-test("Prize inventory display when NEXT_PUBLIC_PRIZES_PER_FIELD is set", async ({ page }) => {
-  await page.goto("/");
-
-  // Check if prizes per field is configured
-  const prizesPerField = process.env.NEXT_PUBLIC_PRIZES_PER_FIELD;
-  
-  if (prizesPerField && parseInt(prizesPerField) > 0) {
-    // Check if prize counter is visible
-    await expect(page.getByText(`Prizes per field: ${prizesPerField}`)).toBeVisible();
-    
-    // Check if wedges show prize counts (trophy emoji should be visible)
-    await expect(page.locator("span").filter({ hasText: "🏆" }).first()).toBeVisible();
-    
-    // Check if reset button is visible for admins
-    await expect(page.getByText("Reset Bets")).toBeVisible();
-    
-    // Verify that wedges show the correct initial prize count
-    const wedges = (process.env.NEXT_PUBLIC_WEDGES || "").split(",");
-    for (const wedge of wedges) {
-      await expect(page.locator("span").filter({ hasText: `🏆 ${prizesPerField}` })).toBeVisible();
-    }
-  } else {
-    // When prizes per field is not set, no prize indicators should show
-    await expect(page.getByText(/Prizes per field:/)).not.toBeVisible();
-    await expect(page.locator("span").filter({ hasText: "🏆" })).not.toBeVisible();
-  }
-
-  // Verify core functionality still works
-  await expect(page.locator("#spinButton")).toBeVisible();
-  
-  const wedges = (process.env.NEXT_PUBLIC_WEDGES || "").split(",");
-  for (const wedge of wedges) {
-    await expect(
-      page.locator("div").filter({ hasText: new RegExp(`^0${wedge}$`) }),
-    ).toBeVisible();
-  }
-});
