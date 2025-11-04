@@ -64,16 +64,32 @@ const throttle = throttledQueue({
 
   const betsDoc = client.sync.v1.services(SYNC_SERVICE_SID).documents("bets");
 
+  // Initialize prize wins tracking if NEXT_PUBLIC_PRIZES_PER_FIELD is set
+  const { NEXT_PUBLIC_WEDGES, NEXT_PUBLIC_PRIZES_PER_FIELD } = process.env;
+  const prizesPerField = parseInt(NEXT_PUBLIC_PRIZES_PER_FIELD || "0");
+
+  let prizeWins: Record<string, number> = {};
+  if (prizesPerField > 0) {
+    const wedges = (NEXT_PUBLIC_WEDGES || "").split(",");
+    wedges.forEach((wedge) => {
+      prizeWins[wedge] = 0;
+    });
+    console.log(
+      `Prize wins tracking reset to 0 wins per field (max ${prizesPerField} prizes per field)`,
+    );
+  }
+
   await betsDoc.update({
     data: {
       bets: [],
       temporaryBlock: false,
       closed: false,
       full: false,
+      prizeWins,
     },
   });
 
-  console.log("Bets doc cleared");
+  console.log("Bets doc cleared and prize wins tracking reset");
 
   const completedBetsDoc = client.sync.v1
     .services(SYNC_SERVICE_SID)

@@ -380,7 +380,6 @@ export async function generateResponse(
           ),
         )
       ) {
-        // @ts-expect-error  is not an object but an array
         const bets = betsDoc.data.bets ? [...betsDoc.data.bets] : [];
         const selectedBet = wedges
           .sort((a, b) => b.length - a.length)
@@ -389,7 +388,9 @@ export async function generateResponse(
               capitalizeEachWord(wedge),
             ),
           );
-        const { MAX_BETS_PER_USER = "0" } = process.env;
+        const { MAX_BETS_PER_USER = "0", NEXT_PUBLIC_PRIZES_PER_FIELD = "0" } =
+          process.env;
+        const prizesPerField = parseInt(NEXT_PUBLIC_PRIZES_PER_FIELD);
         const existingBet = bets.find((bet: any) => bet[0] === hashedSender);
 
         const maxBetsReached =
@@ -400,6 +401,15 @@ export async function generateResponse(
           twimlRes.message(i18next.t("maxBetsReached"));
           return twimlRes.toString();
         }
+
+        // Check if prizes are available for this field
+        const prizeWins = betsDoc.data.prizeWins || {};
+        const currentWins = selectedBet ? prizeWins[selectedBet] || 0 : 0;
+        const prizesLeft =
+          prizesPerField > 0 && selectedBet
+            ? Math.max(0, prizesPerField - currentWins)
+            : Number.MAX_SAFE_INTEGER;
+        const noPrizesLeft = prizesPerField > 0 && prizesLeft <= 0;
 
         if (existingBet) {
           existingBet[1] = selectedBet;
@@ -423,12 +433,22 @@ export async function generateResponse(
           });
         }
 
-        twimlRes.message(
-          i18next.t("betPlaced", {
-            senderName,
-            messageContent: selectedBet,
-          }),
-        );
+        // Send different message based on prize availability
+        if (noPrizesLeft) {
+          twimlRes.message(
+            i18next.t("betPlacedNoPrizes", {
+              senderName,
+              messageContent: selectedBet,
+            }),
+          );
+        } else {
+          twimlRes.message(
+            i18next.t("betPlaced", {
+              senderName,
+              messageContent: selectedBet,
+            }),
+          );
+        }
       } else {
         const contentTemplate = await getTemplate(
           "InvalidBet",

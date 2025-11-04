@@ -72,16 +72,44 @@ export async function fetchToken() {
 
 export async function tempUnlockGame() {
   const syncService = await client.sync.v1.services(SYNC_SERVICE_SID).fetch();
-  const betsDoc = syncService.documents()("bets");
+  const betsDoc = await syncService.documents()("bets").fetch();
 
   await betsDoc.update({
     data: {
+      ...betsDoc.data,
       bets: [],
       temporaryBlock: false,
-      closed: false,
-      full: false,
     },
   });
+}
+
+export async function initializePrizeWins() {
+  const { NEXT_PUBLIC_WEDGES, NEXT_PUBLIC_PRIZES_PER_FIELD } = process.env;
+  const prizesPerField = parseInt(NEXT_PUBLIC_PRIZES_PER_FIELD || "0");
+
+  if (prizesPerField <= 0) {
+    return; // No prize tracking needed
+  }
+
+  const wedges = (NEXT_PUBLIC_WEDGES || "").split(",");
+  const syncService = await client.sync.v1.services(SYNC_SERVICE_SID).fetch();
+  const betsDoc = await syncService.documents()("bets").fetch();
+
+  // Initialize prize wins to 0 for each wedge if not exists
+  const currentData = betsDoc.data || {};
+  if (!currentData.prizeWins) {
+    const prizeWins: Record<string, number> = {};
+    wedges.forEach((wedge) => {
+      prizeWins[wedge] = 0;
+    });
+
+    await betsDoc.update({
+      data: {
+        ...currentData,
+        prizeWins,
+      },
+    });
+  }
 }
 
 export interface MaskedPlayer {
@@ -169,16 +197,16 @@ export async function tempLockGame() {
       completedBets.data.distribution[bet[1]] + 1 || 1;
     completedBets.data.uniques[bet[0]] = true;
   });
-
   await Promise.all([
     completedBetsDoc.update({
       data: {
         ...completedBets.data,
       },
     }),
+
     betsDoc.update({
       data: {
-        ...betsDoc.data,
+        ...bets.data,
         temporaryBlock: true,
       },
     }),
@@ -218,24 +246,54 @@ export async function changeGameLock(severity: "running" | "break" | "end") {
 export async function notifyAndUpdateWinners(winners: any[]) {
   const syncService = await client.sync.v1.services(SYNC_SERVICE_SID).fetch();
   const attendeesMap = syncService.syncMaps()("attendees");
+  const betsDoc = await syncService.documents()("bets").fetch();
 
-  const { OFFERED_PRIZES, SMALL_PRIZES } = process.env;
+  const { OFFERED_PRIZES, SMALL_PRIZES, NEXT_PUBLIC_PRIZES_PER_FIELD } =
+    process.env;
+  const prizesPerField = parseInt(NEXT_PUBLIC_PRIZES_PER_FIELD || "0");
 
-  const availablePrizes = SMALL_PRIZES?.split(",") || [];
+  const availablePrizes =
+    SMALL_PRIZES?.split(",")
+      .map((prize) => prize.trim())
+      .filter((prize) => prize !== "") || [];
+
+  // Check if prizes are available for the winning field
+  let prizesAvailable = true;
+  if (prizesPerField > 0 && winners.length > 0) {
+    const currentWins = betsDoc.data.prizeWins || {};
+    const winningField = winners[0][1]; // Assuming all winners are for the same field
+    const currentWinCount = currentWins[winningField] || 0;
+
+    // Check if adding these winners would exceed the prize limit
+    prizesAvailable = currentWinCount + winners.length <= prizesPerField;
+
+    // Update win count regardless (for tracking purposes)
+    const updatedWins = { ...currentWins };
+    updatedWins[winningField] = currentWinCount + winners.length;
+    await betsDoc.update({
+      data: {
+        ...betsDoc.data,
+        prizeWins: updatedWins,
+      },
+    });
+  }
 
   await Promise.all(
     winners.map(async (winningBet) => {
       const winner = await attendeesMap.syncMapItems(winningBet[0]).fetch();
 
-      const randomPrize = availablePrizes.length > 0
-        ? ` a *${availablePrizes[Math.floor(Math.random() * availablePrizes.length)]}*`
-        : "";
+      const randomPrize =
+        availablePrizes.length > 0 && prizesAvailable
+          ? ` a *${availablePrizes[Math.floor(Math.random() * availablePrizes.length)]}*`
+          : "";
 
       try {
         await attendeesMap.syncMapItems(winningBet[0]).update({
           data: {
             ...winner.data,
-            stage: Stages.WINNER_UNCLAIMED,
+            stage: prizesAvailable
+              ? Stages.WINNER_UNCLAIMED
+              : Stages.WINNER_CLAIMED,
             smallPrize: randomPrize,
           },
         });
@@ -247,7 +305,10 @@ export async function notifyAndUpdateWinners(winners: any[]) {
         }
       }
 
-      if (OFFERED_PRIZES === "small" || OFFERED_PRIZES === "both") {
+      if (
+        (OFFERED_PRIZES === "small" || OFFERED_PRIZES === "both") &&
+        prizesAvailable
+      ) {
         try {
           await callWinner(
             winner.data.sender.replace("whatsapp:", ""),
@@ -260,7 +321,16 @@ export async function notifyAndUpdateWinners(winners: any[]) {
       }
 
       let message;
-      if (OFFERED_PRIZES === "big") {
+
+      // Check if prizes are available for this winner
+      if (!prizesAvailable && prizesPerField > 0) {
+        // Winner on correct field but no prizes left
+        message = await localizeStringForPhoneNumber(
+          "winnerMessageNoPrizesLeft",
+          winner.data.sender.replace("whatsapp:", ""),
+          {},
+        );
+      } else if (OFFERED_PRIZES === "big") {
         message = await localizeStringForPhoneNumber(
           "winnerMessageRaffleQualification",
           winner.data.sender.replace("whatsapp:", ""),
@@ -281,8 +351,6 @@ export async function notifyAndUpdateWinners(winners: any[]) {
             {},
           ));
       }
-
-      console.log(message);
 
       try {
         await client.messages.create({

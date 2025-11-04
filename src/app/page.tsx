@@ -23,9 +23,14 @@ const myFont = localFont({
 function App() {
   const [bets, setBets] = useState<any[]>([]);
   const [isFull, setIsFull] = useState(false);
+  const [prizeWins, setPrizeWins] = useState<Record<string, number>>({});
   const screenOrientation = useScreenOrientation();
 
   let wedges = (process.env.NEXT_PUBLIC_WEDGES || "").split(",");
+  const hideQrCode = process.env.NEXT_PUBLIC_HIDE_QR_CODE === "true";
+  const prizesPerField = parseInt(
+    process.env.NEXT_PUBLIC_PRIZES_PER_FIELD || "0",
+  );
 
   useEffect(() => {
     let syncClient: SyncClient;
@@ -44,11 +49,13 @@ function App() {
           doc.on("updated", (event: any) => {
             if (event.data.bets) setBets(event.data.bets);
             setIsFull(event?.data?.full || false);
+            if (event.data.prizeWins) setPrizeWins(event.data.prizeWins);
           });
 
           if (doc.data) {
             setBets(doc.data.bets || []);
             setIsFull(doc.data.full);
+            setPrizeWins(doc.data.prizeWins || {});
           }
         }
       });
@@ -71,7 +78,7 @@ function App() {
         notifyAndUpdateWinners(bets.filter((bet) => bet[1] === selectedWedge));
         messageOthers(
           bets.filter((bet) => bet[1] !== selectedWedge),
-          selectedWedge
+          selectedWedge,
         );
         tempUnlockGame();
       }}
@@ -80,11 +87,13 @@ function App() {
 
   const legalText = (
     <>
-      <p className="">
-        Please note that by scanning the QR code a WhatsApp conversation will be
-        prompted and your WhatsApp profile and phone number will be accessible
-        by Twilio.
-      </p>
+      {!hideQrCode && (
+        <p className="">
+          Please note that by scanning the QR code a WhatsApp conversation will
+          be prompted and your WhatsApp profile and phone number will be
+          accessible by Twilio.
+        </p>
+      )}
       <p className="">
         Your WhatsApp profile and phone number is necessary for you to play the
         game and will be deleted at the end of the event. Your personal data
@@ -114,14 +123,29 @@ function App() {
   );
 
   const fieldsWithBets = wedges.map((wedge) => {
+    const betCount = bets.filter((bet) => bet[1] === wedge).length;
+    const wins = prizeWins[wedge] || 0;
+    const prizesLeft =
+      prizesPerField > 0
+        ? Math.max(0, prizesPerField - wins)
+        : Number.MAX_SAFE_INTEGER;
+    const noPrizesLeft = prizesPerField > 0 && prizesLeft <= 0;
+
     return (
       <div
         key={wedge}
-        className={`relative text-[#FDF7F4]  py-3 rounded-full w-full ring-[#FFF1F3] ring-2 shadow-[0px_0px_15px_1px]  shadow-[#FFF1F3]`}
+        className={`relative text-[#FDF7F4] py-3 rounded-full w-full ring-2 shadow-[0px_0px_15px_1px] ${
+          noPrizesLeft
+            ? "ring-gray-500 shadow-gray-500 opacity-60"
+            : "ring-[#FFF1F3] shadow-[#FFF1F3]"
+        }`}
       >
-        <span className="text-[6px] absolute bottom-3 left-5">
-          {bets.filter((bet) => bet[1] === wedge).length}
-        </span>
+        <span className="text-[6px] absolute bottom-3 left-5">{betCount}</span>
+        {prizesPerField > 0 && (
+          <span className="text-[10px] absolute top-5 right-2 text-yellow-300">
+            🏆 {noPrizesLeft ? "0" : prizesLeft}
+          </span>
+        )}
         {bets
           .filter((bet) => bet[1] === wedge)
           .map((bet, index) => {
@@ -151,7 +175,9 @@ function App() {
                     alt="bet chip"
                     className="absolute scale-[0.15] z-10 translate-x-[110px]  translate-y-[-160px]"
                   /> */}
-        <span className="text-base ">{wedge}</span>
+        <span className={`text-base ${noPrizesLeft ? "line-through" : ""}`}>
+          {wedge}
+        </span>
       </div>
     );
   });
@@ -169,20 +195,22 @@ function App() {
       </div>
 
       <div className="absolute bottom-5  text-gray-500 text-xs mb-2">
-        <div className="mx-auto grid grid-cols-3 gap-6 mb-5 mr-12 ">
-          <p className="ml-auto my-auto text-right col-span-2 font-extrabold text-4xl text-[#FDF7F4]">
-            {CTA}
-          </p>
-          <div>
-            <QRCode
-              className="mx-auto w-62 h-62 p-1 bg-[#FDF7F4]"
-              value={QR_LINK_URL}
-            />
-            <p className="text-center text-lg text-gray-500">
-              {process.env.NEXT_PUBLIC_TWILIO_PHONE_NUMBER}
+        {!hideQrCode && (
+          <div className="mx-auto grid grid-cols-3 gap-6 mb-5 mr-12 ">
+            <p className="ml-auto my-auto text-right col-span-2 font-extrabold text-4xl text-[#FDF7F4]">
+              {CTA}
             </p>
+            <div>
+              <QRCode
+                className="mx-auto w-62 h-62 p-1 bg-[#FDF7F4]"
+                value={QR_LINK_URL}
+              />
+              <p className="text-center text-lg text-gray-500">
+                {process.env.NEXT_PUBLIC_TWILIO_PHONE_NUMBER}
+              </p>
+            </div>
           </div>
-        </div>
+        )}
         <div className="mx-12">{legalText}</div>
       </div>
     </div>
@@ -204,20 +232,22 @@ function App() {
       <div className="w-1/2 flex items-center justify-center">
         <div className="absolute pt-14 my-auto w-1/2">
           {spinner}
-          <div className="w-2/3 mx-auto grid grid-cols-3 gap-6 ">
-            <p className="ml-auto my-auto text-right col-span-2 font-extrabold text-2xl text-[#FDF7F4]">
-              {CTA}
-            </p>
-            <div>
-              <QRCode
-                className="mx-auto w-36 h-36 p-1 bg-[#FDF7F4]"
-                value={QR_LINK_URL}
-              />
-              <p className="text-center text-lg text-gray-500">
-                {process.env.NEXT_PUBLIC_TWILIO_PHONE_NUMBER}
+          {!hideQrCode && (
+            <div className="w-2/3 mx-auto grid grid-cols-3 gap-6 ">
+              <p className="ml-auto my-auto text-right col-span-2 font-extrabold text-2xl text-[#FDF7F4]">
+                {CTA}
               </p>
+              <div>
+                <QRCode
+                  className="mx-auto w-36 h-36 p-1 bg-[#FDF7F4]"
+                  value={QR_LINK_URL}
+                />
+                <p className="text-center text-lg text-gray-500">
+                  {process.env.NEXT_PUBLIC_TWILIO_PHONE_NUMBER}
+                </p>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </>

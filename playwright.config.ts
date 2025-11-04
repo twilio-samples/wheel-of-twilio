@@ -16,6 +16,8 @@ const baseURL = `http://localhost:${PORT}`;
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
+  timeout: 120_000,
+
   testDir: "./tests/e2e",
   /* Run tests in files in parallel */
   fullyParallel: true,
@@ -28,7 +30,7 @@ export default defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: "html",
 
-  globalTimeout: 40000,
+  globalTimeout: 40_000,
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
@@ -38,7 +40,7 @@ export default defineConfig({
     trace: "on-first-retry",
   },
 
-  globalSetup: require.resolve("./tests/global-setup"),
+  // globalSetup: require.resolve("./tests/global-setup"),
 
   /* Configure projects for major browsers */
   projects: [

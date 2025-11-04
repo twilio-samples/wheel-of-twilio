@@ -9,7 +9,7 @@ const [AUTH_USER, AUTH_PASS] = [
 ];
 
 // Step 1. HTTP Basic Auth Middleware for Challenge
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   if (!isAuthenticated(req)) {
     return new NextResponse("Authentication required", {
       status: 401,

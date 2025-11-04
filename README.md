@@ -19,7 +19,6 @@ This project is Twilio's innovative booth activation designed to motivate people
    ```
 
 2. **Set up Twilio Services:**
-
    - Go to the [Twilio Console](https://www.twilio.com/console).
    - Create the following services and save the service SIDs:
      - A [Sync Service](https://twilio.com/console/sync).
@@ -28,7 +27,6 @@ This project is Twilio's innovative booth activation designed to motivate people
      - Add an SMS sender to the Twilio Messaging Service to support SMS messages.
 
 3. **Configure Environment Variables:**
-
    - Rename `sample.env` to `.env.local`.
    - Add the required service SIDs and other variables in the `.env.local` file:
 
@@ -45,6 +43,8 @@ This project is Twilio's innovative booth activation designed to motivate people
      MESSAGING_SERVICE_SID="MGxxxxxxx"
      BASIC_AUTH_USERNAME="twilio"
      BASIC_AUTH_PASSWORD="admin!"
+     NEXT_PUBLIC_HIDE_QR_CODE=false
+     NEXT_PUBLIC_PRIZES_PER_FIELD=5
      OFFERED_PRIZES="big"
      DISABLE_LEAD_COLLECTION="false"
      SEGMENT_SPACE_ID="your_segment_space_id"
@@ -55,6 +55,8 @@ This project is Twilio's innovative booth activation designed to motivate people
      > The flag `OFFERED_PRIZES` influences the message the winners get. If set the `small`, winners who bet on the right field are informed that they won and can collect a small prize at the Twilio booth. If set to `big`, they are notified that they qualified for a larger prize. You can also set the value to `both`, so winners can pick up a small prize and are qualified for the raffle prize at the same time.
      > The option `MAX_BETS_PER_USER` limits how often one user can submit a bet. If 0, the users can enter as many bets as they want.
      > With `SMALL_PRIZES`, you can list the small prizes that are available for the winners. If someone wins a small prize, it will be randomly selected from the list and tell the user what they won.
+     > The flag `NEXT_PUBLIC_HIDE_QR_CODE` controls the visibility of QR code-related elements. When set to `true`, it hides the QR code, the "Scan the code and win prizes" text, the phone number display, and the QR code-related disclaimer. Defaults to `false` (shows all QR elements).
+     > The option `NEXT_PUBLIC_PRIZES_PER_FIELD` sets the number of prizes available per wedge/field. When set to a positive number, fields will be styled differently when prizes run out, and users betting on fields without prizes will receive a different confirmation message. Set to `0` or omit for unlimited prizes.
 
 4. **Run the setup script:**
 
