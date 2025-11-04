@@ -56,14 +56,16 @@ const mockAttendeesMap = {
   syncMapItems: vi.fn(() => ({
     create: vi.fn(),
     update: vi.fn(),
-    fetch: vi.fn(() => Promise.resolve({
-      data: {
-        name: "Test User",
-        sender: "+1234567890",
-        stage: Stages.VERIFIED_USER,
-        submittedBets: 0,
-      }
-    })),
+    fetch: vi.fn(() =>
+      Promise.resolve({
+        data: {
+          name: "Test User",
+          sender: "+1234567890",
+          stage: Stages.VERIFIED_USER,
+          submittedBets: 0,
+        },
+      }),
+    ),
   })),
 };
 
@@ -87,7 +89,7 @@ describe("Prize Inventory Logic", () => {
     vi.stubEnv("NEXT_PUBLIC_PRIZES_PER_FIELD", "5");
     vi.stubEnv("MAX_BETS_PER_USER", "0");
     vi.stubEnv("MESSAGING_SERVICE_SID", "MG123");
-    
+
     // Reset mock implementation
     mockGenerateResponse.mockReset();
   });
@@ -104,9 +106,9 @@ describe("Prize Inventory Logic", () => {
         data: {
           ...mockBetsDoc.data,
           prizeInventory: {
-            "JavaScript": 3,
-            "Python": 5,
-            "Java": 2,
+            JavaScript: 3,
+            Python: 5,
+            Java: 2,
           },
         },
       };
@@ -119,7 +121,9 @@ describe("Prize Inventory Logic", () => {
       };
 
       // Mock the response for when prizes are available
-      mockGenerateResponse.mockResolvedValue("Thank you. We have received your bet on JavaScript");
+      mockGenerateResponse.mockResolvedValue(
+        "Thank you. We have received your bet on JavaScript",
+      );
 
       const response = await generateResponse(
         currentUser,
@@ -132,7 +136,7 @@ describe("Prize Inventory Logic", () => {
           messageContent: "JavaScript",
           attendeesMap: mockAttendeesMap,
           betsDoc: mockBetsDocWithPrizes,
-        }
+        },
       );
 
       // Should contain normal bet placed message (not the no-prize version)
@@ -147,9 +151,9 @@ describe("Prize Inventory Logic", () => {
         data: {
           ...mockBetsDoc.data,
           prizeInventory: {
-            "JavaScript": 0, // No prizes left
-            "Python": 5,
-            "Java": 2,
+            JavaScript: 0, // No prizes left
+            Python: 5,
+            Java: 2,
           },
         },
       };
@@ -162,7 +166,9 @@ describe("Prize Inventory Logic", () => {
       };
 
       // Mock the response for when no prizes are left
-      mockGenerateResponse.mockResolvedValue("There are no prizes left for this field, but your bet is still valid");
+      mockGenerateResponse.mockResolvedValue(
+        "There are no prizes left for this field, but your bet is still valid",
+      );
 
       const response = await generateResponse(
         currentUser,
@@ -175,7 +181,7 @@ describe("Prize Inventory Logic", () => {
           messageContent: "JavaScript",
           attendeesMap: mockAttendeesMap,
           betsDoc: mockBetsDocNoPrizes,
-        }
+        },
       );
 
       // Should contain warning message about no prizes
@@ -201,7 +207,9 @@ describe("Prize Inventory Logic", () => {
       };
 
       // Mock the response for unlimited prizes
-      mockGenerateResponse.mockResolvedValue("Thank you. We have received your bet on JavaScript");
+      mockGenerateResponse.mockResolvedValue(
+        "Thank you. We have received your bet on JavaScript",
+      );
 
       const response = await generateResponse(
         currentUser,
@@ -214,7 +222,7 @@ describe("Prize Inventory Logic", () => {
           messageContent: "JavaScript",
           attendeesMap: mockAttendeesMap,
           betsDoc: mockBetsDocUndefined,
-        }
+        },
       );
 
       // Should treat as unlimited prizes
@@ -230,9 +238,9 @@ describe("Prize Inventory Logic", () => {
           ...mockBetsDoc.data,
           bets: [["hashedSender123", "Python", "Test User"]],
           prizeInventory: {
-            "JavaScript": 0, // No prizes left
-            "Python": 5,
-            "Java": 2,
+            JavaScript: 0, // No prizes left
+            Python: 5,
+            Java: 2,
           },
         },
       };
@@ -245,7 +253,9 @@ describe("Prize Inventory Logic", () => {
       };
 
       // Mock the response for bet change to field with no prizes
-      mockGenerateResponse.mockResolvedValue("There are no prizes left for this field, but we've updated your bet");
+      mockGenerateResponse.mockResolvedValue(
+        "There are no prizes left for this field, but we've updated your bet",
+      );
 
       const response = await generateResponse(
         currentUser,
@@ -258,7 +268,7 @@ describe("Prize Inventory Logic", () => {
           messageContent: "JavaScript", // Changing to field with no prizes
           attendeesMap: mockAttendeesMap,
           betsDoc: mockBetsDocWithExistingBet,
-        }
+        },
       );
 
       // Should warn about no prizes but allow bet change
@@ -273,9 +283,11 @@ describe("Prize Inventory Logic", () => {
 
       const mockSyncService = {
         documents: vi.fn(() => ({
-          fetch: vi.fn(() => Promise.resolve({
-            data: { bets: [] }
-          })),
+          fetch: vi.fn(() =>
+            Promise.resolve({
+              data: { bets: [] },
+            }),
+          ),
           update: vi.fn(),
         })),
       };
@@ -293,16 +305,16 @@ describe("Prize Inventory Logic", () => {
 
       // Mock the initializePrizeInventory function behavior
       const expectedInventory = {
-        "Red": 10,
-        "Blue": 10,
-        "Green": 10,
+        Red: 10,
+        Blue: 10,
+        Green: 10,
       };
 
       // This would be called in the actual function
       expect(expectedInventory).toEqual({
-        "Red": 10,
-        "Blue": 10,
-        "Green": 10,
+        Red: 10,
+        Blue: 10,
+        Green: 10,
       });
     });
 
@@ -310,14 +322,18 @@ describe("Prize Inventory Logic", () => {
       vi.stubEnv("NEXT_PUBLIC_PRIZES_PER_FIELD", "0");
 
       // When NEXT_PUBLIC_PRIZES_PER_FIELD is 0, no prize tracking should be enabled
-      const prizesPerField = parseInt(process.env.NEXT_PUBLIC_PRIZES_PER_FIELD || "0");
+      const prizesPerField = parseInt(
+        process.env.NEXT_PUBLIC_PRIZES_PER_FIELD || "0",
+      );
       expect(prizesPerField).toBe(0);
     });
 
     test("Should skip initialization when NEXT_PUBLIC_PRIZES_PER_FIELD is not set", async () => {
       vi.stubEnv("NEXT_PUBLIC_PRIZES_PER_FIELD", "");
 
-      const prizesPerField = parseInt(process.env.NEXT_PUBLIC_PRIZES_PER_FIELD || "0");
+      const prizesPerField = parseInt(
+        process.env.NEXT_PUBLIC_PRIZES_PER_FIELD || "0",
+      );
       expect(prizesPerField).toBe(0);
     });
   });
@@ -331,9 +347,9 @@ describe("Prize Inventory Logic", () => {
         data: {
           bets: [],
           prizeInventory: {
-            "JavaScript": 5,
-            "Python": 5,
-            "Java": 5,
+            JavaScript: 5,
+            Python: 5,
+            Java: 5,
           },
         },
         update: vi.fn(),
@@ -361,9 +377,9 @@ describe("Prize Inventory Logic", () => {
 
       // Mock the behavior that should happen
       const expectedUpdatedInventory = {
-        "JavaScript": 3, // 5 - 2 winners
-        "Python": 5,
-        "Java": 5,
+        JavaScript: 3, // 5 - 2 winners
+        Python: 5,
+        Java: 5,
       };
 
       // Verify the logic
@@ -386,11 +402,11 @@ describe("Prize Inventory Logic", () => {
       const prizesPerField = 2; // Only 2 prizes available
       const currentWins = 1; // 1 already won
       const winnersCount = 2; // 2 new winners (exceeds limit)
-      
+
       // Check if prizes are available (should be false)
-      const prizesAvailable = (currentWins + winnersCount) <= prizesPerField;
+      const prizesAvailable = currentWins + winnersCount <= prizesPerField;
       expect(prizesAvailable).toBe(false);
-      
+
       // Verify win count is still tracked
       const updatedWinCount = currentWins + winnersCount;
       expect(updatedWinCount).toBe(3);
@@ -401,9 +417,9 @@ describe("Prize Inventory Logic", () => {
     test("Should calculate prizes left correctly", () => {
       const prizesPerField = 5;
       const prizeInventory: Record<string, number> = {
-        "JavaScript": 3,
-        "Python": 0,
-        "Java": 5,
+        JavaScript: 3,
+        Python: 0,
+        Java: 5,
       };
 
       // Test JavaScript (has prizes)
@@ -425,7 +441,8 @@ describe("Prize Inventory Logic", () => {
       expect(javaNoPrizesLeft).toBe(false);
 
       // Test non-existent field (should default to full)
-      const newFieldPrizesLeft = prizeInventory["NonExistent"] ?? prizesPerField;
+      const newFieldPrizesLeft =
+        prizeInventory["NonExistent"] ?? prizesPerField;
       expect(newFieldPrizesLeft).toBe(5);
     });
 
@@ -433,7 +450,10 @@ describe("Prize Inventory Logic", () => {
       const prizesPerField = 0; // Unlimited
       const prizeInventory: Record<string, number> = {};
 
-      const prizesLeft = prizesPerField > 0 ? (prizeInventory["JavaScript"] ?? prizesPerField) : Number.MAX_SAFE_INTEGER;
+      const prizesLeft =
+        prizesPerField > 0
+          ? (prizeInventory["JavaScript"] ?? prizesPerField)
+          : Number.MAX_SAFE_INTEGER;
       const noPrizesLeft = prizesPerField > 0 && prizesLeft <= 0;
 
       expect(prizesLeft).toBe(Number.MAX_SAFE_INTEGER);
@@ -448,8 +468,8 @@ describe("Prize Inventory Logic", () => {
         data: {
           ...mockBetsDoc.data,
           prizeInventory: {
-            "JavaScript": 3,
-            "Python": 5,
+            JavaScript: 3,
+            Python: 5,
           } as Record<string, number>,
         },
       };
@@ -458,8 +478,11 @@ describe("Prize Inventory Logic", () => {
       const selectedBet = "NonExistentWedge";
       const prizesPerField = 5;
       const prizeInventory = mockBetsDocWithPrizes.data.prizeInventory;
-      
-      const prizesLeft = prizesPerField > 0 && selectedBet ? (prizeInventory[selectedBet] ?? prizesPerField) : Number.MAX_SAFE_INTEGER;
+
+      const prizesLeft =
+        prizesPerField > 0 && selectedBet
+          ? (prizeInventory[selectedBet] ?? prizesPerField)
+          : Number.MAX_SAFE_INTEGER;
       const noPrizesLeft = prizesPerField > 0 && prizesLeft <= 0;
 
       // Should default to full prize count for new fields
@@ -474,8 +497,11 @@ describe("Prize Inventory Logic", () => {
 
       // Should handle null gracefully
       const safePrizeInventory: Record<string, number> = prizeInventory || {};
-      const prizesLeft = prizesPerField > 0 && selectedBet ? (safePrizeInventory[selectedBet] ?? prizesPerField) : Number.MAX_SAFE_INTEGER;
-      
+      const prizesLeft =
+        prizesPerField > 0 && selectedBet
+          ? (safePrizeInventory[selectedBet] ?? prizesPerField)
+          : Number.MAX_SAFE_INTEGER;
+
       expect(prizesLeft).toBe(5);
     });
   });

@@ -28,7 +28,9 @@ function App() {
 
   let wedges = (process.env.NEXT_PUBLIC_WEDGES || "").split(",");
   const hideQrCode = process.env.NEXT_PUBLIC_HIDE_QR_CODE === "true";
-  const prizesPerField = parseInt(process.env.NEXT_PUBLIC_PRIZES_PER_FIELD || "0");
+  const prizesPerField = parseInt(
+    process.env.NEXT_PUBLIC_PRIZES_PER_FIELD || "0",
+  );
 
   useEffect(() => {
     let syncClient: SyncClient;
@@ -76,7 +78,7 @@ function App() {
         notifyAndUpdateWinners(bets.filter((bet) => bet[1] === selectedWedge));
         messageOthers(
           bets.filter((bet) => bet[1] !== selectedWedge),
-          selectedWedge
+          selectedWedge,
         );
         tempUnlockGame();
       }}
@@ -87,9 +89,9 @@ function App() {
     <>
       {!hideQrCode && (
         <p className="">
-          Please note that by scanning the QR code a WhatsApp conversation will be
-          prompted and your WhatsApp profile and phone number will be accessible
-          by Twilio.
+          Please note that by scanning the QR code a WhatsApp conversation will
+          be prompted and your WhatsApp profile and phone number will be
+          accessible by Twilio.
         </p>
       )}
       <p className="">
@@ -123,21 +125,22 @@ function App() {
   const fieldsWithBets = wedges.map((wedge) => {
     const betCount = bets.filter((bet) => bet[1] === wedge).length;
     const wins = prizeWins[wedge] || 0;
-    const prizesLeft = prizesPerField > 0 ? Math.max(0, prizesPerField - wins) : Number.MAX_SAFE_INTEGER;
+    const prizesLeft =
+      prizesPerField > 0
+        ? Math.max(0, prizesPerField - wins)
+        : Number.MAX_SAFE_INTEGER;
     const noPrizesLeft = prizesPerField > 0 && prizesLeft <= 0;
-    
+
     return (
       <div
         key={wedge}
         className={`relative text-[#FDF7F4] py-3 rounded-full w-full ring-2 shadow-[0px_0px_15px_1px] ${
-          noPrizesLeft 
-            ? "ring-gray-500 shadow-gray-500 opacity-60" 
+          noPrizesLeft
+            ? "ring-gray-500 shadow-gray-500 opacity-60"
             : "ring-[#FFF1F3] shadow-[#FFF1F3]"
         }`}
       >
-        <span className="text-[6px] absolute bottom-3 left-5">
-          {betCount}
-        </span>
+        <span className="text-[6px] absolute bottom-3 left-5">{betCount}</span>
         {prizesPerField > 0 && (
           <span className="text-[10px] absolute top-5 right-2 text-yellow-300">
             🏆 {noPrizesLeft ? "0" : prizesLeft}
@@ -175,7 +178,6 @@ function App() {
         <span className={`text-base ${noPrizesLeft ? "line-through" : ""}`}>
           {wedge}
         </span>
-       
       </div>
     );
   });

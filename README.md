@@ -19,7 +19,6 @@ This project is Twilio's innovative booth activation designed to motivate people
    ```
 
 2. **Set up Twilio Services:**
-
    - Go to the [Twilio Console](https://www.twilio.com/console).
    - Create the following services and save the service SIDs:
      - A [Sync Service](https://twilio.com/console/sync).
@@ -28,7 +27,6 @@ This project is Twilio's innovative booth activation designed to motivate people
      - Add an SMS sender to the Twilio Messaging Service to support SMS messages.
 
 3. **Configure Environment Variables:**
-
    - Rename `sample.env` to `.env.local`.
    - Add the required service SIDs and other variables in the `.env.local` file:
 

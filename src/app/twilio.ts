@@ -35,7 +35,7 @@ async function localizeStringForPhoneNumber(
   params: {
     winningWedge?: string;
     smallPrize?: string;
-  }
+  },
 ) {
   await i18next.init({
     lng: getCountry(phone)?.languages[0],
@@ -62,7 +62,7 @@ export async function fetchToken() {
     TWILIO_API_SECRET,
     {
       identity: Privilege.FRONTEND,
-    }
+    },
   );
 
   token.addGrant(syncGrant);
@@ -145,7 +145,7 @@ export async function getWinners(allWinners: boolean): Promise<MaskedPlayer[]> {
       (a: any) =>
         a.stage === Stages.WINNER_UNCLAIMED ||
         (allWinners && a.stage === Stages.WINNER_CLAIMED) ||
-        (allWinners && a.stage === Stages.RAFFLE_WINNER)
+        (allWinners && a.stage === Stages.RAFFLE_WINNER),
     );
 }
 
@@ -159,7 +159,7 @@ export async function winnerPrizeClaimed(winnerKey: string) {
       body: await localizeStringForPhoneNumber(
         "prizePickup",
         winner.data.sender.replace("whatsapp:", ""),
-        {}
+        {},
       ),
       messagingServiceSid: MESSAGING_SERVICE_SID,
       from: winner.data.recipient,
@@ -247,7 +247,8 @@ export async function notifyAndUpdateWinners(winners: any[]) {
   const attendeesMap = syncService.syncMaps()("attendees");
   const betsDoc = await syncService.documents()("bets").fetch();
 
-  const { OFFERED_PRIZES, SMALL_PRIZES, NEXT_PUBLIC_PRIZES_PER_FIELD } = process.env;
+  const { OFFERED_PRIZES, SMALL_PRIZES, NEXT_PUBLIC_PRIZES_PER_FIELD } =
+    process.env;
   const prizesPerField = parseInt(NEXT_PUBLIC_PRIZES_PER_FIELD || "0");
 
   const availablePrizes = SMALL_PRIZES?.split(",") || [];
@@ -258,10 +259,10 @@ export async function notifyAndUpdateWinners(winners: any[]) {
     const currentWins = betsDoc.data.prizeWins || {};
     const winningField = winners[0][1]; // Assuming all winners are for the same field
     const currentWinCount = currentWins[winningField] || 0;
-    
+
     // Check if adding these winners would exceed the prize limit
-    prizesAvailable = (currentWinCount + winners.length) <= prizesPerField;
-    
+    prizesAvailable = currentWinCount + winners.length <= prizesPerField;
+
     // Update win count regardless (for tracking purposes)
     const updatedWins = { ...currentWins };
     updatedWins[winningField] = currentWinCount + winners.length;
@@ -287,7 +288,9 @@ export async function notifyAndUpdateWinners(winners: any[]) {
         await attendeesMap.syncMapItems(winningBet[0]).update({
           data: {
             ...winner.data,
-            stage: prizesAvailable ? Stages.WINNER_UNCLAIMED : Stages.WINNER_CLAIMED,
+            stage: prizesAvailable
+              ? Stages.WINNER_UNCLAIMED
+              : Stages.WINNER_CLAIMED,
             smallPrize: randomPrize,
           },
         });
@@ -299,12 +302,15 @@ export async function notifyAndUpdateWinners(winners: any[]) {
         }
       }
 
-      if ((OFFERED_PRIZES === "small" || OFFERED_PRIZES === "both") && prizesAvailable) {
+      if (
+        (OFFERED_PRIZES === "small" || OFFERED_PRIZES === "both") &&
+        prizesAvailable
+      ) {
         try {
           await callWinner(
             winner.data.sender.replace("whatsapp:", ""),
             winner.data.recipient.replace("whatsapp:", ""),
-            false
+            false,
           );
         } catch (e: any) {
           console.error(e.message);
@@ -312,34 +318,34 @@ export async function notifyAndUpdateWinners(winners: any[]) {
       }
 
       let message;
-      
+
       // Check if prizes are available for this winner
       if (!prizesAvailable && prizesPerField > 0) {
         // Winner on correct field but no prizes left
         message = await localizeStringForPhoneNumber(
           "winnerMessageNoPrizesLeft",
           winner.data.sender.replace("whatsapp:", ""),
-          {}
+          {},
         );
       } else if (OFFERED_PRIZES === "big") {
         message = await localizeStringForPhoneNumber(
           "winnerMessageRaffleQualification",
           winner.data.sender.replace("whatsapp:", ""),
-          {}
+          {},
         );
       } else {
         message =
           (await localizeStringForPhoneNumber(
             "winnerMessageSmallPrizeStart",
             winner.data.sender.replace("whatsapp:", ""),
-            { smallPrize: randomPrize }
+            { smallPrize: randomPrize },
           )) +
           (await localizeStringForPhoneNumber(
             OFFERED_PRIZES === "both"
               ? "winnerMessageBothPrizesEnd"
               : "winnerMessageSmallPrizeEnd",
             winner.data.sender.replace("whatsapp:", ""),
-            {}
+            {},
           ));
       }
 
@@ -352,23 +358,23 @@ export async function notifyAndUpdateWinners(winners: any[]) {
         });
       } catch (e: any) {
         console.error(
-          `Failed to send message to ${winner.data.sender}: ${e.message}`
+          `Failed to send message to ${winner.data.sender}: ${e.message}`,
         );
       }
-    })
+    }),
   );
 }
 
 export async function callWinner(
   to: string,
   from: string,
-  rafflePrize: boolean
+  rafflePrize: boolean,
 ) {
   await client.calls.create({
     twiml: await localizeStringForPhoneNumber(
       rafflePrize ? "winnerCallRafflePrize" : "winnerCallSmallPrize",
       to,
-      {}
+      {},
     ),
     from,
     to,
@@ -378,13 +384,13 @@ export async function callWinner(
 export async function sendRaffleWinnerMessage(
   name: string,
   to: string,
-  from: string
+  from: string,
 ) {
   await client.messages.create({
     body: await localizeStringForPhoneNumber(
       "winnerMessageRafflePrize",
       to,
-      {}
+      {},
     ),
     from,
     to,
@@ -409,7 +415,7 @@ export async function messageOthers(unluckyBets: any[], winningWedge: string) {
         const body = await localizeStringForPhoneNumber(
           hasMoreBetsLeft ? "loserHasMoreTries" : "loserLastTry",
           unluckyPlayer.data.sender,
-          { winningWedge }
+          { winningWedge },
         );
         await client.messages.create({
           body,
@@ -424,13 +430,13 @@ export async function messageOthers(unluckyBets: any[], winningWedge: string) {
           console.error(e.message);
         }
       }
-    })
+    }),
   );
 }
 
 export async function fetchSegmentTraits(
   email: string,
-  specificTrait?: string
+  specificTrait?: string,
 ) {
   let url = `https://profiles.segment.com/v1/spaces/${SEGMENT_SPACE_ID}/collections/users/profiles/email:${email}/traits`;
   if (specificTrait) {
@@ -474,7 +480,7 @@ export async function getAllTemplates() {
     } while (nextUrl);
 
     matches = allTemplates.filter((t: any) =>
-      t.friendly_name.includes(TEMPLATE_PREFIX)
+      t.friendly_name.includes(TEMPLATE_PREFIX),
     );
   } catch (err) {
     console.error(err);
@@ -490,10 +496,10 @@ const templates = await getAllTemplates();
 
 export async function getTemplate(name: string, language?: string) {
   const rightLanguage = templates.find((t: any) =>
-    t.friendly_name.includes(`_${name}_${language}`)
+    t.friendly_name.includes(`_${name}_${language}`),
   );
   const englishLanguage = templates.find((t: any) =>
-    t.friendly_name.includes(`_${name}_en`)
+    t.friendly_name.includes(`_${name}_en`),
   );
   return rightLanguage || englishLanguage;
 }
@@ -524,7 +530,7 @@ export const raffleWinner = async () => {
   const potentialWinners = mapItems.filter(
     (attendee) =>
       attendee.data.stage === Stages.WINNER_UNCLAIMED ||
-      attendee.data.stage === Stages.WINNER_CLAIMED
+      attendee.data.stage === Stages.WINNER_CLAIMED,
   );
 
   if (potentialWinners.length === 0) {
@@ -551,13 +557,13 @@ export const raffleWinner = async () => {
   await sendRaffleWinnerMessage(
     winner.data.fullName,
     winner.data.sender,
-    winner.data.recipient
+    winner.data.recipient,
   );
 
   await callWinner(
     winner.data.sender.replace("whatsapp:", ""),
     winner.data.recipient.replace("whatsapp:", ""),
-    true
+    true,
   );
 
   console.log("Found winner and called them");

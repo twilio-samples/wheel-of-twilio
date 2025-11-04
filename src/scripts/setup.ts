@@ -48,9 +48,11 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
   async function initializePrizeWins() {
     const { NEXT_PUBLIC_WEDGES, NEXT_PUBLIC_PRIZES_PER_FIELD } = process.env;
     const prizesPerField = parseInt(NEXT_PUBLIC_PRIZES_PER_FIELD || "0");
-    
+
     if (prizesPerField <= 0) {
-      console.log("No prize tracking enabled (NEXT_PUBLIC_PRIZES_PER_FIELD not set or 0)");
+      console.log(
+        "No prize tracking enabled (NEXT_PUBLIC_PRIZES_PER_FIELD not set or 0)",
+      );
       return; // No prize tracking needed
     }
 
@@ -59,7 +61,7 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
 
     // Initialize prize wins to 0 for each wedge
     const prizeWins: Record<string, number> = {};
-    wedges.forEach(wedge => {
+    wedges.forEach((wedge) => {
       prizeWins[wedge] = 0;
     });
 
@@ -71,9 +73,13 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
           prizeWins,
         },
       });
-      console.log(`Prize wins tracking initialized with 0 wins per field (max ${prizesPerField} prizes per field)`);
+      console.log(
+        `Prize wins tracking initialized with 0 wins per field (max ${prizesPerField} prizes per field)`,
+      );
     } catch (err) {
-      console.log("Bets document not yet created, prize wins tracking will be initialized on first use");
+      console.log(
+        "Bets document not yet created, prize wins tracking will be initialized on first use",
+      );
     }
   }
 

@@ -67,14 +67,16 @@ const throttle = throttledQueue({
   // Initialize prize wins tracking if NEXT_PUBLIC_PRIZES_PER_FIELD is set
   const { NEXT_PUBLIC_WEDGES, NEXT_PUBLIC_PRIZES_PER_FIELD } = process.env;
   const prizesPerField = parseInt(NEXT_PUBLIC_PRIZES_PER_FIELD || "0");
-  
+
   let prizeWins: Record<string, number> = {};
   if (prizesPerField > 0) {
     const wedges = (NEXT_PUBLIC_WEDGES || "").split(",");
-    wedges.forEach(wedge => {
+    wedges.forEach((wedge) => {
       prizeWins[wedge] = 0;
     });
-    console.log(`Prize wins tracking reset to 0 wins per field (max ${prizesPerField} prizes per field)`);
+    console.log(
+      `Prize wins tracking reset to 0 wins per field (max ${prizesPerField} prizes per field)`,
+    );
   }
 
   await betsDoc.update({
