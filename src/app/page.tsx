@@ -253,7 +253,6 @@ function App() {
 
   return (
     <div className="vh-full flex h-full">
-
       {isFull && (
         <div className="absolute z-10 animate-bounce bottom-10 left-1/2 transform -translate-x-1/2 w-8/10">
           <div className="bg-[#F22F46] text-[#FDF7F4] p-2 rounded-lg">
