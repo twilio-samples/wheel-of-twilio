@@ -70,6 +70,7 @@ export async function fetchToken() {
   return token.toJwt();
 }
 
+
 export async function tempUnlockGame() {
   const syncService = await client.sync.v1.services(SYNC_SERVICE_SID).fetch();
   const betsDoc = await syncService.documents()("bets").fetch();
