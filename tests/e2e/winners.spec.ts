@@ -8,9 +8,9 @@ test("See winners page", async ({ page }) => {
 
   await expect(page.getByPlaceholder("Filter name...")).toBeVisible();
   await page.getByPlaceholder("Filter sender...").click();
-  await page.getByRole("cell", { name: "Name" }).click();
-  await page.getByRole("cell", { name: "Sender" }).click();
-  await page.getByRole("cell", { name: "State" }).click();
+  await page.getByRole('columnheader', { name: 'Name' }).click();
+  await page.getByRole('columnheader', { name: 'Sender' }).click();
+  await page.getByRole('columnheader', { name: 'State' }).click();
   await expect(page.locator("td")).toContainText("No results.");
 });
 
