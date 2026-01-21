@@ -202,6 +202,8 @@ export async function generateResponse(
                 to: currentUser.sender,
               }),
             ]);
+          } else {
+            throw new Error("Invalid code");
           }
         } catch (e: any) {
           if (e.message !== "Invalid code") {

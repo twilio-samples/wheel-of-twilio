@@ -221,18 +221,18 @@ export async function changeGameLock(severity: "running" | "break" | "end") {
   const pause =
     severity === "break"
       ? {
-          quickBreak: true,
-          eventEnded: false,
-        }
+        quickBreak: true,
+        eventEnded: false,
+      }
       : severity === "end"
         ? {
-            quickBreak: false,
-            eventEnded: true,
-          }
+          quickBreak: false,
+          eventEnded: true,
+        }
         : {
-            quickBreak: false,
-            eventEnded: false,
-          };
+          quickBreak: false,
+          eventEnded: false,
+        };
 
   await Promise.all([
     betsDoc.update({
@@ -413,7 +413,7 @@ export async function messageOthers(unluckyBets: any[], winningWedge: string) {
           .syncMapItems(unluckyBet[0])
           .fetch();
         const hasMoreBetsLeft =
-          parseInt(MAX_BETS_PER_USER) > 0 &&
+          parseInt(MAX_BETS_PER_USER) === 0 ||
           unluckyPlayer.data?.submittedBets + 1 <= parseInt(MAX_BETS_PER_USER);
 
         const body = await localizeStringForPhoneNumber(

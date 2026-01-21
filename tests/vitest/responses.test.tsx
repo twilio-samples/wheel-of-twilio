@@ -75,7 +75,7 @@ describe("Lead collection disabled", async () => {
         },
       });
       expect(newUserWelcome).toContain(
-        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Welcome to the game`,
+        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>👋 Welcome to the Wheel Of Twilio!`,
       );
       expect(newUserWelcome).toContain(`</Message></Response>`);
     });
@@ -114,7 +114,7 @@ describe("Lead collection disabled", async () => {
         },
       });
       expect(newUserWelcome).toContain(
-        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Thank you.`,
+        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Thank you! 😊`,
       );
     });
   });
@@ -137,7 +137,7 @@ describe("Lead collection disabled", async () => {
         attendeesMap: {},
       });
       expect(newUserWelcome).toContain(
-        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Sorry, this is not a valid email address`,
+        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Oops! That doesn't look like a valid email address`,
       );
       expect(newUserWelcome).toContain(`</Message></Response>`);
     });
@@ -159,7 +159,7 @@ describe("Lead collection disabled", async () => {
         attendeesMap: {},
       });
       expect(response).toContain(
-        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Sorry, this is not a valid email address`,
+        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Oops! That doesn't look like a valid email address`,
       );
       expect(response).toContain(`</Message></Response>`);
     });
@@ -190,7 +190,7 @@ describe("Lead collection disabled", async () => {
         },
       });
       expect(response).toContain(
-        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Sorry, the verification code is incorrect. Please try again or enter a new email address.`,
+        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>That code doesn't match our records`,
       );
       expect(response).toContain(`</Message></Response>`);
     });
@@ -312,8 +312,8 @@ describe("Lead collection disabled", async () => {
           },
         },
       );
-      expect(response).toBe(
-        `<?xml version="1.0" encoding="UTF-8"?><Response/>`,
+      expect(response).toContain(
+        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>That code doesn't match our records`,
       );
     });
   });
@@ -344,7 +344,7 @@ describe("Lead collection disabled", async () => {
         },
       });
       expect(response).toContain(
-        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>The wheel is already spinning. We cannot accept your bet anymore.`,
+        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>The wheel is currently spinning!`,
       );
       expect(response).toContain(`</Message></Response>`);
     });
@@ -385,7 +385,7 @@ describe("Lead collection disabled", async () => {
         },
       });
       expect(response).toContain(
-        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Thank you.`,
+        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>🎯 Bet confirmed!`,
       );
       expect(response).toContain(`</Message></Response>`);
     });
@@ -590,7 +590,7 @@ describe("Lead collection disabled", async () => {
             // @ts-ignore just for this test
             create: (c) => {
               expect(c.body).toContain(
-                "Enjoy your prize. Feel free to visit the Twilio booth",
+                "You've already claimed your prize!",
               );
             },
           },
@@ -655,7 +655,7 @@ describe("Lead collection disabled", async () => {
         },
       );
       expect(response).toContain(
-        '<?xml version="1.0" encoding="UTF-8"?><Response><Message>Sorry, you have already placed the maximum number of bets.</Message>',
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Message>You've reached the maximum number of bets for this session!",
       );
     });
 
@@ -709,7 +709,7 @@ describe("Lead collection disabled", async () => {
         },
       );
       expect(response).toContain(
-        '<?xml version="1.0" encoding="UTF-8"?><Response><Message>Thank you. We have received your bet on "',
+        '<?xml version="1.0" encoding="UTF-8"?><Response><Message>🎯 Bet confirmed!',
       );
     });
 
@@ -786,7 +786,7 @@ describe("Lead collection disabled", async () => {
           // @ts-ignore just for this test
           create: (c) => {
             expect(c.body).toContain(
-              "Sorry, an error occurred. Please try again later.",
+              "Oops! Something went wrong on our end",
             );
           },
         },
@@ -863,7 +863,7 @@ describe("Lead collection enabled", async () => {
         },
       );
       expect(newUserWelcome).toContain(
-        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Welcome to the game`,
+        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>👋 Welcome to the Wheel Of Twilio!`,
       );
       expect(newUserWelcome).toContain(`</Message></Response>`);
     });
@@ -944,7 +944,7 @@ describe("Lead collection enabled", async () => {
         },
       });
       expect(response).toContain(
-        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>The wheel is already spinning. We cannot accept your bet anymore.`,
+        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>The wheel is currently spinning!`,
       );
     });
   });
@@ -975,7 +975,7 @@ describe("Lead collection enabled", async () => {
         },
       });
       expect(response).toContain(
-        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>The wheel is already spinning. We cannot accept your bet anymore.`,
+        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>The wheel is currently spinning!`,
       );
       expect(response).toContain(`</Message></Response>`);
     });
@@ -1016,7 +1016,7 @@ describe("Lead collection enabled", async () => {
         },
       });
       expect(response).toContain(
-        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>Thank you.`,
+        `<?xml version="1.0" encoding="UTF-8"?><Response><Message>🎯 Bet confirmed!`,
       );
       expect(response).toContain(`</Message></Response>`);
     });
@@ -1220,7 +1220,7 @@ describe("Lead collection enabled", async () => {
             // @ts-ignore just for this test
             create: (c) => {
               expect(c.body).toContain(
-                "Enjoy your prize. Feel free to visit the Twilio booth",
+                "You've already claimed your prize!",
               );
             },
           },
@@ -1293,7 +1293,7 @@ describe("Lead collection enabled", async () => {
         },
       );
       expect(response).toContain(
-        '<?xml version="1.0" encoding="UTF-8"?><Response><Message>Sorry, you have already placed the maximum number of bets.</Message>',
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Message>You've reached the maximum number of bets for this session!",
       );
     });
 
@@ -1342,7 +1342,7 @@ describe("Lead collection enabled", async () => {
         },
       );
       expect(response).toContain(
-        '<?xml version="1.0" encoding="UTF-8"?><Response><Message>Thank you. We have received your bet on "',
+        '<?xml version="1.0" encoding="UTF-8"?><Response><Message>🎯 Bet confirmed!',
       );
     });
 
@@ -1395,7 +1395,7 @@ describe("Lead collection enabled", async () => {
         },
       );
       expect(response).toContain(
-        '<?xml version="1.0" encoding="UTF-8"?><Response><Message>Thank you. We have received your bet on',
+        '<?xml version="1.0" encoding="UTF-8"?><Response><Message>🎯 Bet confirmed!',
       );
     });
   });
