@@ -12,16 +12,16 @@ function getOptionsTemplates(): WhatsAppTemplateConfig[] {
       variables: {},
       types: {
         "twilio/list-picker": {
-          body: `Please select one of the following options:\n`,
+          body: `Cast your bet on where our wheel will land:\n`,
           button: "Select",
           items: wedges.map((wedge) => ({
             item: wedge,
             id: wedge,
-            description: `Select ${wedge}`,
+            description: `Bet on ${wedge}`,
           })),
         },
         "twilio/text": {
-          body: `Please select one of the following options:\n${wedges.map((wedge) => `- ${wedge}`).join("\n")}`,
+          body: `Cast your bet on where our wheel will land:\n${wedges.map((wedge) => `- ${wedge}`).join("\n")}`,
         },
       },
     },
@@ -36,16 +36,16 @@ function getInvalidBetsTemplates(): WhatsAppTemplateConfig[] {
       variables: {},
       types: {
         "twilio/list-picker": {
-          body: `Sorry, this is not a valid bet. Please bet on one of the following options \n`,
+          body: `Sorry, that's not a valid bet. Cast your bet on where our wheel will land:\n`,
           button: "Bet",
           items: wedges.map((wedge) => ({
             item: wedge,
             id: wedge,
-            description: `Select ${wedge}`,
+            description: `Bet on ${wedge}`,
           })),
         },
         "twilio/text": {
-          body: `Sorry, this is not a valid bet. Please bet on one of the following options \n${wedges.map((wedge) => `- ${wedge}`).join("\n")}`,
+          body: `Sorry, that's not a valid bet. Cast your bet on where our wheel will land:\n${wedges.map((wedge) => `- ${wedge}`).join("\n")}`,
         },
       },
     },
