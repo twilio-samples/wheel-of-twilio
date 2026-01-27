@@ -14,25 +14,24 @@ import {
 import SpinAndWin from "./ReactSpinGame";
 import QRCode from "react-qr-code";
 import localFont from "next/font/local";
+import { useScreenOrientation } from "./utils/use-screen-orientation";
 
 const myFont = localFont({
   src: "../../public/fonts/BFBuffalo-Black.otf",
+  weight: "200"
 });
 
 function App() {
   const [bets, setBets] = useState<any[]>([]);
   const [isFull, setIsFull] = useState(false);
-  const [isLandscape, setIsLandscape] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(orientation: landscape)");
-    setIsLandscape(mq.matches);
-    const handler = (e: MediaQueryListEvent) => setIsLandscape(e.matches);
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
-  }, []);
+  const [prizeWins, setPrizeWins] = useState<Record<string, number>>({});
+  const screenOrientation = useScreenOrientation();
 
   let wedges = (process.env.NEXT_PUBLIC_WEDGES || "").split(",");
+  const hideQrCode = process.env.NEXT_PUBLIC_HIDE_QR_CODE === "true";
+  const prizesPerField = parseInt(
+    process.env.NEXT_PUBLIC_PRIZES_PER_FIELD || "0",
+  );
 
   useEffect(() => {
     let syncClient: SyncClient;
@@ -51,11 +50,13 @@ function App() {
           doc.on("updated", (event: any) => {
             if (event.data.bets) setBets(event.data.bets);
             setIsFull(event?.data?.full || false);
+            if (event.data.prizeWins) setPrizeWins(event.data.prizeWins);
           });
 
           if (doc.data) {
             setBets(doc.data.bets || []);
             setIsFull(doc.data.full);
+            setPrizeWins(doc.data.prizeWins || {});
           }
         }
       });
@@ -78,7 +79,7 @@ function App() {
         notifyAndUpdateWinners(bets.filter((bet) => bet[1] === selectedWedge));
         messageOthers(
           bets.filter((bet) => bet[1] !== selectedWedge),
-          selectedWedge
+          selectedWedge,
         );
         tempUnlockGame();
       }}
@@ -87,11 +88,13 @@ function App() {
 
   const legalText = (
     <>
-      <p className="">
-        Please note that by scanning the QR code a WhatsApp conversation will be
-        prompted and your WhatsApp profile and phone number will be accessible
-        by Twilio.
-      </p>
+      {!hideQrCode && (
+        <p className="">
+          Please note that by scanning the QR code a WhatsApp conversation will
+          be prompted and your WhatsApp profile and phone number will be
+          accessible by Twilio.
+        </p>
+      )}
       <p className="">
         Your WhatsApp profile and phone number is necessary for you to play the
         game and will be deleted at the end of the event. Your personal data
@@ -110,8 +113,8 @@ function App() {
   const logoAndHeading = (
     <>
       {/* <img src="/images/twilio_devs.png" alt="logo" className="w-2/3 mb-10" />*/}
-      <img src="/images/twilio.png" alt="logo" className="w-1/2 mb-10" />
-      <h1 className={`text-[#EF223A] text-7xl ${myFont.className} `}>
+      <img src="/images/twilio.png" alt="logo" className="w-1/3 mb-10" />
+      <h1 className={`text-[#EF223A] text-7xl  ${myFont.className} `}>
         Builder is a mindset
       </h1>
       <h1 className="text-[#FDF7F4] text-7xl font-medium mt-1">
@@ -121,14 +124,28 @@ function App() {
   );
 
   const fieldsWithBets = wedges.map((wedge) => {
+    const betCount = bets.filter((bet) => bet[1] === wedge).length;
+    const wins = prizeWins[wedge] || 0;
+    const prizesLeft =
+      prizesPerField > 0
+        ? Math.max(0, prizesPerField - wins)
+        : Number.MAX_SAFE_INTEGER;
+    const noPrizesLeft = prizesPerField > 0 && prizesLeft <= 0;
+
     return (
       <div
         key={wedge}
-        className={`relative text-[#FDF7F4]  py-3 rounded-full w-full ring-[#FFF1F3] ring-2 shadow-[0px_0px_15px_1px]  shadow-[#FFF1F3]`}
+        className={`relative text-[#FDF7F4] py-3 rounded-full w-full ring-2 shadow-[0px_0px_15px_1px] ${noPrizesLeft
+            ? "ring-gray-500 shadow-gray-500 opacity-60"
+            : "ring-[#FFF1F3] shadow-[#FFF1F3]"
+          }`}
       >
-        <span className="text-[6px] absolute bottom-3 left-5">
-          {bets.filter((bet) => bet[1] === wedge).length}
-        </span>
+        <span className="text-[6px] absolute bottom-3 left-5">{betCount}</span>
+        {prizesPerField > 0 && (
+          <span className="text-[10px] absolute top-5 right-2 text-yellow-300">
+            🏆 {noPrizesLeft ? "0" : prizesLeft}
+          </span>
+        )}
         {bets
           .filter((bet) => bet[1] === wedge)
           .map((bet, index) => {
@@ -158,73 +175,79 @@ function App() {
                     alt="bet chip"
                     className="absolute scale-[0.15] z-10 translate-x-[110px]  translate-y-[-160px]"
                   /> */}
-        <span className="text-2xl ">{wedge}</span>
+        <span className={`text-base ${noPrizesLeft ? "line-through" : ""}`}>
+          {wedge}
+        </span>
       </div>
     );
   });
 
   const verticalLayout = (
     <div className="flex flex-col mt-12 w-full h-full ">
-      <div className="flex flex-col text-3xl font-extrabold pb-2 w-4/5 mx-auto">
+      <div className="flex flex-col text-3xl font-extrabold pb-8 w-4/5 mx-auto">
         {logoAndHeading}
       </div>
-      <div className="mt-16">
+      <div className="my-16">
         {spinner}
-        <div className="w-4/5 mx-auto grid grid-cols-2 pt-10 pb-4 gap-8 space-around text-center text-xl font-semibold ">
+        <div className="w-4/5 mx-auto grid grid-cols-2 py-20 gap-6 space-around text-center text-xl font-semibold ">
           {fieldsWithBets}
         </div>
       </div>
 
-      <div className="mt-4 text-gray-500 text-xs mb-2 w-full">
-        <div className="mx-auto grid grid-cols-3 gap-6 mb-3 px-12">
-          <p className="ml-auto my-auto text-right col-span-2 font-extrabold text-6xl text-[#FDF7F4]">
-            {CTA}
-          </p>
-          <div>
-            <QRCode
-              className="mx-auto w-62 h-62 p-1 bg-[#FDF7F4]"
-              value={QR_LINK_URL}
-            />
-            <p className="text-center text-lg text-gray-500">
-              {process.env.NEXT_PUBLIC_TWILIO_PHONE_NUMBER}
+      <div className="absolute bottom-5  text-gray-500 text-xs mb-2">
+        {!hideQrCode && (
+          <div className="mx-auto grid grid-cols-3 gap-6 mb-5 mr-12 ">
+            <p className="ml-auto my-auto text-right col-span-2 font-extrabold text-4xl text-[#FDF7F4]">
+              {CTA}
             </p>
+            <div>
+              <QRCode
+                className="mx-auto w-62 h-62 p-1 bg-[#FDF7F4]"
+                value={QR_LINK_URL}
+              />
+              <p className="text-center text-lg text-gray-500">
+                {process.env.NEXT_PUBLIC_TWILIO_PHONE_NUMBER}
+              </p>
+            </div>
           </div>
-        </div>
-        <div className="mx-12 text-[10px] leading-tight">{legalText}</div>
+        )}
+        <div className="mx-12">{legalText}</div>
       </div>
     </div>
   );
 
   const horizontalLayout = (
     <>
-      <div className="w-2/5 flex flex-col mt-8 h-full">
-        <div className="flex flex-col text-3xl font-extrabold pb-2 w-9/10 mx-auto">
+      <div className="w-1/2 flex flex-col mt-24 relative">
+        <div className="flex flex-col text-3xl font-extrabold pb-8 w-9/10 mx-auto">
           {logoAndHeading}
         </div>
-        <div className="w-9/10 mx-auto grid grid-cols-2 py-3 gap-4 space-around text-center text-xl font-semibold">
+        <div className="w-9/10 mx-auto grid grid-cols-2 py-8  gap-7 space-around text-center text-xl font-semibold ">
           {fieldsWithBets}
         </div>
-        <div className="mt-auto w-9/10 mx-auto grid grid-cols-3 gap-6 pb-16">
-          <p className="ml-auto my-auto text-right col-span-2 font-extrabold text-4xl text-[#FDF7F4]">
-            {CTA}
-          </p>
-          <div>
-            <QRCode
-              className="mx-auto w-48 h-48 p-1 bg-[#FDF7F4]"
-              value={QR_LINK_URL}
-            />
-            <p className="text-center text-xs text-gray-500">
-              {process.env.NEXT_PUBLIC_TWILIO_PHONE_NUMBER}
-            </p>
-          </div>
+        <div className="absolute bottom-3  text-gray-500 text-xs ml-16 mb-2">
+          {legalText}
         </div>
       </div>
-      <div className="w-3/5 flex flex-col items-center pt-8 pb-4 h-full">
-        <div className="flex-1 flex items-center justify-center scale-110">
+      <div className="w-1/2 flex items-center justify-center">
+        <div className="absolute pt-14 my-auto w-1/2">
           {spinner}
-        </div>
-        <div className="text-gray-500 text-[10px] leading-tight px-4 pb-2">
-          {legalText}
+          {!hideQrCode && (
+            <div className="w-2/3 mx-auto grid grid-cols-3 gap-6 ">
+              <p className="ml-auto my-auto text-right col-span-2 font-extrabold text-2xl text-[#FDF7F4]">
+                {CTA}
+              </p>
+              <div>
+                <QRCode
+                  className="mx-auto w-36 h-36 p-1 bg-[#FDF7F4]"
+                  value={QR_LINK_URL}
+                />
+                <p className="text-center text-lg text-gray-500">
+                  {process.env.NEXT_PUBLIC_TWILIO_PHONE_NUMBER}
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </>
@@ -241,7 +264,9 @@ function App() {
           </div>
         </div>
       )}
-      {isLandscape === null ? null : isLandscape ? horizontalLayout : verticalLayout}
+      {screenOrientation.includes("landscape")
+        ? horizontalLayout
+        : verticalLayout}
     </div>
   );
 }
