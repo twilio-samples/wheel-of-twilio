@@ -40,16 +40,12 @@ This project is Twilio's innovative booth activation designed to motivate people
      MAX_BETS_PER_USER="0"
      VERIFY_SERVICE_SID="VAxxxxxxx"
      SYNC_SERVICE_SID="ISxxxxxx"
-     MESSAGING_SERVICE_SID="MGxxxxxxx"
      BASIC_AUTH_USERNAME="twilio"
      BASIC_AUTH_PASSWORD="admin!"
      NEXT_PUBLIC_HIDE_QR_CODE=false
      NEXT_PUBLIC_PRIZES_PER_FIELD=5
      OFFERED_PRIZES="big"
-     DISABLE_LEAD_COLLECTION="false"
-     SEGMENT_SPACE_ID="your_segment_space_id"
-     SEGMENT_PROFILE_KEY="your_segment_profile_key"
-     SEGMENT_TRAIT_CHECK="your_segment_trait_check"
+     LEAD_COLLECTION="MANUAL"
      ```
 
      > The flag `OFFERED_PRIZES` influences the message the winners get. If set the `small`, winners who bet on the right field are informed that they won and can collect a small prize at the Twilio booth. If set to `big`, they are notified that they qualified for a larger prize. You can also set the value to `both`, so winners can pick up a small prize and are qualified for the raffle prize at the same time.
@@ -70,7 +66,7 @@ This project is Twilio's innovative booth activation designed to motivate people
    ngrok http 3000
    ```
 
-   Copy the public URL and use it in the **Integration** section of the messaging service you created above `<URL>/api/incoming` for both WhatsApp and SMS.
+   Copy the public URL and configure it as your WhatsApp / SMS webhook: `<URL>/api/incoming`.
 
 6. **Start the application locally:**
    ```bash
@@ -99,35 +95,25 @@ Here are a few helpful notes:
 - Edit the [opt-out management settings](https://help.twilio.com/articles/360034798533-Getting-Started-with-Advanced-Opt-Out-for-Messaging-Services) of the messaging service to avoid that users accidentally unsubscribe from the list.
 - Users can send the command "forget me" to remove all data stored about this user. It cancels pending orders, removes the user from the Sync data store and removes the Conversation resource. This can be used for debugging as well as to be GDPR-compliant.
 
-### Feature Flag for Lead Collection
+### Lead Collection Mode
 
-Lead collection can be controlled using the `DISABLE_LEAD_COLLECTION` feature flag in the `.env.local` file. By default, it is set to `false`, meaning lead collection is enabled. If you want to disable lead collection, set the flag to `true` in the `.env.local` file:
+The registration flow is controlled by the `LEAD_COLLECTION` environment variable. It accepts one of three values:
+
+| Value | Behaviour |
+|-------|-----------|
+| `MANUAL` (default) | Prompts the user for their name and email address, then verifies the email with Twilio Verify before allowing bets. |
+| `NONE` | Skips registration entirely — any user can place a bet immediately. |
+| `QR` | Asks the user to send a photo of their badge QR code. The code is decoded, the attendee profile is looked up, and a Twilio Customer Memory profile is created automatically. Requires `TWILIO_CONVERSATION_CONFIGURATION_ID`, `TWILIO_MEMORY_STORE_ID`, and `TWILIO_AUTH_TOKEN`. |
 
 ```env
-DISABLE_LEAD_COLLECTION="true"
+LEAD_COLLECTION="MANUAL"
 ```
 
-You can download the lead information by running the following script
+You can download the lead information by running the following script:
 
 ```bash
 pnpm download
 ```
-
-### Segment Integration
-
-This project includes an optional integration with Segment's Profiles API. If you provide the `SEGMENT_SPACE_ID` and `SEGMENT_PROFILE_KEY` environment variables, the application will fetch user traits from Segment using the provided email address once the verification step is completed. The `SEGMENT_TRAIT_CHECK` environment variable allows you to specify a specific trait to check for in the user's profile.
-
-To set up Segment integration:
-
-1. **Create a Segment account** if you don't have one. Sign up [here](https://segment.com/).
-
-2. **Create a Segment Space** and obtain your `SEGMENT_SPACE_ID`.
-
-3. **Generate a Segment Profile API Key** and obtain your `SEGMENT_PROFILE_KEY`.
-
-4. **Specify a Trait to Check** by setting the `SEGMENT_TRAIT_CHECK` environment variable to the desired trait key.
-
-For more details on Segment and how to use the Profiles API, refer to the [Segment documentation](https://segment.com/docs/).
 
 ### Display Considerations
 

@@ -16,4 +16,5 @@ export interface Player {
   country?: string;
   verificationSid?: string;
   bet?: string;
+  profileId?: string;
 }

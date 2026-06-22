@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import twilio from "twilio";
-import {
-  capitalizeEachWord,
-  generateResponse,
-  getUserRemovedResponse,
-} from "./helper";
+import { capitalizeEachWord, getUserRemovedResponse } from "./helper";
+import { handleProfileMode } from "./profile-mode";
+import { handleQrMode } from "./qr-mode";
+import { deleteMemoryProfile } from "./memory";
 import { createHash } from "crypto";
 import { Player } from "../../types";
 import { SyncMapContext } from "twilio/lib/rest/sync/v1/service/syncMap";
@@ -26,7 +25,8 @@ async function getUser(attendeesMap: SyncMapContext, hashedSender: string) {
   let currentUser: Player | undefined;
   try {
     const syncItem = await attendeesMap.syncMapItems(hashedSender).fetch();
-    currentUser = syncItem.data as UserData;
+    // @ts-expect-error  is not an object
+    currentUser = syncItem.data as Player;
   } catch (e: any) {
     if (e.status !== 404) {
       throw e;
@@ -39,6 +39,7 @@ async function addDemoBet(betsDoc: DocumentInstance, messageContent: string) {
   if (process.env.demoBet) {
     const bets = betsDoc.data.bets || [];
 
+    // @ts-expect-error  is not an object but an array
     bets.push([
       "test-better",
       wedges.find((wedge) =>
@@ -66,41 +67,73 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  // Read at request time so a restart-free env change takes effect
+  const LEAD_COLLECTION = process.env.LEAD_COLLECTION ?? "MANUAL";
+
   const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
     accountSid: TWILIO_ACCOUNT_SID,
   });
   const syncService = await client.sync.v1.services(SYNC_SERVICE_SID).fetch();
   const [betsDoc, attendeesMap, formData] = await Promise.all([
-    await syncService.documents()("bets").fetch(),
-    await syncService.syncMaps()("attendees"),
-    await req.formData(),
+    syncService.documents()("bets").fetch(),
+    syncService.syncMaps()("attendees"),
+    req.formData(),
   ]);
 
   const senderID = formData.get("From") as string;
   const recipient = formData.get("To") as string;
+  const messageContent = formData.get("Body") as string;
+  const numMedia = parseInt((formData.get("NumMedia") as string) ?? "0", 10);
+  const mediaUrl = formData.get("MediaUrl0") as string | null;
 
   const hashedSender = createHash("sha256").update(senderID).digest("hex");
-  const messageContent = formData.get("Body") as string;
-
   const currentUser = await getUser(attendeesMap, hashedSender);
 
   process.env.demoBet && (await addDemoBet(betsDoc, messageContent));
+
   let response = "";
+
   if (messageContent.toLowerCase().includes("forget me")) {
     if (currentUser) {
       await attendeesMap.syncMapItems(hashedSender).remove();
+      // In QR mode, also delete the Memory profile
+      if (LEAD_COLLECTION === "QR" && currentUser.profileId) {
+        const { TACConfig } = await import("twilio-agent-connect");
+        const config = TACConfig.fromEnv();
+        const memoryStoreId = process.env.TWILIO_MEMORY_STORE_ID ?? "";
+        await deleteMemoryProfile(config, memoryStoreId, currentUser.profileId);
+      }
     }
-    response = await getUserRemovedResponse(
-      currentUser?.sender || senderID || "",
-    );
-  } else {
-    response = await generateResponse(currentUser, client, {
+    response = await getUserRemovedResponse(currentUser?.sender || senderID || "");
+  } else if (LEAD_COLLECTION === "QR") {
+    const { TAC, TACConfig } = await import("twilio-agent-connect");
+    const config = TACConfig.fromEnv();
+    const memoryClient = (await TAC.create({ config })).getMemoryClient();
+    if (!memoryClient) {
+      throw new Error(
+        "MemoryClient unavailable — ensure TWILIO_CONVERSATION_CONFIGURATION_ID and TWILIO_MEMORY_STORE_ID are set",
+      );
+    }
+    response = await handleQrMode(currentUser, memoryClient, client, {
       senderName: formData.get("ProfileName") as string,
       senderID,
       recipient,
       messageContent,
       attendeesMap,
       betsDoc,
+      numMedia,
+      mediaUrl: mediaUrl ?? undefined,
+    });
+  } else {
+    // LEAD_COLLECTION === "MANUAL" or "NONE"
+    response = await handleProfileMode(currentUser, client, {
+      senderName: formData.get("ProfileName") as string,
+      senderID,
+      recipient,
+      messageContent,
+      attendeesMap,
+      betsDoc,
+      leadCollection: LEAD_COLLECTION,
     });
   }
 

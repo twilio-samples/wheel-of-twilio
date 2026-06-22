@@ -6,7 +6,6 @@ import i18next from "i18next";
 import { getCountry } from "./api/incoming/helper";
 import { Stages } from "./types";
 import { maskNumber } from "./util";
-import Axios from "axios";
 import axios from "axios";
 import { TEMPLATE_PREFIX } from "@/scripts/contentTemplates";
 
@@ -16,11 +15,12 @@ const {
   TWILIO_API_KEY = "",
   TWILIO_API_SECRET = "",
   TWILIO_ACCOUNT_SID = "",
-  MESSAGING_SERVICE_SID = "",
   SYNC_SERVICE_SID = "",
-  SEGMENT_SPACE_ID = "",
-  SEGMENT_PROFILE_KEY = "",
 } = process.env;
+
+function twilioFrom() {
+  return `whatsapp:${process.env.NEXT_PUBLIC_TWILIO_PHONE_NUMBER ?? ""}`;
+}
 
 enum Privilege {
   FRONTEND = "FRONTEND",
@@ -163,8 +163,7 @@ export async function winnerPrizeClaimed(winnerKey: string) {
         winner.data.sender.replace("whatsapp:", ""),
         {},
       ),
-      messagingServiceSid: MESSAGING_SERVICE_SID,
-      from: winner.data.recipient,
+      from: twilioFrom(),
       to: winner.data.sender,
     }),
     attendeesMap.syncMapItems(winnerKey).update({
@@ -356,8 +355,7 @@ export async function notifyAndUpdateWinners(winners: any[]) {
       try {
         await client.messages.create({
           body: message,
-          messagingServiceSid: MESSAGING_SERVICE_SID,
-          from: winner.data.recipient,
+          from: twilioFrom(),
           to: winner.data.sender,
         });
       } catch (e: any) {
@@ -385,18 +383,10 @@ export async function callWinner(
   });
 }
 
-export async function sendRaffleWinnerMessage(
-  name: string,
-  to: string,
-  from: string,
-) {
+export async function sendRaffleWinnerMessage(to: string) {
   await client.messages.create({
-    body: await localizeStringForPhoneNumber(
-      "winnerMessageRafflePrize",
-      to,
-      {},
-    ),
-    from,
+    body: await localizeStringForPhoneNumber("winnerMessageRafflePrize", to, {}),
+    from: twilioFrom(),
     to,
   });
 }
@@ -423,8 +413,7 @@ export async function messageOthers(unluckyBets: any[], winningWedge: string) {
         );
         await client.messages.create({
           body,
-          messagingServiceSid: MESSAGING_SERVICE_SID,
-          from: unluckyPlayer.data.recipient,
+          from: twilioFrom(),
           to: unluckyPlayer.data.sender,
         });
       } catch (e: any) {
@@ -438,29 +427,6 @@ export async function messageOthers(unluckyBets: any[], winningWedge: string) {
   );
 }
 
-export async function fetchSegmentTraits(
-  email: string,
-  specificTrait?: string,
-) {
-  let url = `https://profiles.segment.com/v1/spaces/${SEGMENT_SPACE_ID}/collections/users/profiles/email:${email}/traits`;
-  if (specificTrait) {
-    url += `?include=${specificTrait}`;
-  }
-  try {
-    const response = await Axios.get(url, {
-      headers: {
-        Authorization: `Basic ${btoa(SEGMENT_PROFILE_KEY + ":")}`,
-      },
-    });
-    return response.data.traits;
-  } catch (e: any) {
-    if (e.response?.status === 404) {
-      return null;
-    } else {
-      throw e;
-    }
-  }
-}
 
 export async function getAllTemplates() {
   let matches: any[] = [];
@@ -558,11 +524,7 @@ export const raffleWinner = async () => {
       },
     });
 
-  await sendRaffleWinnerMessage(
-    winner.data.fullName,
-    winner.data.sender,
-    winner.data.recipient,
-  );
+  await sendRaffleWinnerMessage(winner.data.sender);
 
   await callWinner(
     winner.data.sender.replace("whatsapp:", ""),
