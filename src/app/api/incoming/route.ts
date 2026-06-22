@@ -25,12 +25,9 @@ async function getUser(attendeesMap: SyncMapContext, hashedSender: string) {
   let currentUser: Player | undefined;
   try {
     const syncItem = await attendeesMap.syncMapItems(hashedSender).fetch();
-    // @ts-expect-error  is not an object
     currentUser = syncItem.data as Player;
   } catch (e: any) {
-    if (e.status !== 404) {
-      throw e;
-    }
+    if (e.status !== 404) throw e;
   }
   return currentUser;
 }
@@ -38,41 +35,26 @@ async function getUser(attendeesMap: SyncMapContext, hashedSender: string) {
 async function addDemoBet(betsDoc: DocumentInstance, messageContent: string) {
   if (process.env.demoBet) {
     const bets = betsDoc.data.bets || [];
-
-    // @ts-expect-error  is not an object but an array
     bets.push([
       "test-better",
-      wedges.find((wedge) =>
-        capitalizeEachWord(messageContent).includes(wedge),
-      ),
+      wedges.find((wedge) => capitalizeEachWord(messageContent).includes(wedge)),
       "test-better",
     ]);
-
     await betsDoc.update({
-      data: {
-        bets,
-        temporaryBlock: false,
-        closed: false,
-        full: false,
-      },
+      data: { bets, temporaryBlock: false, closed: false, full: false },
     });
   }
 }
 
 export async function GET() {
-  const response = new NextResponse(
-    "Configure this endpoint to respond to incoming messages.",
-  );
-  return response;
+  return new NextResponse("Configure this endpoint to respond to incoming messages.");
 }
 
 export async function POST(req: NextRequest) {
-  // Read at request time so a restart-free env change takes effect
+  // Read at request time so env changes take effect without a restart
   const LEAD_COLLECTION = process.env.LEAD_COLLECTION ?? "MANUAL";
 
-  const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
-    accountSid: TWILIO_ACCOUNT_SID,
-  });
+  const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, { accountSid: TWILIO_ACCOUNT_SID });
   const syncService = await client.sync.v1.services(SYNC_SERVICE_SID).fetch();
   const [betsDoc, attendeesMap, formData] = await Promise.all([
     syncService.documents()("bets").fetch(),
@@ -96,7 +78,6 @@ export async function POST(req: NextRequest) {
   if (messageContent.toLowerCase().includes("forget me")) {
     if (currentUser) {
       await attendeesMap.syncMapItems(hashedSender).remove();
-      // In QR mode, also delete the Memory profile
       if (LEAD_COLLECTION === "QR" && currentUser.profileId) {
         const { TACConfig } = await import("twilio-agent-connect");
         const config = TACConfig.fromEnv();
