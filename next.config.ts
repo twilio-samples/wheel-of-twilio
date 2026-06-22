@@ -8,12 +8,14 @@ const nextConfig: NextConfig = {
     "pino",
     "thread-stream",
   ],
-  outputFileTracingIncludes: {
-    "/api/incoming": [
-      "./node_modules/@img/sharp-linux-x64/**/*",
-      "./node_modules/@img/sharp-libvips-linux-x64/**/*",
-      "./node_modules/@img/sharp-linuxmusl-x64/**/*",
-      "./node_modules/@img/sharp-libvips-linuxmusl-x64/**/*",
+  outputFileTracingExcludes: {
+    "*": [
+      "./node_modules/@img/sharp-linuxmusl-*/**/*",
+      "./node_modules/@img/sharp-libvips-linuxmusl-*/**/*",
+      "./node_modules/@img/sharp-darwin-*/**/*",
+      "./node_modules/@img/sharp-libvips-darwin-*/**/*",
+      "./node_modules/@img/sharp-win32-*/**/*",
+      "./node_modules/@img/sharp-freebsd-*/**/*",
     ],
   },
 };
