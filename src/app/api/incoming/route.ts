@@ -9,7 +9,7 @@ import { Player } from "../../types";
 import { SyncMapContext } from "twilio/lib/rest/sync/v1/service/syncMap";
 import { DocumentInstance } from "twilio/lib/rest/sync/v1/service/document";
 
-export const maxDuration = 15;
+export const maxDuration = 30;
 
 const {
   TWILIO_API_KEY = "",

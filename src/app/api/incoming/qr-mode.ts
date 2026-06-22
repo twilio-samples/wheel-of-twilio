@@ -21,7 +21,7 @@ import { decodeQrFromUrl } from "./qr-decoder";
 
 const {
   TWILIO_ACCOUNT_SID = "",
-  TWILIO_API_SECRET = "",
+  TWILIO_AUTH_TOKEN = "",
   NEXT_PUBLIC_TWILIO_PHONE_NUMBER = "",
 } = process.env;
 
@@ -127,7 +127,7 @@ export async function handleQrMode(
 
   // No profile — expect a QR photo
   if (numMedia > 0 && mediaUrl) {
-    const qrData = await decodeQrFromUrl(mediaUrl, TWILIO_ACCOUNT_SID, TWILIO_API_SECRET);
+    const qrData = await decodeQrFromUrl(mediaUrl, TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 
     if (!qrData) {
       twimlRes.message(
