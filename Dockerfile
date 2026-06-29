@@ -1,0 +1,61 @@
+FROM node:24-slim AS base
+
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+
+WORKDIR /app
+
+RUN corepack enable
+
+FROM base AS deps
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+RUN pnpm install --frozen-lockfile
+
+FROM base AS builder
+
+ARG NEXT_PUBLIC_WEDGES
+ARG NEXT_PUBLIC_TWILIO_PHONE_NUMBER
+ARG NEXT_PUBLIC_HIDE_QR_CODE
+ARG NEXT_PUBLIC_PRIZES_PER_FIELD
+ARG TWILIO_API_KEY
+ARG TWILIO_API_SECRET
+ARG TWILIO_ACCOUNT_SID
+ARG SYNC_SERVICE_SID
+
+ENV NEXT_PUBLIC_WEDGES=$NEXT_PUBLIC_WEDGES
+ENV NEXT_PUBLIC_TWILIO_PHONE_NUMBER=$NEXT_PUBLIC_TWILIO_PHONE_NUMBER
+ENV NEXT_PUBLIC_HIDE_QR_CODE=$NEXT_PUBLIC_HIDE_QR_CODE
+ENV NEXT_PUBLIC_PRIZES_PER_FIELD=$NEXT_PUBLIC_PRIZES_PER_FIELD
+ENV TWILIO_API_KEY=$TWILIO_API_KEY
+ENV TWILIO_API_SECRET=$TWILIO_API_SECRET
+ENV TWILIO_ACCOUNT_SID=$TWILIO_ACCOUNT_SID
+ENV SYNC_SERVICE_SID=$SYNC_SERVICE_SID
+ENV NEXT_TELEMETRY_DISABLED=1
+
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+RUN pnpm exec next build --webpack
+
+FROM node:24-slim AS runner
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
+
+WORKDIR /app
+
+RUN groupadd --system --gid 1001 nodejs \
+  && useradd --system --uid 1001 nextjs
+
+COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+USER nextjs
+
+EXPOSE 3000
+
+CMD ["node", "server.js"]

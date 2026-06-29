@@ -1,0 +1,20 @@
+services:
+  wheel-of-twilio:
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_WEDGES: ${NEXT_PUBLIC_WEDGES:-}
+        NEXT_PUBLIC_TWILIO_PHONE_NUMBER: ${NEXT_PUBLIC_TWILIO_PHONE_NUMBER:-}
+        NEXT_PUBLIC_HIDE_QR_CODE: ${NEXT_PUBLIC_HIDE_QR_CODE:-}
+        NEXT_PUBLIC_PRIZES_PER_FIELD: ${NEXT_PUBLIC_PRIZES_PER_FIELD:-}
+        TWILIO_API_KEY: ${TWILIO_API_KEY:-}
+        TWILIO_API_SECRET: ${TWILIO_API_SECRET:-}
+        TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID:-}
+        SYNC_SERVICE_SID: ${SYNC_SERVICE_SID:-}
+    image: ${IMAGE_NAME:-wheel-of-twilio}
+    container_name: ${CONTAINER_NAME:-wheel-of-twilio}
+    env_file:
+      - ${ENV_FILE:-.env.local}
+    ports:
+      - "${HOST_PORT:-3000}:3000"
+    restart: unless-stopped
