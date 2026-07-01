@@ -11,6 +11,7 @@ import {
   handleBets,
   handleWinnerStages,
   ONE_WEEK,
+  sleep,
 } from "./helper";
 import {
   lookupProfileByPhone,
@@ -146,25 +147,34 @@ export async function handleQrMode(
   if (numMedia > 0 && mediaUrl) {
     const qrData = await decodeQrFromUrl(mediaUrl, TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 
+    // Could not decode any QR code from the image
     if (!qrData) {
       twimlRes.message(
-        "I couldn't read a QR code from that image. Please try again with a clear photo of your badge.",
+        "I couldn't scan a QR code from that image. Please make sure your badge QR code is clearly visible, well-lit and in focus, then try again.",
       );
       return twimlRes.toString();
     }
 
+    // Extract ticket ID — WeAreDevelopers ticket codes start with "ti_"
+    // --- WEAREDEVS_TEMP_START ---
     const badgeId = qrData.includes("=")
       ? new URLSearchParams(qrData).get("id") ?? qrData
       : qrData;
 
-    // --- WEAREDEVS_TEMP_START --- replace getBadgeData with your real badge API after event
+    if (!badgeId.startsWith("ti_")) {
+      twimlRes.message(
+        "I scanned a QR code but it doesn't look like a WeAreDevelopers ticket. Are you sure you scanned the QR code on your badge and not another one? Please try again with your event badge.",
+      );
+      return twimlRes.toString();
+    }
+
     let badgeData: BadgeData;
     try {
       badgeData = await getBadgeData(badgeId);
     } catch (e: any) {
       console.error("Badge lookup failed:", e.message);
       twimlRes.message(
-        "Sorry, we couldn't retrieve your badge information right now. Please ask a Twilio team member for help.",
+        "I could read your badge QR code but couldn't retrieve your details from the event system. Please ask a Twilio team member for help.",
       );
       return twimlRes.toString();
     }
@@ -177,6 +187,9 @@ export async function handleQrMode(
       key: hashedSender,
       data: {
         name: `${badgeData.firstName} ${badgeData.lastName}`,
+        email: badgeData.email,
+        company: badgeData.company,
+        jobTitle: badgeData.jobTitle,
         country: badgeData.country,
         recipient,
         sender: senderID,
@@ -186,10 +199,9 @@ export async function handleQrMode(
       },
     });
 
+    twimlRes.message(`Welcome, ${badgeData.firstName}! You're now registered.`);
     const contentTemplate = await getTemplate("AskForBets", country?.languages[0]);
-    twimlRes.message(
-      `Welcome, ${badgeData.firstName} ${badgeData.lastName}! You're now registered. Text a wedge to play.`,
-    );
+    await sleep(300);
     await client.messages.create({
       contentSid: contentTemplate.sid,
       from,
@@ -200,7 +212,7 @@ export async function handleQrMode(
 
   // No photo, not registered
   twimlRes.message(
-    "Hi! I don't recognize you yet. Please send a photo of your badge QR code to get started.",
+    "Hi! I don't recognize you yet. Please send a photo of your badge QR code to get started.\n\n_Note: Twilio will only use your data for activations at this booth and communication outreach._",
   );
   return twimlRes.toString();
 }

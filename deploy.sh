@@ -151,14 +151,23 @@ for key in "${build_arg_keys[@]}"; do
   build_args+=(--build-arg "$key=$escaped_value")
 done
 
-REMOTE_IMAGE="$ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG"
-
 echo "Building image in ACR: $IMAGE_NAME:$IMAGE_TAG"
 az acr build \
   --registry "$AZURE_ACR_NAME" \
   --image "$IMAGE_NAME:$IMAGE_TAG" \
   "${build_args[@]}" \
   .
+
+# Resolve the exact digest so the container app always pulls the new image.
+# Using a floating tag like :latest causes Azure to reuse the old revision
+# when the tag string hasn't changed, even if the underlying image has.
+IMAGE_DIGEST="$(az acr repository show \
+  --name "$AZURE_ACR_NAME" \
+  --image "$IMAGE_NAME:$IMAGE_TAG" \
+  --query digest \
+  --output tsv)"
+REMOTE_IMAGE="$ACR_LOGIN_SERVER/$IMAGE_NAME@$IMAGE_DIGEST"
+echo "Deploying image digest: $IMAGE_DIGEST"
 
 if ! az containerapp env show \
   --name "$AZURE_CONTAINER_ENV_NAME" \
