@@ -27,77 +27,41 @@ const {
 
 // --- WEAREDEVS_TEMP_START ---
 // Temporary WeAreDevelopers World Congress badge lookup.
-// Remove this block and the getBadgeData() call below once the event is over.
-// Controlled by env var WEAREDEVS_LEAD_COLLECTION_KEY — if absent, falls back
-// to the random stub below.
-async function fetchWeAreDevsBadge(ticketCode: string): Promise<BadgeData | null> {
+// Remove this entire block and replace the getBadgeData() call below with your
+// real badge API once the event is over.
+async function getBadgeData(ticketCode: string): Promise<BadgeData> {
   const apiKey = process.env.WEAREDEVS_LEAD_COLLECTION_KEY;
-  if (!apiKey) return null;
-  try {
-    const res = await fetch("https://wad-api.wearedevelopers.com/api/partner/v1/events/16/scan", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({ ticket_code: ticketCode }),
-    });
-    if (!res.ok) return null;
-    const d = await res.json() as {
-      first_name: string;
-      last_name: string;
-      email: string;
-      job_position: string;
-      company: string;
-      country: string;
-    };
-    return {
-      id: ticketCode,
-      firstName: d.first_name,
-      lastName: d.last_name,
-      email: d.email,
-      jobTitle: d.job_position,
-      company: d.company,
-      country: d.country,
-    };
-  } catch {
-    return null;
+  if (!apiKey) {
+    throw new Error("WEAREDEVS_LEAD_COLLECTION_KEY is not configured");
   }
-}
-// --- WEAREDEVS_TEMP_END ---
-
-const FIRST_NAMES = ["Alex", "Jordan", "Sam", "Taylor", "Morgan"];
-const LAST_NAMES = ["Johnson", "Müller", "Tanaka", "Smith", "Garcia"];
-const COMPANIES = ["Acme Corp", "Globex GmbH", "Initech Ltd", "Umbrella Inc"];
-const COUNTRIES = ["Germany", "United States", "Japan", "United Kingdom"];
-const JOB_TITLES = ["Software Engineer", "Product Manager", "UX Designer", "Developer Advocate"];
-
-function pick<T>(arr: T[]): T {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
-
-// TODO: replace with real badge lookup API call
-function getRandomBadgeData(badgeId: string): BadgeData {
-  return {
-    id: badgeId,
-    firstName: pick(FIRST_NAMES),
-    lastName: pick(LAST_NAMES),
-    company: pick(COMPANIES),
-    email: `badge.${badgeId}@example.com`,
-    country: pick(COUNTRIES),
-    jobTitle: pick(JOB_TITLES),
+  const res = await fetch("https://wad-api.wearedevelopers.com/api/partner/v1/events/16/scan", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({ ticket_code: ticketCode }),
+  });
+  if (!res.ok) {
+    throw new Error(`WeAreDevelopers badge API returned ${res.status}`);
+  }
+  const d = await res.json() as {
+    first_name: string;
+    last_name: string;
+    email: string;
+    job_position: string;
+    company: string;
+    country: string;
   };
-}
-
-// --- WEAREDEVS_TEMP_START ---
-// Returns WeAreDevelopers badge data if WEAREDEVS_LEAD_COLLECTION_KEY is set,
-// otherwise falls back to the random stub. Remove once the event is over.
-async function getBadgeData(badgeId: string): Promise<BadgeData> {
-  if (process.env.WEAREDEVS_LEAD_COLLECTION_KEY) {
-    const data = await fetchWeAreDevsBadge(badgeId);
-    if (data) return data;
-  }
-  return getRandomBadgeData(badgeId);
+  return {
+    id: ticketCode,
+    firstName: d.first_name,
+    lastName: d.last_name,
+    email: d.email,
+    jobTitle: d.job_position,
+    company: d.company,
+    country: d.country,
+  };
 }
 // --- WEAREDEVS_TEMP_END ---
 
@@ -193,8 +157,17 @@ export async function handleQrMode(
       ? new URLSearchParams(qrData).get("id") ?? qrData
       : qrData;
 
-    // --- WEAREDEVS_TEMP_START --- use getBadgeData → getRandomBadgeData after event
-    const badgeData = await getBadgeData(badgeId);
+    // --- WEAREDEVS_TEMP_START --- replace getBadgeData with your real badge API after event
+    let badgeData: BadgeData;
+    try {
+      badgeData = await getBadgeData(badgeId);
+    } catch (e: any) {
+      console.error("Badge lookup failed:", e.message);
+      twimlRes.message(
+        "Sorry, we couldn't retrieve your badge information right now. Please ask a Twilio team member for help.",
+      );
+      return twimlRes.toString();
+    }
     // --- WEAREDEVS_TEMP_END ---
 
     const newProfileId = await createBadgeProfile(memoryClient, phone, badgeData);

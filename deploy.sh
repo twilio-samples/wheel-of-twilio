@@ -245,6 +245,12 @@ for key in "${plain_keys[@]}"; do
   fi
 done
 
+# twilio-agent-connect requires TWILIO_PHONE_NUMBER (no NEXT_PUBLIC_ prefix)
+# — derive it from NEXT_PUBLIC_TWILIO_PHONE_NUMBER so only one var is needed in .env.local
+if [[ -z "${TWILIO_PHONE_NUMBER:-}" && -n "${NEXT_PUBLIC_TWILIO_PHONE_NUMBER:-}" ]]; then
+  plain_env_vars+=("TWILIO_PHONE_NUMBER=${NEXT_PUBLIC_TWILIO_PHONE_NUMBER}")
+fi
+
 if [[ -z "${PORT:-}" ]]; then
   plain_env_vars+=("PORT=$APP_PORT")
 fi
