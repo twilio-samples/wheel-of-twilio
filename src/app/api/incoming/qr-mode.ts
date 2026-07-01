@@ -25,6 +25,47 @@ const {
   NEXT_PUBLIC_TWILIO_PHONE_NUMBER = "",
 } = process.env;
 
+// --- WEAREDEVS_TEMP_START ---
+// Temporary WeAreDevelopers World Congress badge lookup.
+// Remove this block and the getBadgeData() call below once the event is over.
+// Controlled by env var WEAREDEVS_LEAD_COLLECTION_KEY — if absent, falls back
+// to the random stub below.
+async function fetchWeAreDevsBadge(ticketCode: string): Promise<BadgeData | null> {
+  const apiKey = process.env.WEAREDEVS_LEAD_COLLECTION_KEY;
+  if (!apiKey) return null;
+  try {
+    const res = await fetch("https://wad-api.wearedevelopers.com/api/partner/v1/events/16/scan", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({ ticket_code: ticketCode }),
+    });
+    if (!res.ok) return null;
+    const d = await res.json() as {
+      first_name: string;
+      last_name: string;
+      email: string;
+      job_position: string;
+      company: string;
+      country: string;
+    };
+    return {
+      id: ticketCode,
+      firstName: d.first_name,
+      lastName: d.last_name,
+      email: d.email,
+      jobTitle: d.job_position,
+      company: d.company,
+      country: d.country,
+    };
+  } catch {
+    return null;
+  }
+}
+// --- WEAREDEVS_TEMP_END ---
+
 const FIRST_NAMES = ["Alex", "Jordan", "Sam", "Taylor", "Morgan"];
 const LAST_NAMES = ["Johnson", "Müller", "Tanaka", "Smith", "Garcia"];
 const COMPANIES = ["Acme Corp", "Globex GmbH", "Initech Ltd", "Umbrella Inc"];
@@ -47,6 +88,18 @@ function getRandomBadgeData(badgeId: string): BadgeData {
     jobTitle: pick(JOB_TITLES),
   };
 }
+
+// --- WEAREDEVS_TEMP_START ---
+// Returns WeAreDevelopers badge data if WEAREDEVS_LEAD_COLLECTION_KEY is set,
+// otherwise falls back to the random stub. Remove once the event is over.
+async function getBadgeData(badgeId: string): Promise<BadgeData> {
+  if (process.env.WEAREDEVS_LEAD_COLLECTION_KEY) {
+    const data = await fetchWeAreDevsBadge(badgeId);
+    if (data) return data;
+  }
+  return getRandomBadgeData(badgeId);
+}
+// --- WEAREDEVS_TEMP_END ---
 
 export async function handleQrMode(
   currentUser: Player | undefined,
@@ -140,7 +193,9 @@ export async function handleQrMode(
       ? new URLSearchParams(qrData).get("id") ?? qrData
       : qrData;
 
-    const badgeData = getRandomBadgeData(badgeId);
+    // --- WEAREDEVS_TEMP_START --- use getBadgeData → getRandomBadgeData after event
+    const badgeData = await getBadgeData(badgeId);
+    // --- WEAREDEVS_TEMP_END ---
 
     const newProfileId = await createBadgeProfile(memoryClient, phone, badgeData);
 
