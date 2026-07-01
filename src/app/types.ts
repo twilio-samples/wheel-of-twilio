@@ -14,7 +14,10 @@ export interface Player {
   stage: Stages;
   submittedBets: number;
   country?: string;
+  email?: string;
   verificationSid?: string;
   bet?: string;
   profileId?: string;
+  foundInSegment?: boolean;
+  [key: string]: unknown;
 }

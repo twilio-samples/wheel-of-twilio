@@ -218,6 +218,9 @@ secret_keys=(
   # Required for QR mode (LEAD_COLLECTION=QR):
   TWILIO_CONVERSATION_CONFIGURATION_ID
   TWILIO_MEMORY_STORE_ID
+  # Optional: Segment Profiles API for enrichment
+  SEGMENT_SPACE_ID
+  SEGMENT_PROFILE_KEY
   # WEAREDEVS_TEMP: remove after WeAreDevelopers World Congress
   WEAREDEVS_LEAD_COLLECTION_KEY
 )
@@ -233,6 +236,8 @@ plain_keys=(
   OFFERED_PRIZES
   LEAD_COLLECTION
   SMALL_PRIZES
+  # Optional: Segment trait name to check (e.g. "used_console")
+  SEGMENT_TRAIT_CHECK
 )
 
 secret_args=()

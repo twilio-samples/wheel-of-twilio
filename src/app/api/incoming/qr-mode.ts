@@ -19,6 +19,7 @@ import {
   type BadgeData,
 } from "./memory";
 import { decodeQrFromUrl } from "./qr-decoder";
+import { checkSegmentTraits } from "./segment";
 
 const {
   TWILIO_ACCOUNT_SID = "",
@@ -180,7 +181,10 @@ export async function handleQrMode(
     }
     // --- WEAREDEVS_TEMP_END ---
 
-    const newProfileId = await createBadgeProfile(memoryClient, phone, badgeData);
+    const [newProfileId, segmentData] = await Promise.all([
+      createBadgeProfile(memoryClient, phone, badgeData),
+      checkSegmentTraits(badgeData.email),
+    ]);
 
     await attendeesMap.syncMapItems.create({
       ttl: ONE_WEEK,
@@ -196,12 +200,13 @@ export async function handleQrMode(
         submittedBets: 0,
         stage: Stages.VERIFIED_USER,
         profileId: newProfileId,
+        ...segmentData,
       },
     });
 
     twimlRes.message(`Welcome, ${badgeData.firstName}! You're now registered.`);
     const contentTemplate = await getTemplate("AskForBets", country?.languages[0]);
-    await sleep(300);
+    await sleep(1250);
     await client.messages.create({
       contentSid: contentTemplate.sid,
       from,

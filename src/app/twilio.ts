@@ -383,6 +383,31 @@ export async function callWinner(
   });
 }
 
+export async function fetchSegmentTraits(
+  email: string,
+  specificTrait?: string,
+) {
+  const { SEGMENT_SPACE_ID = "", SEGMENT_PROFILE_KEY = "" } = process.env;
+  let url = `https://profiles.segment.com/v1/spaces/${SEGMENT_SPACE_ID}/collections/users/profiles/email:${email}/traits`;
+  if (specificTrait) {
+    url += `?include=${specificTrait}`;
+  }
+  try {
+    const response = await axios.get(url, {
+      headers: {
+        Authorization: `Basic ${btoa(SEGMENT_PROFILE_KEY + ":")}`,
+      },
+    });
+    return response.data.traits;
+  } catch (e: any) {
+    if (e.response?.status === 404) {
+      return null;
+    } else {
+      throw e;
+    }
+  }
+}
+
 export async function sendRaffleWinnerMessage(to: string) {
   await client.messages.create({
     body: await localizeStringForPhoneNumber("winnerMessageRafflePrize", to, {}),

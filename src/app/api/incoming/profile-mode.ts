@@ -15,6 +15,7 @@ import {
   ONE_WEEK,
   sleep,
 } from "./helper";
+import { checkSegmentTraits } from "./segment";
 
 const {
   VERIFY_SERVICE_SID = "",
@@ -139,10 +140,13 @@ export async function handleProfileMode(
           });
 
         if (verificationCheck.status === "approved") {
-          const contentTemplate = await getTemplate("AskForBets", country?.languages[0]);
+          const [contentTemplate, segmentData] = await Promise.all([
+            getTemplate("AskForBets", country?.languages[0]),
+            checkSegmentTraits(currentUser.email),
+          ]);
           await Promise.all([
             attendeesMap.syncMapItems(hashedSender).update({
-              data: { ...currentUser, stage: Stages.VERIFIED_USER },
+              data: { ...currentUser, stage: Stages.VERIFIED_USER, ...segmentData },
             }),
             client.messages.create({
               contentSid: contentTemplate.sid,

@@ -6,6 +6,7 @@ const {
   TWILIO_API_SECRET = "",
   TWILIO_ACCOUNT_SID = "",
   SYNC_SERVICE_SID = "",
+  SEGMENT_TRAIT_CHECK = "",
 } = process.env;
 
 const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
@@ -40,17 +41,19 @@ function escapeCsv(value: unknown): string {
         a.stage !== "NAME_CONFIRMED",
     );
 
+  const traitHeader = SEGMENT_TRAIT_CHECK || "SegmentTrait";
   const rows = attendees.map((a) => {
     // MANUAL mode stores fullName + email; QR mode stores name (first+last combined)
     const name = a.fullName ?? a.name ?? "";
-    return [name, a.country, a.email, a.company, a.jobTitle, a.event, a.stage, a.submittedBets]
+    const traitValue = SEGMENT_TRAIT_CHECK ? a[SEGMENT_TRAIT_CHECK] : undefined;
+    return [name, a.country, a.email, a.company, a.jobTitle, a.event, a.stage, a.submittedBets, a.foundInSegment, traitValue]
       .map(escapeCsv)
       .join(",");
   });
 
   writeFileSync(
     "attendees.csv",
-    `Name,Country,Email,Company,JobTitle,Event,Stage,SubmittedBets\n${rows.join("\n")}`,
+    `Name,Country,Email,Company,JobTitle,Event,Stage,SubmittedBets,FoundInSegment,${traitHeader}\n${rows.join("\n")}`,
   );
 
   console.log(`Exported ${rows.length} attendees to attendees.csv`);
