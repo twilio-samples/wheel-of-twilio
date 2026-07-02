@@ -2,22 +2,22 @@
 import { useState, useEffect } from "react";
 
 const getOrientation = () => {
-  if (typeof screen !== "undefined") {
-    return screen?.orientation?.type;
+  if (typeof window !== "undefined") {
+    return window.innerWidth >= window.innerHeight ? "landscape-primary" : "portrait-primary";
   }
-  return "landscape";
+  return "landscape-primary";
 };
 
 export const useScreenOrientation = () => {
   const [orientation, setOrientation] = useState(getOrientation());
 
   useEffect(() => {
+    setOrientation(getOrientation());
     const handleOrientationChange = () => setOrientation(getOrientation());
 
-    screen.orientation.addEventListener("change", handleOrientationChange);
+    window.addEventListener("resize", handleOrientationChange);
 
-    return () =>
-      screen.orientation.removeEventListener("change", handleOrientationChange);
+    return () => window.removeEventListener("resize", handleOrientationChange);
   }, []);
 
   return orientation;
