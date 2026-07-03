@@ -31,39 +31,46 @@ const {
 // Temporary WeAreDevelopers World Congress badge lookup.
 // Remove this entire block and replace the getBadgeData() call below with your
 // real badge API once the event is over.
-async function getBadgeData(ticketCode: string): Promise<BadgeData> {
+async function getBadgeData(ticketCode: string): Promise<BadgeData | null> {
   const apiKey = process.env.WEAREDEVS_LEAD_COLLECTION_KEY;
   if (!apiKey) {
-    throw new Error("WEAREDEVS_LEAD_COLLECTION_KEY is not configured");
+    console.error("WEAREDEVS_LEAD_COLLECTION_KEY is not configured");
+    return null;
   }
-  const res = await fetch("https://wad-api.wearedevelopers.com/api/partner/v1/events/16/scan", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({ ticket_code: ticketCode }),
-  });
-  if (!res.ok) {
-    throw new Error(`WeAreDevelopers badge API returned ${res.status}`);
+  try {
+    const res = await fetch("https://wad-api.wearedevelopers.com/api/partner/v1/events/16/scan", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({ ticket_code: ticketCode }),
+    });
+    if (!res.ok) {
+      console.error(`WeAreDevelopers badge API returned ${res.status}`);
+      return null;
+    }
+    const d = await res.json() as {
+      first_name: string;
+      last_name: string;
+      email: string;
+      job_position: string;
+      company: string;
+      country: string;
+    };
+    return {
+      id: ticketCode,
+      firstName: d.first_name,
+      lastName: d.last_name,
+      email: d.email,
+      jobTitle: d.job_position,
+      company: d.company,
+      country: d.country,
+    };
+  } catch (e: any) {
+    console.error("Badge API error:", e.message);
+    return null;
   }
-  const d = await res.json() as {
-    first_name: string;
-    last_name: string;
-    email: string;
-    job_position: string;
-    company: string;
-    country: string;
-  };
-  return {
-    id: ticketCode,
-    firstName: d.first_name,
-    lastName: d.last_name,
-    email: d.email,
-    jobTitle: d.job_position,
-    company: d.company,
-    country: d.country,
-  };
 }
 // --- WEAREDEVS_TEMP_END ---
 
@@ -156,24 +163,16 @@ export async function handleQrMode(
       return twimlRes.toString();
     }
 
-    // Extract ticket ID — WeAreDevelopers ticket codes start with "ti_"
     // --- WEAREDEVS_TEMP_START ---
-    const badgeId = qrData.includes("=")
-      ? new URLSearchParams(qrData).get("id") ?? qrData
-      : qrData;
-
-    if (!badgeId.startsWith("ti_")) {
+    if (!qrData.startsWith("ti_")) {
       twimlRes.message(
         "I scanned a QR code but it doesn't look like a WeAreDevelopers ticket. Are you sure you scanned the QR code on your badge and not another one? Please try again with your event badge.",
       );
       return twimlRes.toString();
     }
 
-    let badgeData: BadgeData;
-    try {
-      badgeData = await getBadgeData(badgeId);
-    } catch (e: any) {
-      console.error("Badge lookup failed:", e.message);
+    const badgeData = await getBadgeData(qrData);
+    if (!badgeData) {
       twimlRes.message(
         "I could read your badge QR code but couldn't retrieve your details from the event system. Please ask a Twilio team member for help.",
       );

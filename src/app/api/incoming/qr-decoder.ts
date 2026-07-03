@@ -13,6 +13,15 @@ function decode(image: { bitmap: { data: Buffer; width: number; height: number }
   return code?.data ?? null;
 }
 
+function extractTicketId(raw: string): string {
+  // Badge QR may encode a URL with ticket ID in a query param: ...?id=ti_xxx
+  if (raw.includes("=")) {
+    const qs = raw.includes("?") ? raw.split("?")[1] : raw;
+    return new URLSearchParams(qs).get("id") ?? raw;
+  }
+  return raw;
+}
+
 export async function decodeQrFromUrl(
   imageUrl: string,
   accountSid: string,
@@ -36,25 +45,22 @@ export async function decodeQrFromUrl(
     return null;
   }
 
-  // Pass 1: original
-  try { const r = decode(base.clone()); if (r) return r; } catch { /* */ }
-
-  // Pass 2: normalize contrast
-  try { const r = decode(base.clone().normalize()); if (r) return r; } catch { /* */ }
-
-  // Pass 3: greyscale + normalize
-  try { const r = decode(base.clone().greyscale().normalize()); if (r) return r; } catch { /* */ }
-
   const width: number = base.bitmap.width;
+  const attempts: Array<() => any> = [
+    () => base.clone(),
+    () => base.clone().normalize(),
+    () => base.clone().greyscale().normalize(),
+    ...(width > 1200 ? [() => base.clone().resize({ w: 1200 }).normalize()] : []),
+    ...(width > 800 ? [() => base.clone().resize({ w: 800 }).greyscale().normalize()] : []),
+    ...(width > 400 ? [() => base.clone().resize({ w: 400 }).greyscale().normalize()] : []),
+    ...(width > 300 ? [() => base.clone().resize({ w: 300 }).greyscale().normalize()] : []),
+  ];
 
-  // Pass 4: resize to 1200px + normalize
-  if (width > 1200) {
-    try { const r = decode(base.clone().resize({ w: 1200 }).normalize()); if (r) return r; } catch { /* */ }
-  }
-
-  // Pass 5: resize to 800px + greyscale + normalize
-  if (width > 800) {
-    try { const r = decode(base.clone().resize({ w: 800 }).greyscale().normalize()); if (r) return r; } catch { /* */ }
+  for (const prepare of attempts) {
+    try {
+      const raw = decode(prepare());
+      if (raw) return extractTicketId(raw);
+    } catch { /* try next */ }
   }
 
   return null;
