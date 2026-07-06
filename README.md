@@ -14,8 +14,8 @@ This project is Twilio's innovative booth activation designed to motivate people
 1. **Clone the project repository:**
 
    ```bash
-   git clone https://github.com/your-repo/wheel-of-fortune.git
-   cd wheel-of-fortune
+   git clone https://github.com/your-repo/twilio-activation-wheel.git
+   cd twilio-activation-wheel
    ```
 
 2. **Set up Twilio Services:**
@@ -34,6 +34,7 @@ This project is Twilio's innovative booth activation designed to motivate people
      TWILIO_ACCOUNT_SID="ACxxxxx"
      TWILIO_API_KEY="SKxxxxx"
      TWILIO_API_SECRET="xxxxx"
+     TWILIO_AUTH_TOKEN="xxxxx"
      EVENT_NAME="DevEvent 2024"
      NEXT_PUBLIC_WEDGES="San Francisco,London,Paris,Madrid,Berlin,New York,Munich,Barcelona,Amsterdam,Vienna"
      NEXT_PUBLIC_TWILIO_PHONE_NUMBER="+4918601860"
@@ -45,6 +46,7 @@ This project is Twilio's innovative booth activation designed to motivate people
      NEXT_PUBLIC_HIDE_QR_CODE=false
      NEXT_PUBLIC_PRIZES_PER_FIELD=5
      OFFERED_PRIZES="big"
+     SMALL_PRIZES="Twilio Sticker Pack"
      LEAD_COLLECTION="MANUAL"
      ```
 

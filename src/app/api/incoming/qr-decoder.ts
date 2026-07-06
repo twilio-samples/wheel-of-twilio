@@ -1,11 +1,11 @@
 import axios from "axios";
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const { Jimp } = require("jimp") as { Jimp: any };
 import { createRequire } from "module";
 
-const require2 = createRequire(import.meta.url);
+const _require = createRequire(import.meta.url);
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const jsQR = require2("jsqr") as typeof import("jsqr").default;
+const { Jimp } = _require("jimp") as { Jimp: any };
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const jsQR = _require("jsqr") as typeof import("jsqr").default;
 
 function decode(image: { bitmap: { data: Buffer; width: number; height: number } }): string | null {
   const { data, width, height } = image.bitmap;

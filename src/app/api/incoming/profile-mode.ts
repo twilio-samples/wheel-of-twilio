@@ -179,13 +179,13 @@ export async function handleProfileMode(
     }
   } catch (error: any) {
     if (error.code === 54006) {
-      betsDoc.update({ data: { ...betsDoc.data, full: true } });
+      await betsDoc.update({ data: { ...betsDoc.data, full: true } });
       twimlRes.message(i18next.t("roundFull"));
     } else {
       twimlRes.message(i18next.t("catchAllError"));
     }
     console.error(error.message);
-    throw error;
+    return twimlRes.toString();
   }
 
   return twimlRes.toString();
