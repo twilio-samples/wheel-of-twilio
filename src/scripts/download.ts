@@ -13,16 +13,19 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
   accountSid: TWILIO_ACCOUNT_SID,
 });
 
+function escapeCsv(value: unknown): string {
+  const str = value == null ? "" : String(value);
+  return str.includes(",") || str.includes('"') || str.includes("\n")
+    ? `"${str.replace(/"/g, '""')}"`
+    : str;
+}
+
 (async () => {
-  //fetch all attendees and write to csv file with header columns
   const attendeesMap = await client.sync.v1
     .services(SYNC_SERVICE_SID)
     .syncMaps("attendees");
 
-  let res: any = await attendeesMap.syncMapItems.page({
-    pageSize: 1500,
-  });
-
+  let res: any = await attendeesMap.syncMapItems.page({ pageSize: 1500 });
   const mapItems = [...res.instances];
   while (res.nextPageUrl) {
     res = await res.nextPage();
@@ -31,12 +34,27 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
 
   const attendees = mapItems
     .map((item) => item.data)
-    .filter((a) => a.stage !== "NEW_USER" && a.stage !== "VERIFYING");
-  const csv = attendees.map((attendee) => {
-    return `${attendee.fullName},${attendee.country},${attendee.email},${attendee.foundInSegment},${attendee[SEGMENT_TRAIT_CHECK]},${attendee.event},${attendee.stage},${attendee.submittedBets}`;
+    .filter(
+      (a) =>
+        a.stage !== "NEW_USER" &&
+        a.stage !== "VERIFYING" &&
+        a.stage !== "NAME_CONFIRMED",
+    );
+
+  const traitHeader = SEGMENT_TRAIT_CHECK || "SegmentTrait";
+  const rows = attendees.map((a) => {
+    // MANUAL mode stores fullName + email; QR mode stores name (first+last combined)
+    const name = a.fullName ?? a.name ?? "";
+    const traitValue = SEGMENT_TRAIT_CHECK ? a[SEGMENT_TRAIT_CHECK] : undefined;
+    return [name, a.country, a.email, a.company, a.jobTitle, a.event, a.stage, a.submittedBets, a.foundInSegment, traitValue]
+      .map(escapeCsv)
+      .join(",");
   });
+
   writeFileSync(
     "attendees.csv",
-    `Name,Country,Email,FoundInSegment,CompletedSignup,Event,Stage,SubmittedBets\n${csv.join("\n")}`,
+    `Name,Country,Email,Company,JobTitle,Event,Stage,SubmittedBets,FoundInSegment,${traitHeader}\n${rows.join("\n")}`,
   );
+
+  console.log(`Exported ${rows.length} attendees to attendees.csv`);
 })();

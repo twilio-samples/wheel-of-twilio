@@ -18,6 +18,7 @@ import { useScreenOrientation } from "./utils/use-screen-orientation";
 
 const myFont = localFont({
   src: "../../public/fonts/BFBuffalo-Black.otf",
+  weight: "200"
 });
 
 function App() {
@@ -113,7 +114,7 @@ function App() {
     <>
       {/* <img src="/images/twilio_devs.png" alt="logo" className="w-2/3 mb-10" />*/}
       <img src="/images/twilio.png" alt="logo" className="w-1/3 mb-10" />
-      <h1 className={`text-[#EF223A] text-7xl ${myFont.className} `}>
+      <h1 className={`text-[#EF223A] text-7xl  ${myFont.className} `}>
         Builder is a mindset
       </h1>
       <h1 className="text-[#FDF7F4] text-7xl font-medium mt-1">
@@ -134,11 +135,10 @@ function App() {
     return (
       <div
         key={wedge}
-        className={`relative text-[#FDF7F4] py-3 rounded-full w-full ring-2 shadow-[0px_0px_15px_1px] ${
-          noPrizesLeft
+        className={`relative text-[#FDF7F4] py-3 rounded-full w-full ring-2 shadow-[0px_0px_15px_1px] ${noPrizesLeft
             ? "ring-gray-500 shadow-gray-500 opacity-60"
             : "ring-[#FFF1F3] shadow-[#FFF1F3]"
-        }`}
+          }`}
       >
         <span className="text-[6px] absolute bottom-3 left-5">{betCount}</span>
         {prizesPerField > 0 && (

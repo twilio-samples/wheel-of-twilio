@@ -23,9 +23,9 @@ Edit `.env.local` and fill in the required Twilio values:
 TWILIO_ACCOUNT_SID="ACxxxxx"
 TWILIO_API_KEY="SKxxxxx"
 TWILIO_API_SECRET="xxxxx"
+TWILIO_AUTH_TOKEN="xxxxx"
 VERIFY_SERVICE_SID="VAxxxxx"
 SYNC_SERVICE_SID="ISxxxxx"
-MESSAGING_SERVICE_SID="MGxxxxx"
 NEXT_PUBLIC_TWILIO_PHONE_NUMBER="+15551234567"
 ```
 

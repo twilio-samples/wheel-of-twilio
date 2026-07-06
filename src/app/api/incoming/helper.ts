@@ -5,32 +5,31 @@ const phoneUtil = PhoneNumberUtil.getInstance();
 
 import twilio, { twiml } from "twilio";
 import i18next from "i18next";
-import { createHash } from "crypto";
 import { Player, Stages } from "../../types";
 import { SyncMapContext } from "twilio/lib/rest/sync/v1/service/syncMap";
 import { DocumentInstance } from "twilio/lib/rest/sync/v1/service/document";
-import { maskNumber } from "@/app/util";
-import { getTemplate, fetchSegmentTraits } from "@/app/twilio";
+import { getTemplate } from "@/app/twilio";
 
 const en = require("../../../locale/en.json");
 
 const ONE_WEEK = 60 * 60 * 24 * 7;
+export { ONE_WEEK };
+
 const {
-  VERIFY_SERVICE_SID = "",
-  EVENT_NAME = "",
-  MESSAGING_SERVICE_SID = "",
+  NEXT_PUBLIC_TWILIO_PHONE_NUMBER = "",
   NEXT_PUBLIC_WEDGES = "",
-  SEGMENT_SPACE_ID = "",
-  SEGMENT_PROFILE_KEY = "",
-  SEGMENT_TRAIT_CHECK = "",
+  EVENT_NAME = "",
 } = process.env;
 
 const wedges = NEXT_PUBLIC_WEDGES.split(",");
 
 const regexForEmail = /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/;
-const regexFor6ConsecutiveDigits = /\d{6}/;
+export { regexForEmail };
 
-async function initI18n(senderID: string) {
+const regexFor6ConsecutiveDigits = /\d{6}/;
+export { regexFor6ConsecutiveDigits };
+
+export async function initI18n(senderID: string) {
   let lng;
   if (senderID) {
     lng = getCountry(senderID)?.languages[0];
@@ -54,431 +53,130 @@ export async function getUserRemovedResponse(sender: string) {
   return twimlRes.toString();
 }
 
-export async function generateResponse(
-  currentUser: Player | undefined,
+export interface BetsContext {
+  recipient: string;
+  messageContent: string;
+  attendeesMap: SyncMapContext;
+  betsDoc: DocumentInstance;
+  senderID?: string;
+  senderName?: string;
+}
+
+export async function handleBets(
+  currentUser: Player,
   client: twilio.Twilio,
-  {
-    senderName,
-    senderID,
-    recipient,
-    messageContent,
-    attendeesMap,
-    betsDoc,
-  }: {
-    senderName?: string;
-    senderID?: string;
-    recipient: string;
-    messageContent: string;
-    attendeesMap: SyncMapContext;
-    betsDoc: DocumentInstance;
-  },
-) {
-  const { OFFERED_PRIZES, DISABLE_LEAD_COLLECTION } = process.env;
-
+  ctx: BetsContext,
+  hashedSender: string,
+  country: ICountry | undefined,
+): Promise<string> {
+  const { MAX_BETS_PER_USER = "0" } = process.env;
+  const { messageContent, betsDoc, attendeesMap, senderName, senderID } = ctx;
   const twimlRes = new twiml.MessagingResponse();
+  const from = `whatsapp:${NEXT_PUBLIC_TWILIO_PHONE_NUMBER}`;
 
-  try {
-    const matchedEmail = regexForEmail.exec(messageContent);
-    const country = await initI18n(currentUser?.sender || senderID || "");
-    const hashedSender = createHash("sha256")
-      .update(currentUser?.sender || senderID || "")
-      .digest("hex");
+  if (betsDoc.data.temporaryBlock) {
+    twimlRes.message(i18next.t("betsNotAccepted"));
+    return twimlRes.toString();
+  }
 
-    if (DISABLE_LEAD_COLLECTION === "false") {
-      if (!currentUser) {
-        await attendeesMap.syncMapItems.create({
-          ttl: ONE_WEEK,
-          key: hashedSender,
-          data: {
-            name: senderName,
-            country: country?.name,
-            recipient,
-            sender: senderID,
-            submittedBets: 0,
-            stage: Stages.NEW_USER,
-          },
-        });
+  if (betsDoc.data.eventEnded) {
+    twimlRes.message(i18next.t("gameEnded"));
+    return twimlRes.toString();
+  }
 
-        twimlRes.message(i18next.t("welcome"));
-      } else if (currentUser.stage === Stages.NEW_USER) {
-        twimlRes.message(i18next.t("promptEmail"));
-        await attendeesMap.syncMapItems(hashedSender).update({
-          data: {
-            ...currentUser,
-            fullName: sanitizeFullName(senderName || ""),
-            stage: Stages.NAME_CONFIRMED,
-          },
-        });
-      } else if (
-        currentUser.stage === Stages.NAME_CONFIRMED ||
-        (currentUser.stage === Stages.VERIFYING && matchedEmail !== null)
-      ) {
-        if (matchedEmail === null) {
-          twimlRes.message(i18next.t("invalidEmail"));
-        } else {
-          try {
-            const verification = await client.verify.v2
-              .services(VERIFY_SERVICE_SID)
-              .verifications.create({
-                to: matchedEmail[0].toLowerCase(),
-                channel: "email",
-                channelConfiguration: {
-                  substitutions: {
-                    "event-name": EVENT_NAME,
-                  },
-                },
-              });
-            await attendeesMap.syncMapItems(hashedSender).update({
-              data: {
-                ...currentUser,
-                email: matchedEmail[0].toLowerCase(),
-                stage: Stages.VERIFYING,
-                verificationSid: verification.sid,
-              },
-            });
-            twimlRes.message(i18next.t("sentEmail"));
-          } catch (e: any) {
-            if (e?.message?.startsWith("Invalid parameter `To`:")) {
-              twimlRes.message(i18next.t("invalidEmail"));
-            } else {
-              throw e;
-            }
-          }
-        }
-      } else if (currentUser.stage === Stages.VERIFYING) {
-        try {
-          const submittedCode = regexFor6ConsecutiveDigits.exec(messageContent);
-          if (submittedCode === null) {
-            throw new Error("Invalid code");
-          }
-          const verificationCheck = await client.verify.v2
-            .services(VERIFY_SERVICE_SID)
-            .verificationChecks.create({
-              verificationSid: currentUser.verificationSid,
-              code: submittedCode[0],
-            });
+  if (
+    wedges.some((wedge) =>
+      capitalizeEachWord(messageContent).includes(capitalizeEachWord(wedge)),
+    )
+  ) {
+    // @ts-ignore
+    const bets = betsDoc.data.bets ? [...betsDoc.data.bets] : [];
+    const selectedBet = [...wedges]
+      .sort((a, b) => b.length - a.length)
+      .find((wedge) =>
+        capitalizeEachWord(messageContent).includes(capitalizeEachWord(wedge)),
+      );
 
-          if (verificationCheck.status === "approved") {
-            let foundInSegment = false,
-              checkedTrait;
-            if (
-              SEGMENT_SPACE_ID &&
-              SEGMENT_PROFILE_KEY &&
-              SEGMENT_TRAIT_CHECK &&
-              verificationCheck.to // skip in the tests
-            ) {
-              try {
-                const traits = await fetchSegmentTraits(
-                  verificationCheck.to,
-                  SEGMENT_TRAIT_CHECK,
-                );
-                if (traits) {
-                  foundInSegment = true;
-                  checkedTrait = traits[SEGMENT_TRAIT_CHECK];
-                }
-              } catch (e) {
-                console.error("Error fetching segment traits:", e);
-              }
-            }
+    const existingBet = bets.find((bet: any) => bet[0] === hashedSender);
+    const maxBetsReached =
+      parseInt(MAX_BETS_PER_USER) > 0 &&
+      currentUser.submittedBets >= parseInt(MAX_BETS_PER_USER);
 
-            const contentTemplate = await getTemplate(
-              "AskForBets",
-              country?.languages[0],
-            );
-
-            await Promise.all([
-              attendeesMap.syncMapItems(hashedSender).update({
-                data: {
-                  ...currentUser,
-                  stage: Stages.VERIFIED_USER,
-                  [SEGMENT_TRAIT_CHECK]: checkedTrait,
-                  foundInSegment,
-                },
-              }),
-              client.messages.create({
-                contentSid: contentTemplate.sid,
-                from: recipient,
-                messagingServiceSid: MESSAGING_SERVICE_SID,
-                to: currentUser.sender,
-              }),
-            ]);
-          } else {
-            throw new Error("Invalid code");
-          }
-        } catch (e: any) {
-          if (e.message !== "Invalid code") {
-            throw e;
-          }
-          twimlRes.message(i18next.t("verificationFailed"));
-        }
-      } else if (currentUser.stage === Stages.VERIFIED_USER) {
-        if (betsDoc.data.temporaryBlock) {
-          twimlRes.message(i18next.t("betsNotAccepted"));
-        } else if (betsDoc.data.eventEnded) {
-          twimlRes.message(i18next.t("gameEnded"));
-        } else if (
-          // check if one of the wedges is a substring of the capitalized messageContent
-          wedges.some((wedge) =>
-            capitalizeEachWord(messageContent).includes(
-              capitalizeEachWord(wedge),
-            ),
-          )
-        ) {
-          const { MAX_BETS_PER_USER = "0" } = process.env;
-          // @ts-ignore
-          const bets = betsDoc.data.bets ? [...betsDoc.data.bets] : [];
-          //sort longest to shortest first
-          const selectedBet = wedges
-            .sort((a, b) => b.length - a.length)
-            .find((wedge) =>
-              capitalizeEachWord(messageContent).includes(
-                capitalizeEachWord(wedge),
-              ),
-            );
-
-          const existingBet = bets.find((bet: any) => bet[0] === hashedSender);
-
-          const maxBetsReached =
-            parseInt(MAX_BETS_PER_USER) > 0 &&
-            currentUser.submittedBets >= parseInt(MAX_BETS_PER_USER);
-
-          if (!existingBet && maxBetsReached) {
-            twimlRes.message(i18next.t("maxBetsReached"));
-            return twimlRes.toString();
-          }
-
-          if (existingBet) {
-            existingBet[1] = selectedBet;
-          } else {
-            bets.push([
-              hashedSender,
-              selectedBet,
-              senderName || maskNumber(senderID || ""),
-            ]);
-          }
-          await betsDoc.update({
-            data: {
-              ...betsDoc.data,
-              full: false,
-              bets: [...bets],
-            },
-          });
-          if (!existingBet) {
-            // inc counter only if new bet and if it was successfully added
-            await attendeesMap.syncMapItems(hashedSender).update({
-              data: {
-                ...currentUser,
-                submittedBets: currentUser.submittedBets + 1,
-                event: EVENT_NAME,
-              },
-            });
-          }
-
-          twimlRes.message(
-            i18next.t("betPlaced", {
-              messageContent: selectedBet,
-            }),
-          );
-        } else {
-          const contentTemplate = await getTemplate(
-            "InvalidBet",
-            country?.languages[0],
-          );
-
-          await client.messages.create({
-            contentSid: contentTemplate.sid,
-            from: recipient,
-            messagingServiceSid: MESSAGING_SERVICE_SID,
-            to: currentUser.sender,
-          });
-        }
-      } else if (currentUser.stage === Stages.WINNER_UNCLAIMED) {
-        await client.messages.create({
-          body:
-            OFFERED_PRIZES === "small" || OFFERED_PRIZES === "both"
-              ? i18next.t("alreadyPlayedNotClaimedSmallPrize")
-              : i18next.t("alreadyPlayedAndQualified"),
-          from: recipient,
-          messagingServiceSid: MESSAGING_SERVICE_SID,
-          to: currentUser.sender,
-        });
-      } else if (
-        currentUser.stage === Stages.WINNER_CLAIMED ||
-        currentUser.stage === Stages.RAFFLE_WINNER
-      ) {
-        await client.messages.create({
-          body: i18next.t("alreadyPlayedPrizeClaimed"),
-          from: recipient,
-          messagingServiceSid: MESSAGING_SERVICE_SID,
-          to: currentUser.sender,
-        });
-      } else {
-        await client.messages.create({
-          body: i18next.t("catchAllError"),
-          from: recipient,
-          messagingServiceSid: MESSAGING_SERVICE_SID,
-          to: currentUser.sender,
-        });
-        console.error("Unhandled stage", currentUser.stage, currentUser);
-      }
-    } else {
-      if (!currentUser) {
-        await attendeesMap.syncMapItems.create({
-          ttl: ONE_WEEK,
-          key: hashedSender,
-          data: {
-            name: senderName,
-            country: country?.name,
-            recipient,
-            sender: senderID,
-            submittedBets: 0,
-            stage: Stages.NEW_USER,
-          },
-        });
-
-        twimlRes.message(i18next.t("welcomeNoLeadCollection"));
-
-        await sleep(1000);
-
-        const contentTemplate = await getTemplate(
-          "AskForBets",
-          country?.languages[0],
-        );
-
-        await client.messages.create({
-          contentSid: contentTemplate.sid,
-          from: recipient,
-          messagingServiceSid: MESSAGING_SERVICE_SID,
-          to: senderID || "",
-        });
-      } else if (currentUser.stage === Stages.WINNER_UNCLAIMED) {
-        await client.messages.create({
-          body:
-            OFFERED_PRIZES === "small" || OFFERED_PRIZES === "both"
-              ? i18next.t("alreadyPlayedNotClaimedSmallPrize")
-              : i18next.t("alreadyPlayedAndQualified"),
-          from: recipient,
-          messagingServiceSid: MESSAGING_SERVICE_SID,
-          to: currentUser.sender,
-        });
-      } else if (
-        currentUser.stage === Stages.WINNER_CLAIMED ||
-        currentUser.stage === Stages.RAFFLE_WINNER
-      ) {
-        await client.messages.create({
-          body: i18next.t("alreadyPlayedPrizeClaimed"),
-          from: recipient,
-          messagingServiceSid: MESSAGING_SERVICE_SID,
-          to: currentUser.sender,
-        });
-      } else if (betsDoc.data.temporaryBlock) {
-        twimlRes.message(i18next.t("betsNotAccepted"));
-      } else if (betsDoc.data.eventEnded) {
-        twimlRes.message(i18next.t("gameEnded"));
-      } else if (
-        wedges.some((wedge) =>
-          capitalizeEachWord(messageContent).includes(
-            capitalizeEachWord(wedge),
-          ),
-        )
-      ) {
-        const bets = betsDoc.data.bets ? [...betsDoc.data.bets] : [];
-        const selectedBet = wedges
-          .sort((a, b) => b.length - a.length)
-          .find((wedge) =>
-            capitalizeEachWord(messageContent).includes(
-              capitalizeEachWord(wedge),
-            ),
-          );
-        const { MAX_BETS_PER_USER = "0", NEXT_PUBLIC_PRIZES_PER_FIELD = "0" } =
-          process.env;
-        const prizesPerField = parseInt(NEXT_PUBLIC_PRIZES_PER_FIELD);
-        const existingBet = bets.find((bet: any) => bet[0] === hashedSender);
-
-        const maxBetsReached =
-          parseInt(MAX_BETS_PER_USER) > 0 &&
-          currentUser?.submittedBets >= parseInt(MAX_BETS_PER_USER);
-
-        if (!existingBet && maxBetsReached) {
-          twimlRes.message(i18next.t("maxBetsReached"));
-          return twimlRes.toString();
-        }
-
-        // Check if prizes are available for this field
-        const prizeWins = betsDoc.data.prizeWins || {};
-        const currentWins = selectedBet ? prizeWins[selectedBet] || 0 : 0;
-        const prizesLeft =
-          prizesPerField > 0 && selectedBet
-            ? Math.max(0, prizesPerField - currentWins)
-            : Number.MAX_SAFE_INTEGER;
-        const noPrizesLeft = prizesPerField > 0 && prizesLeft <= 0;
-
-        if (existingBet) {
-          existingBet[1] = selectedBet;
-        } else {
-          bets.push([hashedSender, selectedBet, senderName]);
-        }
-        await betsDoc.update({
-          data: {
-            ...betsDoc.data,
-            full: false,
-            bets: [...bets],
-          },
-        });
-        if (!existingBet && currentUser) {
-          await attendeesMap.syncMapItems(hashedSender).update({
-            data: {
-              ...currentUser,
-              submittedBets: currentUser.submittedBets + 1,
-              event: EVENT_NAME,
-            },
-          });
-        }
-
-        // Send different message based on prize availability
-        if (noPrizesLeft) {
-          twimlRes.message(
-            i18next.t("betPlacedNoPrizes", {
-              senderName,
-              messageContent: selectedBet,
-            }),
-          );
-        } else {
-          twimlRes.message(
-            i18next.t("betPlaced", {
-              senderName,
-              messageContent: selectedBet,
-            }),
-          );
-        }
-      } else {
-        const contentTemplate = await getTemplate(
-          "InvalidBet",
-          country?.languages[0],
-        );
-
-        await client.messages.create({
-          contentSid: contentTemplate.sid,
-          from: recipient,
-          messagingServiceSid: MESSAGING_SERVICE_SID,
-          to: currentUser?.sender,
-        });
-      }
+    if (!existingBet && maxBetsReached) {
+      twimlRes.message(i18next.t("maxBetsReached"));
+      return twimlRes.toString();
     }
-  } catch (error: any) {
-    if (error.code === 54006) {
-      betsDoc.update({
+
+    if (existingBet) {
+      existingBet[1] = selectedBet;
+    } else {
+      bets.push([
+        hashedSender,
+        selectedBet,
+        senderName || maskNumber(senderID || ""),
+      ]);
+    }
+
+    await betsDoc.update({
+      data: {
+        ...betsDoc.data,
+        full: false,
+        bets: [...bets],
+      },
+    });
+
+    if (!existingBet) {
+      await attendeesMap.syncMapItems(hashedSender).update({
         data: {
-          ...betsDoc.data,
-          full: true,
+          ...currentUser,
+          submittedBets: currentUser.submittedBets + 1,
+          event: EVENT_NAME,
         },
       });
-      twimlRes.message(i18next.t("roundFull"));
-    } else {
-      twimlRes.message(i18next.t("catchAllError"));
     }
-    console.error(error.message);
-    throw error;
+
+    twimlRes.message(
+      i18next.t("betPlaced", { messageContent: selectedBet }),
+    );
+    return twimlRes.toString();
+  }
+
+  // Invalid bet — send template
+  const contentTemplate = await getTemplate("InvalidBet", country?.languages[0]);
+  await client.messages.create({
+    contentSid: contentTemplate.sid,
+    from,
+    to: currentUser.sender,
+  });
+  return twimlRes.toString();
+}
+
+export async function handleWinnerStages(
+  currentUser: Player,
+  client: twilio.Twilio,
+): Promise<string> {
+  const { OFFERED_PRIZES } = process.env;
+  const from = `whatsapp:${NEXT_PUBLIC_TWILIO_PHONE_NUMBER}`;
+  const twimlRes = new twiml.MessagingResponse();
+
+  if (currentUser.stage === Stages.WINNER_UNCLAIMED) {
+    await client.messages.create({
+      body:
+        OFFERED_PRIZES === "small" || OFFERED_PRIZES === "both"
+          ? i18next.t("alreadyPlayedNotClaimedSmallPrize")
+          : i18next.t("alreadyPlayedAndQualified"),
+      from,
+      to: currentUser.sender,
+    });
+  } else if (
+    currentUser.stage === Stages.WINNER_CLAIMED ||
+    currentUser.stage === Stages.RAFFLE_WINNER
+  ) {
+    await client.messages.create({
+      body: i18next.t("alreadyPlayedPrizeClaimed"),
+      from,
+      to: currentUser.sender,
+    });
   }
 
   return twimlRes.toString();
@@ -501,14 +199,18 @@ export function capitalizeEachWord(str: string) {
     .join(" ");
 }
 
-function sleep(ms: number) {
+export function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function sanitizeFullName(fullName: string) {
+export function sanitizeFullName(fullName: string) {
   return fullName
-    .replace(/[^a-zA-Z\s-]/g, "") // remove non-alphabetic characters, except dashes
-    .replace(/\s/g, " ") // replace all whitespace characters with a single space
-    .replace(/\s+/g, " ") // replace multiple spaces with a single space
-    .trim(); // trim leading and trailing spaces
+    .replace(/[^a-zA-Z\s-]/g, "")
+    .replace(/\s/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function maskNumber(phone: string): string {
+  return phone.replace(/(\+?\d{2})\d+(\d{2})/, "$1****$2");
 }

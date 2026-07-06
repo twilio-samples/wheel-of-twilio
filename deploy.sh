@@ -151,14 +151,23 @@ for key in "${build_arg_keys[@]}"; do
   build_args+=(--build-arg "$key=$escaped_value")
 done
 
-REMOTE_IMAGE="$ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG"
-
 echo "Building image in ACR: $IMAGE_NAME:$IMAGE_TAG"
 az acr build \
   --registry "$AZURE_ACR_NAME" \
   --image "$IMAGE_NAME:$IMAGE_TAG" \
   "${build_args[@]}" \
   .
+
+# Resolve the exact digest so the container app always pulls the new image.
+# Using a floating tag like :latest causes Azure to reuse the old revision
+# when the tag string hasn't changed, even if the underlying image has.
+IMAGE_DIGEST="$(az acr repository show \
+  --name "$AZURE_ACR_NAME" \
+  --image "$IMAGE_NAME:$IMAGE_TAG" \
+  --query digest \
+  --output tsv)"
+REMOTE_IMAGE="$ACR_LOGIN_SERVER/$IMAGE_NAME@$IMAGE_DIGEST"
+echo "Deploying image digest: $IMAGE_DIGEST"
 
 if ! az containerapp env show \
   --name "$AZURE_CONTAINER_ENV_NAME" \
@@ -201,12 +210,19 @@ secret_keys=(
   TWILIO_ACCOUNT_SID
   TWILIO_API_KEY
   TWILIO_API_SECRET
+  TWILIO_AUTH_TOKEN
   VERIFY_SERVICE_SID
   SYNC_SERVICE_SID
-  MESSAGING_SERVICE_SID
   BASIC_AUTH_USERNAME
   BASIC_AUTH_PASSWORD
+  # Required for QR mode (LEAD_COLLECTION=QR):
+  TWILIO_CONVERSATION_CONFIGURATION_ID
+  TWILIO_MEMORY_STORE_ID
+  # Optional: Segment Profiles API for enrichment
+  SEGMENT_SPACE_ID
   SEGMENT_PROFILE_KEY
+  # WEAREDEVS_TEMP: remove after WeAreDevelopers World Congress
+  WEAREDEVS_LEAD_COLLECTION_KEY
 )
 
 plain_keys=(
@@ -218,9 +234,9 @@ plain_keys=(
   NEXT_PUBLIC_PRIZES_PER_FIELD
   MAX_BETS_PER_USER
   OFFERED_PRIZES
-  DISABLE_LEAD_COLLECTION
+  LEAD_COLLECTION
   SMALL_PRIZES
-  SEGMENT_SPACE_ID
+  # Optional: Segment trait name to check (e.g. "used_console")
   SEGMENT_TRAIT_CHECK
 )
 
@@ -242,6 +258,12 @@ for key in "${plain_keys[@]}"; do
     plain_env_vars+=("$key=$value")
   fi
 done
+
+# twilio-agent-connect requires TWILIO_PHONE_NUMBER (no NEXT_PUBLIC_ prefix)
+# — derive it from NEXT_PUBLIC_TWILIO_PHONE_NUMBER so only one var is needed in .env.local
+if [[ -z "${TWILIO_PHONE_NUMBER:-}" && -n "${NEXT_PUBLIC_TWILIO_PHONE_NUMBER:-}" ]]; then
+  plain_env_vars+=("TWILIO_PHONE_NUMBER=${NEXT_PUBLIC_TWILIO_PHONE_NUMBER}")
+fi
 
 if [[ -z "${PORT:-}" ]]; then
   plain_env_vars+=("PORT=$APP_PORT")

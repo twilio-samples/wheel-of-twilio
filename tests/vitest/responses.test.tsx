@@ -1,42 +1,58 @@
 import { expect, test, describe, vi } from "vitest";
-import { generateResponse, getCountry } from "@/app/api/incoming/helper";
+
+// Mock twilio.ts before any imports that pull it in, to prevent jwa/AccessToken
+// from crashing in jsdom (Buffer not available at module evaluation time)
+vi.mock("@/app/twilio", () => ({
+  getTemplate: async () => ({ sid: "HXmock" }),
+  getAllTemplates: async () => [],
+}));
+
+import { handleProfileMode } from "@/app/api/incoming/profile-mode";
+import { getCountry } from "@/app/api/incoming/helper";
 import { Stages } from "@/app/types";
+
+// Alias so existing test calls continue to work unchanged
+const generateResponse = (user: any, client: any, ctx: any) =>
+  handleProfileMode(user, client, {
+    ...ctx,
+    leadCollection: process.env.LEAD_COLLECTION ?? "MANUAL",
+  });
 
 const firstWedge = (process.env.NEXT_PUBLIC_WEDGES || "").split(",")[0];
 
-describe("Lead collection disabled", async () => {
-  describe("For known user, get country", async () => {
+describe("LEAD_COLLECTION=MANUAL", () => {
+  describe("For known user, get country", () => {
     test("German phone number returns correct country/language", async () => {
-      vi.stubEnv("DISABLE_LEAD_COLLECTION", "false");
+      vi.stubEnv("LEAD_COLLECTION", "MANUAL");
       const country = await getCountry("+4915112341234");
       expect(country?.name).toBe("Germany");
       expect(country?.languages[0]).toBe("de");
     });
 
     test("British phone number returns UK/English", async () => {
-      vi.stubEnv("DISABLE_LEAD_COLLECTION", "false");
+      vi.stubEnv("LEAD_COLLECTION", "MANUAL");
       const country = await getCountry("+441312345678");
       expect(country?.name).toBe("United Kingdom");
       expect(country?.languages[0]).toBe("en");
     });
 
     test("Unknown phone number returns undefined", async () => {
-      vi.stubEnv("DISABLE_LEAD_COLLECTION", "false");
+      vi.stubEnv("LEAD_COLLECTION", "MANUAL");
       const country = await getCountry("+1234567");
       expect(country).toBeUndefined();
     });
 
     test("US phone number returns US/English", async () => {
-      vi.stubEnv("DISABLE_LEAD_COLLECTION", "false");
+      vi.stubEnv("LEAD_COLLECTION", "MANUAL");
       const country = await getCountry("+12127363100");
       expect(country?.name).toBe("United States");
       expect(country?.languages[0]).toBe("en");
     });
   });
 
-  describe("For unknown user, generate welcome message", async () => {
+  describe("For unknown user, generate welcome message", () => {
     test("Test responses with invalid country code", async () => {
-      vi.stubEnv("DISABLE_LEAD_COLLECTION", "false");
+      vi.stubEnv("LEAD_COLLECTION", "MANUAL");
       await expect(
         (async () => {
           // @ts-ignore just for this test
@@ -59,7 +75,7 @@ describe("Lead collection disabled", async () => {
     });
 
     test("Test English response from generateResponse", async () => {
-      vi.stubEnv("DISABLE_LEAD_COLLECTION", "false");
+      vi.stubEnv("LEAD_COLLECTION", "MANUAL");
       // @ts-ignore just for this test
       const newUserWelcome = await generateResponse(undefined, undefined, {
         messageContent: "Hello, I'm a new user",
@@ -81,9 +97,9 @@ describe("Lead collection disabled", async () => {
     });
   });
 
-  describe("For unnamed user, generate response", async () => {
+  describe("For unnamed user, generate response", () => {
     test("Prompt NEW_USER for name", async () => {
-      vi.stubEnv("DISABLE_LEAD_COLLECTION", "false");
+      vi.stubEnv("LEAD_COLLECTION", "MANUAL");
       const currentUser = {
         name: "test-better",
         sender: "+11231232468",
@@ -119,9 +135,9 @@ describe("Lead collection disabled", async () => {
     });
   });
 
-  describe("For known user, generate response", async () => {
+  describe("For known user, generate response", () => {
     test("Catch invalid email for German user at stage NAME_CONFIRMED", async () => {
-      vi.stubEnv("DISABLE_LEAD_COLLECTION", "false");
+      vi.stubEnv("LEAD_COLLECTION", "MANUAL");
       const currentUser = {
         name: "test-better",
         sender: "+11231232468",
@@ -143,7 +159,7 @@ describe("Lead collection disabled", async () => {
     });
 
     test("Catch invalid email for English user at stage NAME_CONFIRMED", async () => {
-      vi.stubEnv("DISABLE_LEAD_COLLECTION", "false");
+      vi.stubEnv("LEAD_COLLECTION", "MANUAL");
       const currentUser = {
         name: "test-better",
         sender: "+115112341234",
@@ -165,9 +181,9 @@ describe("Lead collection disabled", async () => {
     });
   });
 
-  describe("For unverified user, generate response", async () => {
+  describe("For unverified user, generate response", () => {
     test("Check for right message when the no code is sent", async () => {
-      vi.stubEnv("DISABLE_LEAD_COLLECTION", "false");
+      vi.stubEnv("LEAD_COLLECTION", "MANUAL");
       const currentUser = {
         name: "test-better",
         sender: "+11231232468",
@@ -196,7 +212,7 @@ describe("Lead collection disabled", async () => {
     });
 
     test("Check for right message when a valid code is sent", async () => {
-      vi.stubEnv("DISABLE_LEAD_COLLECTION", "false");
+      vi.stubEnv("LEAD_COLLECTION", "MANUAL");
       const currentUser = {
         name: "test-better",
         sender: "+4915112341234",
@@ -257,7 +273,7 @@ describe("Lead collection disabled", async () => {
     });
 
     test("Check for right message when an invalid code is sent", async () => {
-      vi.stubEnv("DISABLE_LEAD_COLLECTION", "false");
+      vi.stubEnv("LEAD_COLLECTION", "MANUAL");
       const currentUser = {
         name: "test-better",
         sender: "+4915112341234",
@@ -318,9 +334,9 @@ describe("Lead collection disabled", async () => {
     });
   });
 
-  describe("For verified users with selected country, generate response", async () => {
+  describe("For verified users with selected country, generate response", () => {
     test("Check for right message when bets are blocked", async () => {
-      vi.stubEnv("DISABLE_LEAD_COLLECTION", "false");
+      vi.stubEnv("LEAD_COLLECTION", "MANUAL");
       const currentUser = {
         name: "test-better",
         sender: "+115112341234",
@@ -350,7 +366,7 @@ describe("Lead collection disabled", async () => {
     });
 
     test("Check for right message when a valid bet is placed", async () => {
-      vi.stubEnv("DISABLE_LEAD_COLLECTION", "false");
+      vi.stubEnv("LEAD_COLLECTION", "MANUAL");
       const currentUser = {
         name: "test-better",
         sender: "+115112341234",
@@ -391,8 +407,7 @@ describe("Lead collection disabled", async () => {
     });
 
     test("Check for right message when an invalid bet is placed", async () => {
-      vi.stubEnv("DISABLE_LEAD_COLLECTION", "false");
-      vi.stubEnv("DISABLE_LEAD_COLLECTION", "false");
+      vi.stubEnv("LEAD_COLLECTION", "MANUAL");
       const currentUser = {
         name: "test-better",
         sender: "+115112341234",
@@ -435,9 +450,9 @@ describe("Lead collection disabled", async () => {
     });
   });
 
-  describe("For winner user, generate response", async () => {
+  describe("For winner user, generate response", () => {
     test("Check for right message when the stage is WINNER_UNCLAIMED and offered small prizes", async () => {
-      vi.stubEnv("DISABLE_LEAD_COLLECTION", "false");
+      vi.stubEnv("LEAD_COLLECTION", "MANUAL");
       vi.stubEnv("OFFERED_PRIZES", "small");
 
       const currentUser = {
@@ -482,7 +497,7 @@ describe("Lead collection disabled", async () => {
     });
 
     test("Check for right message when the stage is WINNER_UNCLAIMED and offered both prizes", async () => {
-      vi.stubEnv("DISABLE_LEAD_COLLECTION", "false");
+      vi.stubEnv("LEAD_COLLECTION", "MANUAL");
       vi.stubEnv("OFFERED_PRIZES", "both");
 
       const currentUser = {
@@ -527,7 +542,7 @@ describe("Lead collection disabled", async () => {
     });
 
     test("Check for right message when the stage is WINNER_UNCLAIMED and offered big prizes", async () => {
-      vi.stubEnv("DISABLE_LEAD_COLLECTION", "false");
+      vi.stubEnv("LEAD_COLLECTION", "MANUAL");
       vi.stubEnv("OFFERED_PRIZES", "big");
 
       const currentUser = {
@@ -572,7 +587,7 @@ describe("Lead collection disabled", async () => {
     });
 
     test("Check for right message when the stage is WINNER_CLAIMED", async () => {
-      vi.stubEnv("DISABLE_LEAD_COLLECTION", "false");
+      vi.stubEnv("LEAD_COLLECTION", "MANUAL");
       const currentUser = {
         name: "test-better",
         sender: "+115112341234",
@@ -615,9 +630,9 @@ describe("Lead collection disabled", async () => {
     });
   });
 
-  describe("Check if max bets are handled correctly", async () => {
+  describe("Check if max bets are handled correctly", () => {
     test("Check for right message when the max bets are reached", async () => {
-      vi.stubEnv("DISABLE_LEAD_COLLECTION", "false");
+      vi.stubEnv("LEAD_COLLECTION", "MANUAL");
       vi.stubEnv("MAX_BETS_PER_USER", "2");
       const currentUser = {
         name: "test-better",
@@ -660,7 +675,7 @@ describe("Lead collection disabled", async () => {
     });
 
     test("Check for right message when the max bets are not reached", async () => {
-      vi.stubEnv("DISABLE_LEAD_COLLECTION", "false");
+      vi.stubEnv("LEAD_COLLECTION", "MANUAL");
       vi.stubEnv("MAX_BETS_PER_USER", "20");
       const currentUser = {
         name: "test-better",
@@ -714,7 +729,7 @@ describe("Lead collection disabled", async () => {
     });
 
     test("Check for right message when there are no max bets", async () => {
-      vi.stubEnv("DISABLE_LEAD_COLLECTION", "false");
+      vi.stubEnv("LEAD_COLLECTION", "MANUAL");
       vi.stubEnv("MAX_BETS_PER_USER", "0");
       const currentUser = {
         name: "test-better",
@@ -769,7 +784,7 @@ describe("Lead collection disabled", async () => {
   });
 
   test("Check for right message when the stage is unknown", async () => {
-    vi.stubEnv("DISABLE_LEAD_COLLECTION", "false");
+    vi.stubEnv("LEAD_COLLECTION", "MANUAL");
     const currentUser = {
       name: "test-better",
       sender: "+4915112341234",
@@ -811,10 +826,10 @@ describe("Lead collection disabled", async () => {
   });
 });
 
-describe("Lead collection enabled", async () => {
-  describe("For unknown user, generate welcome message", async () => {
+describe("LEAD_COLLECTION=NONE", () => {
+  describe("For unknown user, generate welcome message", () => {
     test("Test responses with invalid country code", async () => {
-      vi.stubEnv("DISABLE_LEAD_COLLECTION", "true");
+      vi.stubEnv("LEAD_COLLECTION", "NONE");
       await expect(
         (async () => {
           // @ts-ignore just for this test
@@ -869,9 +884,9 @@ describe("Lead collection enabled", async () => {
     });
   });
 
-  describe("For unnamed user, generate response", async () => {
+  describe("For unnamed user, generate response", () => {
     test("Prompt NEW_USER for name", async () => {
-      vi.stubEnv("DISABLE_LEAD_COLLECTION", "true");
+      vi.stubEnv("LEAD_COLLECTION", "NONE");
       const currentUser = {
         name: "test-better",
         sender: "+11231232468",
@@ -919,9 +934,9 @@ describe("Lead collection enabled", async () => {
     });
   });
 
-  describe("For unverified user, generate response", async () => {
+  describe("For unverified user, generate response", () => {
     test("Check for right message when the no code is sent", async () => {
-      vi.stubEnv("DISABLE_LEAD_COLLECTION", "true");
+      vi.stubEnv("LEAD_COLLECTION", "NONE");
       const currentUser = {
         name: "test-better",
         sender: "+11231232468",
@@ -949,9 +964,9 @@ describe("Lead collection enabled", async () => {
     });
   });
 
-  describe("For verified users with selected country, generate response", async () => {
+  describe("For verified users with selected country, generate response", () => {
     test("Check for right message when bets are blocked", async () => {
-      vi.stubEnv("DISABLE_LEAD_COLLECTION", "true");
+      vi.stubEnv("LEAD_COLLECTION", "NONE");
       const currentUser = {
         name: "test-better",
         sender: "+115112341234",
@@ -981,7 +996,7 @@ describe("Lead collection enabled", async () => {
     });
 
     test("Check for right message when a valid bet is placed", async () => {
-      vi.stubEnv("DISABLE_LEAD_COLLECTION", "true");
+      vi.stubEnv("LEAD_COLLECTION", "NONE");
       const currentUser = {
         name: "test-better",
         sender: "+115112341234",
@@ -1022,7 +1037,7 @@ describe("Lead collection enabled", async () => {
     });
 
     test("Check for right message when an invalid bet is placed", async () => {
-      vi.stubEnv("DISABLE_LEAD_COLLECTION", "true");
+      vi.stubEnv("LEAD_COLLECTION", "NONE");
       const currentUser = {
         name: "test-better",
         sender: "+115112341234",
@@ -1065,9 +1080,9 @@ describe("Lead collection enabled", async () => {
     });
   });
 
-  describe("For winner user, generate response", async () => {
+  describe("For winner user, generate response", () => {
     test("Check for right message when the stage is WINNER_UNCLAIMED and offered small prizes", async () => {
-      vi.stubEnv("DISABLE_LEAD_COLLECTION", "true");
+      vi.stubEnv("LEAD_COLLECTION", "NONE");
       vi.stubEnv("OFFERED_PRIZES", "small");
 
       const currentUser = {
@@ -1112,7 +1127,7 @@ describe("Lead collection enabled", async () => {
     });
 
     test("Check for right message when the stage is WINNER_UNCLAIMED and offered both prizes", async () => {
-      vi.stubEnv("DISABLE_LEAD_COLLECTION", "true");
+      vi.stubEnv("LEAD_COLLECTION", "NONE");
       vi.stubEnv("OFFERED_PRIZES", "both");
 
       const currentUser = {
@@ -1157,7 +1172,7 @@ describe("Lead collection enabled", async () => {
     });
 
     test("Check for right message when the stage is WINNER_UNCLAIMED and offered big prizes", async () => {
-      vi.stubEnv("DISABLE_LEAD_COLLECTION", "true");
+      vi.stubEnv("LEAD_COLLECTION", "NONE");
       vi.stubEnv("OFFERED_PRIZES", "big");
 
       const currentUser = {
@@ -1202,7 +1217,7 @@ describe("Lead collection enabled", async () => {
     });
 
     test("Check for right message when the stage is WINNER_CLAIMED", async () => {
-      vi.stubEnv("DISABLE_LEAD_COLLECTION", "true");
+      vi.stubEnv("LEAD_COLLECTION", "NONE");
       const currentUser = {
         name: "test-better",
         sender: "+115112341234",
@@ -1245,7 +1260,7 @@ describe("Lead collection enabled", async () => {
     });
   });
 
-  describe("Check if max bets are handled correctly", async () => {
+  describe("Check if max bets are handled correctly", () => {
     test("Check for right message when the max bets are reached", async () => {
       vi.stubEnv("MAX_BETS_PER_USER", "2");
       const currentUser = {

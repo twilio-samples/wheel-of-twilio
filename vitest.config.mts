@@ -8,6 +8,7 @@ export default defineConfig({
   test: {
     exclude: [...configDefaults.exclude, "*/e2e/*"],
     environment: "jsdom",
+    setupFiles: ["./tests/vitest/setup.ts"],
     env: {
       ...config({ path: ".env.local" }).parsed,
     },
