@@ -154,6 +154,8 @@ export async function handleProfileMode(
               to: currentUser.sender,
             }),
           ]);
+        } else {
+          twimlRes.message(i18next.t("verificationFailed"));
         }
       } catch (e: any) {
         if (e.message !== "Invalid code") {

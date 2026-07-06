@@ -20,8 +20,8 @@ const generateResponse = (user: any, client: any, ctx: any) =>
 
 const firstWedge = (process.env.NEXT_PUBLIC_WEDGES || "").split(",")[0];
 
-describe("LEAD_COLLECTION=MANUAL", async () => {
-  describe("For known user, get country", async () => {
+describe("LEAD_COLLECTION=MANUAL", () => {
+  describe("For known user, get country", () => {
     test("German phone number returns correct country/language", async () => {
       vi.stubEnv("LEAD_COLLECTION", "MANUAL");
       const country = await getCountry("+4915112341234");
@@ -50,7 +50,7 @@ describe("LEAD_COLLECTION=MANUAL", async () => {
     });
   });
 
-  describe("For unknown user, generate welcome message", async () => {
+  describe("For unknown user, generate welcome message", () => {
     test("Test responses with invalid country code", async () => {
       vi.stubEnv("LEAD_COLLECTION", "MANUAL");
       await expect(
@@ -97,7 +97,7 @@ describe("LEAD_COLLECTION=MANUAL", async () => {
     });
   });
 
-  describe("For unnamed user, generate response", async () => {
+  describe("For unnamed user, generate response", () => {
     test("Prompt NEW_USER for name", async () => {
       vi.stubEnv("LEAD_COLLECTION", "MANUAL");
       const currentUser = {
@@ -135,7 +135,7 @@ describe("LEAD_COLLECTION=MANUAL", async () => {
     });
   });
 
-  describe("For known user, generate response", async () => {
+  describe("For known user, generate response", () => {
     test("Catch invalid email for German user at stage NAME_CONFIRMED", async () => {
       vi.stubEnv("LEAD_COLLECTION", "MANUAL");
       const currentUser = {
@@ -181,7 +181,7 @@ describe("LEAD_COLLECTION=MANUAL", async () => {
     });
   });
 
-  describe("For unverified user, generate response", async () => {
+  describe("For unverified user, generate response", () => {
     test("Check for right message when the no code is sent", async () => {
       vi.stubEnv("LEAD_COLLECTION", "MANUAL");
       const currentUser = {
@@ -334,7 +334,7 @@ describe("LEAD_COLLECTION=MANUAL", async () => {
     });
   });
 
-  describe("For verified users with selected country, generate response", async () => {
+  describe("For verified users with selected country, generate response", () => {
     test("Check for right message when bets are blocked", async () => {
       vi.stubEnv("LEAD_COLLECTION", "MANUAL");
       const currentUser = {
@@ -450,7 +450,7 @@ describe("LEAD_COLLECTION=MANUAL", async () => {
     });
   });
 
-  describe("For winner user, generate response", async () => {
+  describe("For winner user, generate response", () => {
     test("Check for right message when the stage is WINNER_UNCLAIMED and offered small prizes", async () => {
       vi.stubEnv("LEAD_COLLECTION", "MANUAL");
       vi.stubEnv("OFFERED_PRIZES", "small");
@@ -630,7 +630,7 @@ describe("LEAD_COLLECTION=MANUAL", async () => {
     });
   });
 
-  describe("Check if max bets are handled correctly", async () => {
+  describe("Check if max bets are handled correctly", () => {
     test("Check for right message when the max bets are reached", async () => {
       vi.stubEnv("LEAD_COLLECTION", "MANUAL");
       vi.stubEnv("MAX_BETS_PER_USER", "2");
@@ -826,8 +826,8 @@ describe("LEAD_COLLECTION=MANUAL", async () => {
   });
 });
 
-describe("LEAD_COLLECTION=NONE", async () => {
-  describe("For unknown user, generate welcome message", async () => {
+describe("LEAD_COLLECTION=NONE", () => {
+  describe("For unknown user, generate welcome message", () => {
     test("Test responses with invalid country code", async () => {
       vi.stubEnv("LEAD_COLLECTION", "NONE");
       await expect(
@@ -884,7 +884,7 @@ describe("LEAD_COLLECTION=NONE", async () => {
     });
   });
 
-  describe("For unnamed user, generate response", async () => {
+  describe("For unnamed user, generate response", () => {
     test("Prompt NEW_USER for name", async () => {
       vi.stubEnv("LEAD_COLLECTION", "NONE");
       const currentUser = {
@@ -934,7 +934,7 @@ describe("LEAD_COLLECTION=NONE", async () => {
     });
   });
 
-  describe("For unverified user, generate response", async () => {
+  describe("For unverified user, generate response", () => {
     test("Check for right message when the no code is sent", async () => {
       vi.stubEnv("LEAD_COLLECTION", "NONE");
       const currentUser = {
@@ -964,7 +964,7 @@ describe("LEAD_COLLECTION=NONE", async () => {
     });
   });
 
-  describe("For verified users with selected country, generate response", async () => {
+  describe("For verified users with selected country, generate response", () => {
     test("Check for right message when bets are blocked", async () => {
       vi.stubEnv("LEAD_COLLECTION", "NONE");
       const currentUser = {
@@ -1080,7 +1080,7 @@ describe("LEAD_COLLECTION=NONE", async () => {
     });
   });
 
-  describe("For winner user, generate response", async () => {
+  describe("For winner user, generate response", () => {
     test("Check for right message when the stage is WINNER_UNCLAIMED and offered small prizes", async () => {
       vi.stubEnv("LEAD_COLLECTION", "NONE");
       vi.stubEnv("OFFERED_PRIZES", "small");
@@ -1260,7 +1260,7 @@ describe("LEAD_COLLECTION=NONE", async () => {
     });
   });
 
-  describe("Check if max bets are handled correctly", async () => {
+  describe("Check if max bets are handled correctly", () => {
     test("Check for right message when the max bets are reached", async () => {
       vi.stubEnv("MAX_BETS_PER_USER", "2");
       const currentUser = {
