@@ -153,6 +153,13 @@ export async function handleQrMode(
 
   // No profile — expect a QR photo
   if (numMedia > 0 && mediaUrl) {
+    // Acknowledge immediately — QR parsing takes a moment
+    await client.messages.create({
+      body: "Got your image! Scanning your badge QR code now...",
+      from,
+      to: senderID || "",
+    });
+
     const qrData = await decodeQrFromUrl(mediaUrl, TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 
     // Could not decode any QR code from the image
