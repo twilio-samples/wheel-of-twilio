@@ -91,7 +91,7 @@ export async function handleBets(
   ) {
     // @ts-ignore
     const bets = betsDoc.data.bets ? [...betsDoc.data.bets] : [];
-    const selectedBet = wedges
+    const selectedBet = [...wedges]
       .sort((a, b) => b.length - a.length)
       .find((wedge) =>
         capitalizeEachWord(messageContent).includes(capitalizeEachWord(wedge)),

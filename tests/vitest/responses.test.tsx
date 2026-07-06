@@ -408,7 +408,6 @@ describe("LEAD_COLLECTION=MANUAL", async () => {
 
     test("Check for right message when an invalid bet is placed", async () => {
       vi.stubEnv("LEAD_COLLECTION", "MANUAL");
-      vi.stubEnv("LEAD_COLLECTION", "MANUAL");
       const currentUser = {
         name: "test-better",
         sender: "+115112341234",

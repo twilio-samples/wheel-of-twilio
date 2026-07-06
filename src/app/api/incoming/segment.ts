@@ -20,8 +20,8 @@ export async function checkSegmentTraits(email: string | undefined): Promise<Seg
         [SEGMENT_TRAIT_CHECK]: traits[SEGMENT_TRAIT_CHECK],
       };
     }
-  } catch (e) {
-    console.error("Error fetching Segment traits:", e);
+  } catch (e: any) {
+    console.error("Error fetching Segment traits:", e?.status ?? e?.message ?? "unknown error");
   }
 
   return { foundInSegment: false };
