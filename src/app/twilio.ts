@@ -287,6 +287,7 @@ export async function notifyAndUpdateWinners(winners: any[]) {
           ? ` a *${availablePrizes[Math.floor(Math.random() * availablePrizes.length)]}*`
           : "";
 
+      let syncUpdateSucceeded = false;
       try {
         await attendeesMap.syncMapItems(winningBet[0]).update({
           data: {
@@ -297,6 +298,7 @@ export async function notifyAndUpdateWinners(winners: any[]) {
             smallPrize: randomPrize,
           },
         });
+        syncUpdateSucceeded = true;
       } catch (e: any) {
         if (e.code === 20404) {
           console.error(`User ${winningBet[0]} not found in sync map`);
@@ -304,6 +306,8 @@ export async function notifyAndUpdateWinners(winners: any[]) {
           console.error(e.message);
         }
       }
+
+      if (!syncUpdateSucceeded) return;
 
       if (
         (OFFERED_PRIZES === "small" || OFFERED_PRIZES === "both") &&
