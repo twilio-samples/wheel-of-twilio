@@ -376,12 +376,15 @@ export async function callWinner(
   from: string,
   rafflePrize: boolean,
 ) {
+  const baseUrl = process.env.BASE_URL;
+  if (!baseUrl) throw new Error("BASE_URL environment variable is not set");
+
+  const path = rafflePrize
+    ? "/api/twiml/winner-raffle-prize"
+    : "/api/twiml/winner-small-prize";
+
   await client.calls.create({
-    twiml: await localizeStringForPhoneNumber(
-      rafflePrize ? "winnerCallRafflePrize" : "winnerCallSmallPrize",
-      to,
-      {},
-    ),
+    url: `${baseUrl}${path}`,
     from,
     to,
   });
