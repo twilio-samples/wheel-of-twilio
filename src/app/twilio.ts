@@ -137,7 +137,7 @@ export async function getWinners(allWinners: boolean): Promise<MaskedPlayer[]> {
     .map((w: any) => {
       return {
         key: w.key,
-        name: w.data.fullName,
+        name: w.data.fullName ?? w.data.name,
         smallPrize: w.data.smallPrize,
         stage: w.data.stage,
         sender: maskNumber(w.data.sender),
