@@ -11,12 +11,26 @@ export const CATEGORICAL_COLORS = [
   "#d95926", // orange
 ];
 
+// Tote-board surface tokens — a shade lifted off the page background so
+// panels read as their own plane, plus the two brand accents (red for
+// live/urgent, gold for prize/claimed) carried over from the wheel screen.
+export const SURFACE = {
+  card: "#0B1B3E",
+  raised: "#12275A",
+  line: "#24365F",
+};
+
+export const ACCENT = {
+  red: "#EF223A",
+  gold: "#E8B339",
+};
+
 export const CHART_INK = {
-  primary: "#ffffff",
-  secondary: "#c3c2b7",
-  muted: "#898781",
-  gridline: "#2c2c2a",
-  baseline: "#383835",
+  primary: "#FDF7F4",
+  secondary: "#B9C3D9",
+  muted: "#7C89AC",
+  gridline: "#24365F",
+  baseline: "#3A4A73",
 };
 
 export function wedgeColor(index: number) {

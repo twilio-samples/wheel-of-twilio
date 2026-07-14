@@ -1,7 +1,7 @@
 "use client";
 
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
-import { CHART_INK, wedgeColor } from "./palette";
+import { CHART_INK, SURFACE, wedgeColor } from "./palette";
 
 interface BetsPieChartProps {
   data: { wedge: string; count: number }[];
@@ -37,14 +37,19 @@ export function BetsPieChart({ data }: BetsPieChartProps) {
   const total = data.reduce((sum, d) => sum + d.count, 0);
 
   return (
-    <div className="rounded-md border border-white/10 bg-white/5 p-4">
-      <div className="text-sm text-[#c3c2b7] mb-2">Bets by wedge</div>
+    <div
+      className="rounded-md border p-4"
+      style={{ borderColor: SURFACE.line, backgroundColor: SURFACE.card }}
+    >
+      <div className="text-xs uppercase tracking-widest text-[#7C89AC] mb-2">
+        Bets by wedge
+      </div>
       {total === 0 ? (
-        <div className="flex h-[320px] items-center justify-center text-sm text-[#898781]">
+        <div className="flex h-[300px] items-center justify-center text-sm text-[#7C89AC]">
           No bets yet
         </div>
       ) : (
-        <ResponsiveContainer width="100%" height={320}>
+        <ResponsiveContainer width="100%" height={300}>
           <PieChart>
             <Pie
               data={data}
@@ -53,7 +58,7 @@ export function BetsPieChart({ data }: BetsPieChartProps) {
               innerRadius={60}
               outerRadius={110}
               paddingAngle={2}
-              stroke="#000D25"
+              stroke={SURFACE.card}
               strokeWidth={2}
               labelLine={{ stroke: CHART_INK.muted, strokeWidth: 1 }}
               label={renderSliceLabel}
@@ -64,7 +69,7 @@ export function BetsPieChart({ data }: BetsPieChartProps) {
             </Pie>
             <Tooltip
               contentStyle={{
-                background: "#0d0d0d",
+                background: SURFACE.raised,
                 border: `1px solid ${CHART_INK.gridline}`,
                 borderRadius: 6,
               }}

@@ -1,7 +1,7 @@
 "use client";
 
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { CHART_INK, wedgeColor } from "./palette";
+import { CHART_INK, SURFACE, wedgeColor } from "./palette";
 
 interface HistoryPoint {
   timestamp: number;
@@ -21,15 +21,20 @@ export function BetsOverTimeChart({ history }: { history: HistoryPoint[] }) {
   }));
 
   return (
-    <div className="rounded-md border border-white/10 bg-white/5 p-4">
-      <div className="text-sm text-[#c3c2b7] mb-2">Bets per round over time</div>
+    <div
+      className="rounded-md border p-4"
+      style={{ borderColor: SURFACE.line, backgroundColor: SURFACE.card }}
+    >
+      <div className="text-xs uppercase tracking-widest text-[#7C89AC] mb-2">
+        Bets per round over time
+      </div>
       {data.length === 0 ? (
-        <div className="flex h-[280px] items-center justify-center text-sm text-[#898781]">
+        <div className="flex h-[300px] items-center justify-center text-sm text-[#7C89AC]">
           No rounds played yet
         </div>
       ) : (
-        <ResponsiveContainer width="100%" height={280}>
-          <AreaChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
+        <ResponsiveContainer width="100%" height={300}>
+          <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
             <CartesianGrid stroke={CHART_INK.gridline} vertical={false} />
             <XAxis
               dataKey="time"
@@ -40,10 +45,11 @@ export function BetsOverTimeChart({ history }: { history: HistoryPoint[] }) {
               allowDecimals={false}
               stroke={CHART_INK.baseline}
               tick={{ fill: CHART_INK.muted, fontSize: 12 }}
+              width={30}
             />
             <Tooltip
               contentStyle={{
-                background: "#0d0d0d",
+                background: SURFACE.raised,
                 border: `1px solid ${CHART_INK.gridline}`,
                 borderRadius: 6,
               }}
@@ -58,8 +64,8 @@ export function BetsOverTimeChart({ history }: { history: HistoryPoint[] }) {
               stroke={color}
               strokeWidth={2}
               fill={color}
-              fillOpacity={0.1}
-              dot={{ r: 4, fill: color, stroke: "#000D25", strokeWidth: 2 }}
+              fillOpacity={0.15}
+              dot={{ r: 4, fill: color, stroke: SURFACE.card, strokeWidth: 2 }}
               activeDot={{ r: 5 }}
             />
           </AreaChart>

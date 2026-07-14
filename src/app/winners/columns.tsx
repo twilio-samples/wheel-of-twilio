@@ -2,7 +2,8 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Stages } from "../types";
-import { MaskedPlayer, winnerPrizeClaimed } from "../twilio";
+import { MaskedPlayer } from "../twilio";
+import { ClaimButton, StatusPill } from "./status";
 
 export const columns: ColumnDef<MaskedPlayer>[] = [
   {
@@ -17,32 +18,17 @@ export const columns: ColumnDef<MaskedPlayer>[] = [
     accessorKey: "sender",
     header: "Sender",
   },
-  { accessorKey: "smallPrize", header: "Small Prize" },
+  { accessorKey: "smallPrize", header: "Prize" },
   {
     accessorKey: "stage",
-    header: "State",
+    header: "Status",
     cell: ({ row }) => {
+      const stage = row.getValue("stage") as string;
       return (
-        <div className="flex items-center flex-wrap">
-          <div className="mr-4">
-            {row.getValue("stage") === Stages.WINNER_CLAIMED
-              ? "Claimed"
-              : row.getValue("stage") === Stages.WINNER_UNCLAIMED
-                ? "Unclaimed"
-                : row.getValue("stage") === Stages.RAFFLE_WINNER
-                  ? "Raffle Winner"
-                  : "Unknown State"}
-          </div>
-          {row.getValue("stage") === Stages.WINNER_UNCLAIMED && (
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded "
-              onClick={async () => {
-                await winnerPrizeClaimed(row.getValue("key"));
-                window.location.reload();
-              }}
-            >
-              Prize received
-            </button>
+        <div className="flex items-center gap-3 flex-wrap">
+          <StatusPill stage={stage} />
+          {stage === Stages.WINNER_UNCLAIMED && (
+            <ClaimButton winnerKey={row.getValue("key")} />
           )}
         </div>
       );
