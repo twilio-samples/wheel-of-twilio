@@ -5,7 +5,7 @@ import { getWinners } from "../twilio";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { RaffleButton } from "./raffleButton";
-import { AutoRefresh } from "./auto-refresh";
+import { AutoRefresh } from "@/components/auto-refresh";
 
 export default async function WinnerPage(props: {
   searchParams: Promise<{ all: string }>;

@@ -151,6 +151,63 @@ export async function getWinners(allWinners: boolean): Promise<MaskedPlayer[]> {
     );
 }
 
+export interface StatsSummary {
+  totalBets: number;
+  uniqueBettors: number;
+  roundsPlayed: number;
+  distribution: { wedge: string; count: number }[];
+  winners: { unclaimed: number; claimed: number; raffle: number };
+  history: { timestamp: number; roundBets: number; cumulativeTotal: number }[];
+}
+
+export async function getStats(): Promise<StatsSummary> {
+  const wedges = (process.env.NEXT_PUBLIC_WEDGES || "").split(",");
+  const syncService = await client.sync.v1.services(SYNC_SERVICE_SID).fetch();
+  const betsDoc = await syncService.documents()("bets").fetch();
+  const statsDoc = await syncService.documents()("stats").fetch();
+  const attendeesMap = syncService.syncMaps()("attendees");
+
+  const distribution: Record<string, number> = {
+    ...(statsDoc.data.distribution || {}),
+  };
+  const uniques: Record<string, boolean> = { ...(statsDoc.data.uniques || {}) };
+
+  const pendingBets: any[] = Object.values(betsDoc.data.bets || {});
+  pendingBets.forEach((bet: any) => {
+    distribution[bet[1]] = (distribution[bet[1]] || 0) + 1;
+    uniques[bet[0]] = true;
+  });
+
+  let res = await attendeesMap.syncMapItems.page({ pageSize: 500 });
+  const attendees: any[] = [...res.instances];
+  while (res.nextPageUrl) {
+    res = await res.nextPage();
+    attendees.push(...res.instances);
+  }
+
+  const winners = attendees.reduce(
+    (acc, attendee) => {
+      if (attendee.data.stage === Stages.WINNER_UNCLAIMED) acc.unclaimed++;
+      else if (attendee.data.stage === Stages.WINNER_CLAIMED) acc.claimed++;
+      else if (attendee.data.stage === Stages.RAFFLE_WINNER) acc.raffle++;
+      return acc;
+    },
+    { unclaimed: 0, claimed: 0, raffle: 0 },
+  );
+
+  return {
+    totalBets: Object.values(distribution).reduce((sum, count) => sum + count, 0),
+    uniqueBettors: Object.keys(uniques).length,
+    roundsPlayed: (statsDoc.data.history || []).length,
+    distribution: wedges.map((wedge) => ({
+      wedge,
+      count: distribution[wedge] || 0,
+    })),
+    winners,
+    history: statsDoc.data.history || [],
+  };
+}
+
 export async function winnerPrizeClaimed(winnerKey: string) {
   const syncService = await client.sync.v1.services(SYNC_SERVICE_SID).fetch();
   const attendeesMap = syncService.syncMaps()("attendees");
@@ -191,12 +248,27 @@ export async function tempLockGame() {
 
   completedBets.data.distribution = completedBets.data.distribution || {};
   completedBets.data.uniques = completedBets.data.uniques || {};
+  completedBets.data.history = completedBets.data.history || [];
+
+  const roundBets = Object.values(actualBets).length;
 
   Object.values(actualBets).forEach((bet: any) => {
     completedBets.data.distribution[bet[1]] =
       completedBets.data.distribution[bet[1]] + 1 || 1;
     completedBets.data.uniques[bet[0]] = true;
   });
+
+  const cumulativeTotal = Object.values(completedBets.data.distribution).reduce(
+    (sum: number, count: any) => sum + count,
+    0,
+  );
+
+  completedBets.data.history.push({
+    timestamp: Date.now(),
+    roundBets,
+    cumulativeTotal,
+  });
+
   await Promise.all([
     completedBetsDoc.update({
       data: {
