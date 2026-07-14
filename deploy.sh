@@ -363,8 +363,12 @@ echo
 echo "Deployment complete"
 echo "App URL: https://$FQDN"
 echo "Twilio incoming webhook: https://$FQDN/api/incoming"
+echo "TwiML - small prize call: https://$FQDN/api/twiml/winner-small-prize"
+echo "TwiML - raffle prize call: https://$FQDN/api/twiml/winner-raffle-prize"
 echo
 echo "Useful checks:"
 echo "  curl -i https://$FQDN/"
 echo "  curl -i https://$FQDN/api/incoming"
+echo "  curl -i https://$FQDN/api/twiml/winner-small-prize"
+echo "  curl -i https://$FQDN/api/twiml/winner-raffle-prize"
 echo "  az containerapp logs show -g $AZURE_RESOURCE_GROUP -n $AZURE_CONTAINER_APP_NAME --follow"

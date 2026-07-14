@@ -15,6 +15,7 @@ import {
 } from "./helper";
 import {
   lookupProfileByPhone,
+  getProfileTraits,
   createBadgeProfile,
   type BadgeData,
 } from "./memory";
@@ -129,7 +130,11 @@ export async function handleQrMode(
 
   if (profileId) {
     // Has a memory profile but no Sync entry — create it and prompt for bets
-    const contentTemplate = await getTemplate("AskForBets", country?.languages[0]);
+    const [contentTemplate, profileTraits] = await Promise.all([
+      getTemplate("AskForBets", country?.languages[0]),
+      getProfileTraits(memoryClient, profileId),
+    ]);
+    const firstName = (profileTraits?.Contact as any)?.firstName as string | undefined;
     await attendeesMap.syncMapItems.create({
       ttl: ONE_WEEK,
       key: hashedSender,
@@ -143,6 +148,12 @@ export async function handleQrMode(
         profileId,
       },
     });
+    await client.messages.create({
+      body: firstName ? `Welcome back, ${firstName}! 👋` : "Welcome back! 👋",
+      from,
+      to: senderID || "",
+    });
+    await sleep(500);
     await client.messages.create({
       contentSid: contentTemplate.sid,
       from,
@@ -164,25 +175,31 @@ export async function handleQrMode(
 
     // Could not decode any QR code from the image
     if (!qrData) {
-      twimlRes.message(
-        "I couldn't scan a QR code from that image. Please make sure your badge QR code is clearly visible, well-lit and in focus, then try again.",
-      );
+      await client.messages.create({
+        body: "I couldn't scan a QR code from that image. Please make sure your badge QR code is clearly visible, well-lit and in focus, then try again.",
+        from,
+        to: senderID || "",
+      });
       return twimlRes.toString();
     }
 
     // --- WEAREDEVS_TEMP_START ---
     if (!qrData.startsWith("ti_")) {
-      twimlRes.message(
-        "I scanned a QR code but it doesn't look like a WeAreDevelopers ticket. Are you sure you scanned the QR code on your badge and not another one? Please try again with your event badge.",
-      );
+      await client.messages.create({
+        body: "I scanned a QR code but it doesn't look like a WeAreDevelopers ticket. Are you sure you scanned the QR code on your badge and not another one? Please try again with your event badge.",
+        from,
+        to: senderID || "",
+      });
       return twimlRes.toString();
     }
 
     const badgeData = await getBadgeData(qrData);
     if (!badgeData) {
-      twimlRes.message(
-        "I could read your badge QR code but couldn't retrieve your details from the event system. Please ask a Twilio team member for help.",
-      );
+      await client.messages.create({
+        body: "I could read your badge QR code but couldn't retrieve your details from the event system. Please ask a Twilio team member for help.",
+        from,
+        to: senderID || "",
+      });
       return twimlRes.toString();
     }
     // --- WEAREDEVS_TEMP_END ---
@@ -210,8 +227,12 @@ export async function handleQrMode(
       },
     });
 
-    twimlRes.message(`Welcome, ${badgeData.firstName}! You're now registered.`);
     const contentTemplate = await getTemplate("AskForBets", country?.languages[0]);
+    await client.messages.create({
+      body: `Thanks, ${badgeData.firstName}! Your registration is complete. 🎉`,
+      from,
+      to: senderID || "",
+    });
     await sleep(1250);
     await client.messages.create({
       contentSid: contentTemplate.sid,
@@ -222,8 +243,10 @@ export async function handleQrMode(
   }
 
   // No photo, not registered
-  twimlRes.message(
-    "Hi! I don't recognize you yet. Please send a photo of your badge QR code to get started.\n\n_Note: Twilio will only use your data for activations at this booth and communication outreach._",
-  );
+  await client.messages.create({
+    body: "Hi! I don't recognize you yet. Please send a photo of your badge QR code to get started.\n\n_Note: Twilio will only use your data for activations at this booth and communication outreach._",
+    from,
+    to: senderID || "",
+  });
   return twimlRes.toString();
 }
