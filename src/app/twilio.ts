@@ -4,7 +4,7 @@ import AccessToken, { SyncGrant } from "twilio/lib/jwt/AccessToken";
 
 import i18next from "i18next";
 import { getCountry } from "./api/incoming/helper";
-import { Stages } from "./types";
+import { GameState, Stages } from "./types";
 import { maskNumber } from "./util";
 import axios from "axios";
 import { TEMPLATE_PREFIX } from "@/scripts/contentTemplates";
@@ -285,34 +285,24 @@ export async function tempLockGame() {
   ]);
 }
 
-export async function changeGameLock(severity: "running" | "break" | "end") {
+export async function getGameState(): Promise<GameState> {
+  const syncService = await client.sync.v1.services(SYNC_SERVICE_SID).fetch();
+  const betsDoc = await syncService.documents()("bets").fetch();
+
+  return betsDoc.data.gameState || GameState.RUNNING;
+}
+
+export async function setGameState(gameState: GameState) {
   const syncService = await client.sync.v1.services(SYNC_SERVICE_SID).fetch();
   const betsDoc = syncService.documents()("bets");
+  const bets = await betsDoc.fetch();
 
-  const pause =
-    severity === "break"
-      ? {
-        quickBreak: true,
-        eventEnded: false,
-      }
-      : severity === "end"
-        ? {
-          quickBreak: false,
-          eventEnded: true,
-        }
-        : {
-          quickBreak: false,
-          eventEnded: false,
-        };
-
-  await Promise.all([
-    betsDoc.update({
-      data: {
-        ...betsDoc.data,
-        ...pause,
-      },
-    }),
-  ]);
+  await betsDoc.update({
+    data: {
+      ...bets.data,
+      gameState,
+    },
+  });
 }
 
 export async function notifyAndUpdateWinners(winners: any[]) {
