@@ -15,6 +15,8 @@ import SpinAndWin from "./ReactSpinGame";
 import QRCode from "react-qr-code";
 import localFont from "next/font/local";
 import { useScreenOrientation } from "./utils/use-screen-orientation";
+import { GameStatusScreen } from "./game-status-screen";
+import { GameState } from "./types";
 
 const myFont = localFont({
   src: "../../public/fonts/BFBuffalo-Black.otf",
@@ -25,6 +27,7 @@ function App() {
   const [bets, setBets] = useState<any[]>([]);
   const [isFull, setIsFull] = useState(false);
   const [prizeWins, setPrizeWins] = useState<Record<string, number>>({});
+  const [gameState, setGameState] = useState<GameState>(GameState.RUNNING);
   const screenOrientation = useScreenOrientation();
 
   let wedges = (process.env.NEXT_PUBLIC_WEDGES || "").split(",");
@@ -51,12 +54,14 @@ function App() {
             if (event.data.bets) setBets(event.data.bets);
             setIsFull(event?.data?.full || false);
             if (event.data.prizeWins) setPrizeWins(event.data.prizeWins);
+            setGameState(event?.data?.gameState || GameState.RUNNING);
           });
 
           if (doc.data) {
             setBets(doc.data.bets || []);
             setIsFull(doc.data.full);
             setPrizeWins(doc.data.prizeWins || {});
+            setGameState(doc.data.gameState || GameState.RUNNING);
           }
         }
       });
@@ -252,6 +257,24 @@ function App() {
       </div>
     </>
   );
+
+  if (gameState === GameState.PAUSED) {
+    return (
+      <GameStatusScreen
+        heading="Be right back"
+        subheading="The Wheel of Twilio will return after a break"
+      />
+    );
+  }
+
+  if (gameState === GameState.ENDED) {
+    return (
+      <GameStatusScreen
+        heading="The game has ended"
+        subheading="No more bets can be placed"
+      />
+    );
+  }
 
   return (
     <div className="vh-full flex h-full">

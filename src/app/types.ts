@@ -1,3 +1,9 @@
+export const enum GameState {
+  RUNNING = "running",
+  PAUSED = "paused",
+  ENDED = "ended",
+}
+
 export const enum Stages {
   NEW_USER = "NEW_USER",
   NAME_CONFIRMED = "NAME_CONFIRMED",

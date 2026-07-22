@@ -47,15 +47,7 @@ Run the deploy script from the repository root:
 ./deploy.sh
 ```
 
-The script prompts for:
-
-- Azure resource group
-- Azure region
-- Azure Container Registry name
-- Container App name
-- Container Apps environment name
-
-You can press Enter to accept the defaults.
+The script uses default names for the Azure resource group, region, Container Registry, Container App, and Container Apps environment unless you override them (see [Optional Overrides](#optional-overrides)).
 
 The script creates or updates:
 
@@ -133,7 +125,7 @@ Open `http://localhost:3000`.
 
 ## Optional Overrides
 
-Set these before running `./deploy.sh` if you do not want to use the prompts:
+Set these before running `./deploy.sh` if you want to override the defaults:
 
 ```sh
 export AZURE_RESOURCE_GROUP="wheel-of-twilio-rg"

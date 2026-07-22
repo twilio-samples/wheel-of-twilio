@@ -5,7 +5,7 @@ const phoneUtil = PhoneNumberUtil.getInstance();
 
 import twilio, { twiml } from "twilio";
 import i18next from "i18next";
-import { Player, Stages } from "../../types";
+import { GameState, Player, Stages } from "../../types";
 import { SyncMapContext } from "twilio/lib/rest/sync/v1/service/syncMap";
 import { DocumentInstance } from "twilio/lib/rest/sync/v1/service/document";
 import { getTemplate } from "@/app/twilio";
@@ -79,8 +79,13 @@ export async function handleBets(
     return twimlRes.toString();
   }
 
-  if (betsDoc.data.eventEnded) {
+  if (betsDoc.data.gameState === GameState.ENDED) {
     twimlRes.message(i18next.t("gameEnded"));
+    return twimlRes.toString();
+  }
+
+  if (betsDoc.data.gameState === GameState.PAUSED) {
+    twimlRes.message(i18next.t("betsNotAccepted"));
     return twimlRes.toString();
   }
 
