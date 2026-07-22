@@ -27,3 +27,14 @@ export interface Player {
   foundInSegment?: boolean;
   [key: string]: unknown;
 }
+
+export interface Settings {
+  wedges: string[];
+  eventName: string;
+  hideQrCode: boolean;
+  prizesPerField: number;
+  offeredPrizes: "" | "small" | "big" | "both";
+  smallPrizes: string[];
+  leadCollection: "MANUAL" | "QR" | "NONE";
+  maxBetsPerUser: number;
+}

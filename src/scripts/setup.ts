@@ -40,6 +40,7 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
 
   await createSyncDocIfNotExists("bets");
   await createSyncDocIfNotExists("stats");
+  await createSyncDocIfNotExists("settings");
   await createSyncMapIfNotExists("attendees");
 
   // Initialize prize wins tracking if NEXT_PUBLIC_PRIZES_PER_FIELD is set

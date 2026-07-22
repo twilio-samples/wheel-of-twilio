@@ -2,10 +2,11 @@ import twilio, { twiml } from "twilio";
 import i18next from "i18next";
 import { createHash } from "crypto";
 import type { MemoryClient, TACConfig } from "twilio-agent-connect";
-import { Player, Stages } from "../../types";
+import { Player, Settings, Stages } from "../../types";
 import { SyncMapContext } from "twilio/lib/rest/sync/v1/service/syncMap";
 import { DocumentInstance } from "twilio/lib/rest/sync/v1/service/document";
 import { getTemplate } from "@/app/twilio";
+import { settingsFromEnv } from "@/app/settings-defaults";
 import {
   initI18n,
   handleBets,
@@ -88,6 +89,7 @@ export async function handleQrMode(
     betsDoc,
     numMedia,
     mediaUrl,
+    settings = settingsFromEnv(),
   }: {
     senderName?: string;
     senderID?: string;
@@ -97,6 +99,7 @@ export async function handleQrMode(
     betsDoc: DocumentInstance;
     numMedia: number;
     mediaUrl?: string;
+    settings?: Settings;
   },
 ): Promise<string> {
   const twimlRes = new twiml.MessagingResponse();
@@ -110,7 +113,7 @@ export async function handleQrMode(
     .update(currentUser?.sender || senderID || "")
     .digest("hex");
 
-  const ctx = { senderName, senderID, recipient, messageContent, attendeesMap, betsDoc };
+  const ctx = { senderName, senderID, recipient, messageContent, attendeesMap, betsDoc, settings };
 
   // Already registered — handle bets / winner stages
   if (currentUser?.stage === Stages.VERIFIED_USER) {
@@ -122,7 +125,7 @@ export async function handleQrMode(
     currentUser?.stage === Stages.WINNER_CLAIMED ||
     currentUser?.stage === Stages.RAFFLE_WINNER
   ) {
-    return handleWinnerStages(currentUser, client);
+    return handleWinnerStages(currentUser, client, settings);
   }
 
   // Not yet registered — check if Memory profile exists

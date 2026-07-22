@@ -1,10 +1,11 @@
 import twilio, { twiml } from "twilio";
 import i18next from "i18next";
 import { createHash } from "crypto";
-import { Player, Stages } from "../../types";
+import { Player, Settings, Stages } from "../../types";
 import { SyncMapContext } from "twilio/lib/rest/sync/v1/service/syncMap";
 import { DocumentInstance } from "twilio/lib/rest/sync/v1/service/document";
 import { getTemplate } from "@/app/twilio";
+import { settingsFromEnv } from "@/app/settings-defaults";
 import {
   initI18n,
   handleBets,
@@ -19,7 +20,6 @@ import { checkSegmentTraits } from "./segment";
 
 const {
   VERIFY_SERVICE_SID = "",
-  EVENT_NAME = "",
   NEXT_PUBLIC_TWILIO_PHONE_NUMBER = "",
 } = process.env;
 
@@ -31,6 +31,7 @@ interface ProfileModeContext {
   attendeesMap: SyncMapContext;
   betsDoc: DocumentInstance;
   leadCollection?: string;
+  settings?: Settings;
 }
 
 export async function handleProfileMode(
@@ -44,6 +45,7 @@ export async function handleProfileMode(
     attendeesMap,
     betsDoc,
     leadCollection = "MANUAL",
+    settings = settingsFromEnv(),
   }: ProfileModeContext,
 ): Promise<string> {
   const twimlRes = new twiml.MessagingResponse();
@@ -54,14 +56,14 @@ export async function handleProfileMode(
     .update(currentUser?.sender || senderID || "")
     .digest("hex");
 
-  const ctx = { senderName, senderID, recipient, messageContent, attendeesMap, betsDoc };
+  const ctx = { senderName, senderID, recipient, messageContent, attendeesMap, betsDoc, settings };
 
   try {
     if (leadCollection === "NONE") {
       return handleNoneMode(
         currentUser,
         client,
-        { senderName, senderID, recipient, messageContent, attendeesMap, betsDoc },
+        { senderName, senderID, recipient, messageContent, attendeesMap, betsDoc, settings },
         { from, country, hashedSender, twimlRes },
       );
     }
@@ -106,7 +108,7 @@ export async function handleProfileMode(
               to: matchedEmail[0].toLowerCase(),
               channel: "email",
               channelConfiguration: {
-                substitutions: { "event-name": EVENT_NAME },
+                substitutions: { "event-name": settings.eventName },
               },
             });
           await attendeesMap.syncMapItems(hashedSender).update({
@@ -170,7 +172,7 @@ export async function handleProfileMode(
       currentUser.stage === Stages.WINNER_CLAIMED ||
       currentUser.stage === Stages.RAFFLE_WINNER
     ) {
-      return handleWinnerStages(currentUser, client);
+      return handleWinnerStages(currentUser, client, settings);
     } else {
       await client.messages.create({
         body: i18next.t("catchAllError"),
@@ -196,7 +198,15 @@ export async function handleProfileMode(
 async function handleNoneMode(
   currentUser: Player | undefined,
   client: twilio.Twilio,
-  { senderName, senderID, recipient, messageContent, attendeesMap, betsDoc }: ProfileModeContext,
+  {
+    senderName,
+    senderID,
+    recipient,
+    messageContent,
+    attendeesMap,
+    betsDoc,
+    settings = settingsFromEnv(),
+  }: ProfileModeContext,
   {
     from,
     country,
@@ -209,7 +219,15 @@ async function handleNoneMode(
     twimlRes: twiml.MessagingResponse;
   },
 ): Promise<string> {
-  const ctx = { senderName, senderID, recipient: recipient!, messageContent, attendeesMap: attendeesMap!, betsDoc: betsDoc! };
+  const ctx = {
+    senderName,
+    senderID,
+    recipient: recipient!,
+    messageContent,
+    attendeesMap: attendeesMap!,
+    betsDoc: betsDoc!,
+    settings,
+  };
 
   if (!currentUser) {
     await attendeesMap!.syncMapItems.create({
@@ -243,7 +261,7 @@ async function handleNoneMode(
     currentUser.stage === Stages.WINNER_CLAIMED ||
     currentUser.stage === Stages.RAFFLE_WINNER
   ) {
-    return handleWinnerStages(currentUser, client);
+    return handleWinnerStages(currentUser, client, settings);
   }
 
   return handleBets(currentUser, client, ctx, hashedSender, country);

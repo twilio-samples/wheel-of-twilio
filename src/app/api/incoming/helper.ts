@@ -5,23 +5,18 @@ const phoneUtil = PhoneNumberUtil.getInstance();
 
 import twilio, { twiml } from "twilio";
 import i18next from "i18next";
-import { GameState, Player, Stages } from "../../types";
+import { GameState, Player, Settings, Stages } from "../../types";
 import { SyncMapContext } from "twilio/lib/rest/sync/v1/service/syncMap";
 import { DocumentInstance } from "twilio/lib/rest/sync/v1/service/document";
 import { getTemplate } from "@/app/twilio";
+import { settingsFromEnv } from "@/app/settings-defaults";
 
 const en = require("../../../locale/en.json");
 
 const ONE_WEEK = 60 * 60 * 24 * 7;
 export { ONE_WEEK };
 
-const {
-  NEXT_PUBLIC_TWILIO_PHONE_NUMBER = "",
-  NEXT_PUBLIC_WEDGES = "",
-  EVENT_NAME = "",
-} = process.env;
-
-const wedges = NEXT_PUBLIC_WEDGES.split(",");
+const { NEXT_PUBLIC_TWILIO_PHONE_NUMBER = "" } = process.env;
 
 const regexForEmail = /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/;
 export { regexForEmail };
@@ -60,6 +55,7 @@ export interface BetsContext {
   betsDoc: DocumentInstance;
   senderID?: string;
   senderName?: string;
+  settings?: Settings;
 }
 
 export async function handleBets(
@@ -69,8 +65,15 @@ export async function handleBets(
   hashedSender: string,
   country: ICountry | undefined,
 ): Promise<string> {
-  const { MAX_BETS_PER_USER = "0" } = process.env;
-  const { messageContent, betsDoc, attendeesMap, senderName, senderID } = ctx;
+  const {
+    messageContent,
+    betsDoc,
+    attendeesMap,
+    senderName,
+    senderID,
+    settings = settingsFromEnv(),
+  } = ctx;
+  const { wedges, maxBetsPerUser, eventName } = settings;
   const twimlRes = new twiml.MessagingResponse();
   const from = `whatsapp:${NEXT_PUBLIC_TWILIO_PHONE_NUMBER}`;
 
@@ -104,8 +107,7 @@ export async function handleBets(
 
     const existingBet = bets.find((bet: any) => bet[0] === hashedSender);
     const maxBetsReached =
-      parseInt(MAX_BETS_PER_USER) > 0 &&
-      currentUser.submittedBets >= parseInt(MAX_BETS_PER_USER);
+      maxBetsPerUser > 0 && currentUser.submittedBets >= maxBetsPerUser;
 
     if (!existingBet && maxBetsReached) {
       twimlRes.message(i18next.t("maxBetsReached"));
@@ -135,7 +137,7 @@ export async function handleBets(
         data: {
           ...currentUser,
           submittedBets: currentUser.submittedBets + 1,
-          event: EVENT_NAME,
+          event: eventName,
         },
       });
     }
@@ -159,8 +161,9 @@ export async function handleBets(
 export async function handleWinnerStages(
   currentUser: Player,
   client: twilio.Twilio,
+  settings: Settings = settingsFromEnv(),
 ): Promise<string> {
-  const { OFFERED_PRIZES } = process.env;
+  const { offeredPrizes: OFFERED_PRIZES } = settings;
   const from = `whatsapp:${NEXT_PUBLIC_TWILIO_PHONE_NUMBER}`;
   const twimlRes = new twiml.MessagingResponse();
 

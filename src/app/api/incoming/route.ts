@@ -5,9 +5,10 @@ import { handleProfileMode } from "./profile-mode";
 import { handleQrMode } from "./qr-mode";
 import { deleteMemoryProfile } from "./memory";
 import { createHash } from "crypto";
-import { Player } from "../../types";
+import { Player, Settings } from "../../types";
 import { SyncMapContext } from "twilio/lib/rest/sync/v1/service/syncMap";
 import { DocumentInstance } from "twilio/lib/rest/sync/v1/service/document";
+import { getSettings } from "../../settings";
 
 export const maxDuration = 30;
 
@@ -16,10 +17,7 @@ const {
   TWILIO_API_SECRET = "",
   TWILIO_ACCOUNT_SID = "",
   SYNC_SERVICE_SID = "",
-  NEXT_PUBLIC_WEDGES = "",
 } = process.env;
-
-const wedges = NEXT_PUBLIC_WEDGES.split(",");
 
 async function getUser(attendeesMap: SyncMapContext, hashedSender: string) {
   let currentUser: Player | undefined;
@@ -32,7 +30,11 @@ async function getUser(attendeesMap: SyncMapContext, hashedSender: string) {
   return currentUser;
 }
 
-async function addDemoBet(betsDoc: DocumentInstance, messageContent: string) {
+async function addDemoBet(
+  betsDoc: DocumentInstance,
+  messageContent: string,
+  wedges: string[],
+) {
   if (process.env.demoBet) {
     const bets = betsDoc.data.bets || [];
     bets.push([
@@ -51,8 +53,9 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  // Read at request time so env changes take effect without a restart
-  const LEAD_COLLECTION = process.env.LEAD_COLLECTION ?? "MANUAL";
+  // Read at request time so settings changes take effect without a restart
+  const settings: Settings = await getSettings();
+  const LEAD_COLLECTION = settings.leadCollection;
 
   const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, { accountSid: TWILIO_ACCOUNT_SID });
   const syncService = await client.sync.v1.services(SYNC_SERVICE_SID).fetch();
@@ -71,7 +74,7 @@ export async function POST(req: NextRequest) {
   const hashedSender = createHash("sha256").update(senderID).digest("hex");
   const currentUser = await getUser(attendeesMap, hashedSender);
 
-  process.env.demoBet && (await addDemoBet(betsDoc, messageContent));
+  process.env.demoBet && (await addDemoBet(betsDoc, messageContent, settings.wedges));
 
   let response = "";
 
@@ -104,6 +107,7 @@ export async function POST(req: NextRequest) {
       betsDoc,
       numMedia,
       mediaUrl: mediaUrl ?? undefined,
+      settings,
     });
   } else {
     // LEAD_COLLECTION === "MANUAL" or "NONE"
@@ -115,6 +119,7 @@ export async function POST(req: NextRequest) {
       attendeesMap,
       betsDoc,
       leadCollection: LEAD_COLLECTION,
+      settings,
     });
   }
 
