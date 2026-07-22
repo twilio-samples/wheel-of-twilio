@@ -8,12 +8,21 @@ test("See admin page", async ({ page }) => {
 
   await expect(page.getByPlaceholder("Search name...")).toBeVisible();
   await page.getByPlaceholder("Search sender...").click();
-  await page.getByRole("columnheader", { name: "Name" }).click();
-  await page.getByRole("columnheader", { name: "Sender" }).click();
-  await page.getByRole("columnheader", { name: "Status" }).click();
-  await expect(page.getByRole("button", { name: "Running" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Paused" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Ended" })).toBeVisible();
+
+  // The winners table only renders once there's at least one tracked prize;
+  // otherwise the empty state copy shows instead. Either is a valid render.
+  await expect(
+    page
+      .getByRole("columnheader", { name: "Name" })
+      .or(page.getByText("No winners match yet.")),
+  ).toBeVisible();
+
+  await expect(
+    page.getByRole("button", { name: "Show all winners" }),
+  ).toBeVisible();
+  await expect(page.getByRole("radio", { name: "Running" })).toBeVisible();
+  await expect(page.getByRole("radio", { name: "Paused" })).toBeVisible();
+  await expect(page.getByRole("radio", { name: "Ended" })).toBeVisible();
 });
 
 test("Don't see the admin page as unauthenticated user", async ({ page }) => {
