@@ -30,10 +30,17 @@ function App() {
   const [gameState, setGameState] = useState<GameState>(GameState.RUNNING);
   const screenOrientation = useScreenOrientation();
 
-  let wedges = (process.env.NEXT_PUBLIC_WEDGES || "").split(",");
-  const hideQrCode = process.env.NEXT_PUBLIC_HIDE_QR_CODE === "true";
-  const prizesPerField = parseInt(
-    process.env.NEXT_PUBLIC_PRIZES_PER_FIELD || "0",
+  // process.env.NEXT_PUBLIC_* is inlined at build time, so these only serve
+  // as the initial defaults — the settings Sync doc subscription below
+  // overrides them live when an admin has saved settings at /settings.
+  const [wedges, setWedges] = useState<string[]>(() =>
+    (process.env.NEXT_PUBLIC_WEDGES || "").split(","),
+  );
+  const [hideQrCode, setHideQrCode] = useState(
+    () => process.env.NEXT_PUBLIC_HIDE_QR_CODE === "true",
+  );
+  const [prizesPerField, setPrizesPerField] = useState(() =>
+    parseInt(process.env.NEXT_PUBLIC_PRIZES_PER_FIELD || "0"),
   );
 
   useEffect(() => {
@@ -49,7 +56,10 @@ function App() {
       });
       syncClient.on("connectionStateChanged", async (state: string) => {
         if (state === "connected") {
-          const doc: any = await syncClient.document("bets");
+          const [doc, settingsDoc]: any[] = await Promise.all([
+            syncClient.document("bets"),
+            syncClient.document("settings"),
+          ]);
           doc.on("updated", (event: any) => {
             if (event.data.bets) setBets(event.data.bets);
             setIsFull(event?.data?.full || false);
@@ -63,6 +73,14 @@ function App() {
             setPrizeWins(doc.data.prizeWins || {});
             setGameState(doc.data.gameState || GameState.RUNNING);
           }
+
+          const applySettings = (data: any) => {
+            if (data?.wedges) setWedges(data.wedges);
+            if (data?.hideQrCode !== undefined) setHideQrCode(data.hideQrCode);
+            if (data?.prizesPerField !== undefined) setPrizesPerField(data.prizesPerField);
+          };
+          settingsDoc.on("updated", (event: any) => applySettings(event.data));
+          applySettings(settingsDoc.data);
         }
       });
     });

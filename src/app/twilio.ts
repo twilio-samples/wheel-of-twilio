@@ -8,6 +8,7 @@ import { GameState, Stages } from "./types";
 import { maskNumber } from "./util";
 import axios from "axios";
 import { TEMPLATE_PREFIX } from "@/scripts/contentTemplates";
+import { getSettings } from "./settings";
 
 const en = require("../locale/en.json");
 
@@ -85,14 +86,12 @@ export async function tempUnlockGame() {
 }
 
 export async function initializePrizeWins() {
-  const { NEXT_PUBLIC_WEDGES, NEXT_PUBLIC_PRIZES_PER_FIELD } = process.env;
-  const prizesPerField = parseInt(NEXT_PUBLIC_PRIZES_PER_FIELD || "0");
+  const { wedges, prizesPerField } = await getSettings();
 
   if (prizesPerField <= 0) {
     return; // No prize tracking needed
   }
 
-  const wedges = (NEXT_PUBLIC_WEDGES || "").split(",");
   const syncService = await client.sync.v1.services(SYNC_SERVICE_SID).fetch();
   const betsDoc = await syncService.documents()("bets").fetch();
 
@@ -161,7 +160,7 @@ export interface StatsSummary {
 }
 
 export async function getStats(): Promise<StatsSummary> {
-  const wedges = (process.env.NEXT_PUBLIC_WEDGES || "").split(",");
+  const { wedges } = await getSettings();
   const syncService = await client.sync.v1.services(SYNC_SERVICE_SID).fetch();
   const betsDoc = await syncService.documents()("bets").fetch();
   const statsDoc = await syncService.documents()("stats").fetch();
@@ -310,14 +309,8 @@ export async function notifyAndUpdateWinners(winners: any[]) {
   const attendeesMap = syncService.syncMaps()("attendees");
   const betsDoc = await syncService.documents()("bets").fetch();
 
-  const { OFFERED_PRIZES, SMALL_PRIZES, NEXT_PUBLIC_PRIZES_PER_FIELD } =
-    process.env;
-  const prizesPerField = parseInt(NEXT_PUBLIC_PRIZES_PER_FIELD || "0");
-
-  const availablePrizes =
-    SMALL_PRIZES?.split(",")
-      .map((prize) => prize.trim())
-      .filter((prize) => prize !== "") || [];
+  const { offeredPrizes: OFFERED_PRIZES, smallPrizes: availablePrizes, prizesPerField } =
+    await getSettings();
 
   // Check if prizes are available for the winning field
   let prizesAvailable = true;
@@ -488,7 +481,7 @@ export async function sendRaffleWinnerMessage(to: string) {
 export async function messageOthers(unluckyBets: any[], winningWedge: string) {
   const syncService = await client.sync.v1.services(SYNC_SERVICE_SID).fetch();
   const attendeesMap = syncService.syncMaps()("attendees");
-  const { MAX_BETS_PER_USER = "0" } = process.env;
+  const { maxBetsPerUser } = await getSettings();
 
   await Promise.all(
     unluckyBets.map(async (unluckyBet) => {
@@ -497,8 +490,8 @@ export async function messageOthers(unluckyBets: any[], winningWedge: string) {
           .syncMapItems(unluckyBet[0])
           .fetch();
         const hasMoreBetsLeft =
-          parseInt(MAX_BETS_PER_USER) === 0 ||
-          unluckyPlayer.data?.submittedBets + 1 <= parseInt(MAX_BETS_PER_USER);
+          maxBetsPerUser === 0 ||
+          unluckyPlayer.data?.submittedBets + 1 <= maxBetsPerUser;
 
         const body = await localizeStringForPhoneNumber(
           hasMoreBetsLeft ? "loserHasMoreTries" : "loserLastTry",
@@ -569,7 +562,7 @@ export async function getTemplate(name: string, language?: string) {
 }
 
 export const raffleWinner = async () => {
-  const { OFFERED_PRIZES } = process.env;
+  const { offeredPrizes: OFFERED_PRIZES } = await getSettings();
   if (OFFERED_PRIZES !== "big" && OFFERED_PRIZES !== "both") {
     console.log("No raffle prize offered");
     return {
