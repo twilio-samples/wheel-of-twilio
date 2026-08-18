@@ -27,7 +27,14 @@ async function ensureSettingsDocExists(syncService: any) {
     await doc.fetch();
   } catch (e: any) {
     if (e.status !== 404) throw e;
-    await syncService.documents().create({ uniqueName: "settings" });
+    try {
+      await syncService.documents().create({ uniqueName: "settings" });
+    } catch (createError: any) {
+      // Another concurrent caller (e.g. /admin and /settings racing on a
+      // cold Sync service) may have created it in the meantime — that's
+      // fine, the doc exists either way. Only re-throw a genuine failure.
+      if (createError.status !== 409) throw createError;
+    }
   }
   await doc.documentPermissions(Privilege.FRONTEND).update({
     read: true,
