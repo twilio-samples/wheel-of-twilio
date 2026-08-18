@@ -54,9 +54,6 @@ function assertValidSettings(settings: Settings) {
   if (!["", "small", "big", "both"].includes(settings.offeredPrizes)) {
     throw new Error("Invalid offered prizes value");
   }
-  if (settings.prizesPerField < 0) {
-    throw new Error("Prizes per field cannot be negative");
-  }
   if (settings.maxBetsPerUser < 0) {
     throw new Error("Max bets per user cannot be negative");
   }

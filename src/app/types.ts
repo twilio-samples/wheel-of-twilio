@@ -32,7 +32,6 @@ export interface Settings {
   wedges: string[];
   eventName: string;
   hideQrCode: boolean;
-  prizesPerField: number;
   offeredPrizes: "" | "small" | "big" | "both";
   smallPrizes: string[];
   leadCollection: "MANUAL" | "QR" | "NONE";

@@ -85,33 +85,6 @@ export async function tempUnlockGame() {
   });
 }
 
-export async function initializePrizeWins() {
-  const { wedges, prizesPerField } = await getSettings();
-
-  if (prizesPerField <= 0) {
-    return; // No prize tracking needed
-  }
-
-  const syncService = await client.sync.v1.services(SYNC_SERVICE_SID).fetch();
-  const betsDoc = await syncService.documents()("bets").fetch();
-
-  // Initialize prize wins to 0 for each wedge if not exists
-  const currentData = betsDoc.data || {};
-  if (!currentData.prizeWins) {
-    const prizeWins: Record<string, number> = {};
-    wedges.forEach((wedge) => {
-      prizeWins[wedge] = 0;
-    });
-
-    await betsDoc.update({
-      data: {
-        ...currentData,
-        prizeWins,
-      },
-    });
-  }
-}
-
 export interface MaskedPlayer {
   name: string;
   sender: string;
@@ -307,38 +280,16 @@ export async function setGameState(gameState: GameState) {
 export async function notifyAndUpdateWinners(winners: any[]) {
   const syncService = await client.sync.v1.services(SYNC_SERVICE_SID).fetch();
   const attendeesMap = syncService.syncMaps()("attendees");
-  const betsDoc = await syncService.documents()("bets").fetch();
 
-  const { offeredPrizes: OFFERED_PRIZES, smallPrizes: availablePrizes, prizesPerField } =
+  const { offeredPrizes: OFFERED_PRIZES, smallPrizes: availablePrizes } =
     await getSettings();
-
-  // Check if prizes are available for the winning field
-  let prizesAvailable = true;
-  if (prizesPerField > 0 && winners.length > 0) {
-    const currentWins = betsDoc.data.prizeWins || {};
-    const winningField = winners[0][1]; // Assuming all winners are for the same field
-    const currentWinCount = currentWins[winningField] || 0;
-
-    // Check if adding these winners would exceed the prize limit
-    prizesAvailable = currentWinCount + winners.length <= prizesPerField;
-
-    // Update win count regardless (for tracking purposes)
-    const updatedWins = { ...currentWins };
-    updatedWins[winningField] = currentWinCount + winners.length;
-    await betsDoc.update({
-      data: {
-        ...betsDoc.data,
-        prizeWins: updatedWins,
-      },
-    });
-  }
 
   await Promise.all(
     winners.map(async (winningBet) => {
       const winner = await attendeesMap.syncMapItems(winningBet[0]).fetch();
 
       const randomPrize =
-        availablePrizes.length > 0 && prizesAvailable
+        availablePrizes.length > 0
           ? ` a *${availablePrizes[Math.floor(Math.random() * availablePrizes.length)]}*`
           : "";
 
@@ -347,9 +298,7 @@ export async function notifyAndUpdateWinners(winners: any[]) {
         await attendeesMap.syncMapItems(winningBet[0]).update({
           data: {
             ...winner.data,
-            stage: prizesAvailable
-              ? Stages.WINNER_UNCLAIMED
-              : Stages.WINNER_CLAIMED,
+            stage: Stages.WINNER_UNCLAIMED,
             smallPrize: randomPrize,
           },
         });
@@ -364,10 +313,7 @@ export async function notifyAndUpdateWinners(winners: any[]) {
 
       if (!syncUpdateSucceeded) return;
 
-      if (
-        (OFFERED_PRIZES === "small" || OFFERED_PRIZES === "both") &&
-        prizesAvailable
-      ) {
+      if (OFFERED_PRIZES === "small" || OFFERED_PRIZES === "both") {
         try {
           await callWinner(
             winner.data.sender.replace("whatsapp:", ""),
@@ -381,15 +327,7 @@ export async function notifyAndUpdateWinners(winners: any[]) {
 
       let message;
 
-      // Check if prizes are available for this winner
-      if (!prizesAvailable && prizesPerField > 0) {
-        // Winner on correct field but no prizes left
-        message = await localizeStringForPhoneNumber(
-          "winnerMessageNoPrizesLeft",
-          winner.data.sender.replace("whatsapp:", ""),
-          {},
-        );
-      } else if (OFFERED_PRIZES === "big") {
+      if (OFFERED_PRIZES === "big") {
         message = await localizeStringForPhoneNumber(
           "winnerMessageRaffleQualification",
           winner.data.sender.replace("whatsapp:", ""),

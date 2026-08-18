@@ -18,7 +18,6 @@
     "winnerMessageSmallPrizeStart": "🎉 CONGRATULATIONS! 🎉\n\nYou guessed correctly and won{{smallPrize}}!",
     "winnerMessageSmallPrizeEnd": " Stop by the Twilio booth to claim your prize.\n\nPS: Did you know this game is open source? Check it out at https://github.com/twilio-samples/wheel-of-twilio/",
     "winnerMessageBothPrizesEnd": " Stop by the Twilio booth to claim your prize. You are also automatically qualified for the grand prize!\n\nPS: Did you know this game is open source? Check it out at https://github.com/twilio-samples/wheel-of-twilio/",
-    "winnerMessageNoPrizesLeft": "Congratulations! You bet on the right field! 🎉\n\nWe ran out of prizes for this field. However, we hope you had a great time at the Twilio booth!\n\nPS: Did you know this game is open source? Check it out at https://github.com/twilio-samples/wheel-of-twilio/",
     "loserHasMoreTries": "Not quite this time! The winning field was \"{{winningWedge}}\".\n\n🔄 Good news: You can try again! Just reply with your next bet and give it another shot.\n\nPS: This game is open source! Check it out: https://github.com/twilio-samples/wheel-of-twilio/",
     "loserLastTry": "The winning field was \"{{winningWedge}}\" this time.\n\nThanks for playing with us! 🙏 We hope you enjoyed the experience. Stop by the Twilio booth to chat with our team!\n\nPS: This game is open source! https://github.com/twilio-samples/wheel-of-twilio/",
     "alreadyPlayedAndQualified": "Congrats, you already guessed the right field in a previous round.",
