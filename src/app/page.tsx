@@ -26,7 +26,6 @@ const myFont = localFont({
 function App() {
   const [bets, setBets] = useState<any[]>([]);
   const [isFull, setIsFull] = useState(false);
-  const [prizeWins, setPrizeWins] = useState<Record<string, number>>({});
   const [gameState, setGameState] = useState<GameState>(GameState.RUNNING);
   const screenOrientation = useScreenOrientation();
 
@@ -38,9 +37,6 @@ function App() {
   );
   const [hideQrCode, setHideQrCode] = useState(
     () => process.env.NEXT_PUBLIC_HIDE_QR_CODE === "true",
-  );
-  const [prizesPerField, setPrizesPerField] = useState(() =>
-    parseInt(process.env.NEXT_PUBLIC_PRIZES_PER_FIELD || "0"),
   );
 
   useEffect(() => {
@@ -63,21 +59,18 @@ function App() {
           doc.on("updated", (event: any) => {
             if (event.data.bets) setBets(event.data.bets);
             setIsFull(event?.data?.full || false);
-            if (event.data.prizeWins) setPrizeWins(event.data.prizeWins);
             setGameState(event?.data?.gameState || GameState.RUNNING);
           });
 
           if (doc.data) {
             setBets(doc.data.bets || []);
             setIsFull(doc.data.full);
-            setPrizeWins(doc.data.prizeWins || {});
             setGameState(doc.data.gameState || GameState.RUNNING);
           }
 
           const applySettings = (data: any) => {
             if (data?.wedges) setWedges(data.wedges);
             if (data?.hideQrCode !== undefined) setHideQrCode(data.hideQrCode);
-            if (data?.prizesPerField !== undefined) setPrizesPerField(data.prizesPerField);
           };
           settingsDoc.on("updated", (event: any) => applySettings(event.data));
           applySettings(settingsDoc.data);
@@ -148,27 +141,13 @@ function App() {
 
   const fieldsWithBets = wedges.map((wedge) => {
     const betCount = bets.filter((bet) => bet[1] === wedge).length;
-    const wins = prizeWins[wedge] || 0;
-    const prizesLeft =
-      prizesPerField > 0
-        ? Math.max(0, prizesPerField - wins)
-        : Number.MAX_SAFE_INTEGER;
-    const noPrizesLeft = prizesPerField > 0 && prizesLeft <= 0;
 
     return (
       <div
         key={wedge}
-        className={`relative text-[#FDF7F4] py-3 rounded-full w-full ring-2 shadow-[0px_0px_15px_1px] ${noPrizesLeft
-            ? "ring-gray-500 shadow-gray-500 opacity-60"
-            : "ring-[#FFF1F3] shadow-[#FFF1F3]"
-          }`}
+        className="relative text-[#FDF7F4] py-3 rounded-full w-full ring-2 shadow-[0px_0px_15px_1px] ring-[#FFF1F3] shadow-[#FFF1F3]"
       >
         <span className="text-[6px] absolute bottom-3 left-5">{betCount}</span>
-        {prizesPerField > 0 && (
-          <span className="text-[10px] absolute top-5 right-2 text-yellow-300">
-            🏆 {noPrizesLeft ? "0" : prizesLeft}
-          </span>
-        )}
         {bets
           .filter((bet) => bet[1] === wedge)
           .map((bet, index) => {
@@ -198,9 +177,7 @@ function App() {
                     alt="bet chip"
                     className="absolute scale-[0.15] z-10 translate-x-[110px]  translate-y-[-160px]"
                   /> */}
-        <span className={`text-base ${noPrizesLeft ? "line-through" : ""}`}>
-          {wedge}
-        </span>
+        <span className="text-base">{wedge}</span>
       </div>
     );
   });

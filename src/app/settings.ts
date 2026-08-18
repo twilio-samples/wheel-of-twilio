@@ -27,7 +27,14 @@ async function ensureSettingsDocExists(syncService: any) {
     await doc.fetch();
   } catch (e: any) {
     if (e.status !== 404) throw e;
-    await syncService.documents().create({ uniqueName: "settings" });
+    try {
+      await syncService.documents().create({ uniqueName: "settings" });
+    } catch (createError: any) {
+      // Another concurrent caller (e.g. /admin and /settings racing on a
+      // cold Sync service) may have created it in the meantime — that's
+      // fine, the doc exists either way. Only re-throw a genuine failure.
+      if (createError.status !== 409) throw createError;
+    }
   }
   await doc.documentPermissions(Privilege.FRONTEND).update({
     read: true,
@@ -53,9 +60,6 @@ function assertValidSettings(settings: Settings) {
   }
   if (!["", "small", "big", "both"].includes(settings.offeredPrizes)) {
     throw new Error("Invalid offered prizes value");
-  }
-  if (settings.prizesPerField < 0) {
-    throw new Error("Prizes per field cannot be negative");
   }
   if (settings.maxBetsPerUser < 0) {
     throw new Error("Max bets per user cannot be negative");

@@ -21,7 +21,6 @@ describe("settingsFromEnv", () => {
     vi.stubEnv("NEXT_PUBLIC_WEDGES", "");
     vi.stubEnv("EVENT_NAME", "");
     vi.stubEnv("NEXT_PUBLIC_HIDE_QR_CODE", "");
-    vi.stubEnv("NEXT_PUBLIC_PRIZES_PER_FIELD", "");
     vi.stubEnv("OFFERED_PRIZES", "");
     vi.stubEnv("SMALL_PRIZES", "");
     vi.stubEnv("LEAD_COLLECTION", "");
@@ -31,7 +30,6 @@ describe("settingsFromEnv", () => {
       wedges: [],
       eventName: "",
       hideQrCode: false,
-      prizesPerField: 0,
       offeredPrizes: "",
       smallPrizes: [],
       leadCollection: "MANUAL",
@@ -50,21 +48,17 @@ describe("settingsFromEnv", () => {
 
   test("parses booleans and numbers", () => {
     vi.stubEnv("NEXT_PUBLIC_HIDE_QR_CODE", "true");
-    vi.stubEnv("NEXT_PUBLIC_PRIZES_PER_FIELD", "5");
     vi.stubEnv("MAX_BETS_PER_USER", "3");
 
     const settings = settingsFromEnv();
     expect(settings.hideQrCode).toBe(true);
-    expect(settings.prizesPerField).toBe(5);
     expect(settings.maxBetsPerUser).toBe(3);
   });
 
   test("falls back to 0 for non-numeric values instead of NaN", () => {
-    vi.stubEnv("NEXT_PUBLIC_PRIZES_PER_FIELD", "not-a-number");
     vi.stubEnv("MAX_BETS_PER_USER", "not-a-number");
 
     const settings = settingsFromEnv();
-    expect(settings.prizesPerField).toBe(0);
     expect(settings.maxBetsPerUser).toBe(0);
   });
 
@@ -79,7 +73,6 @@ describe("mergeSettings", () => {
     wedges: ["Java", "Python"],
     eventName: "Default Event",
     hideQrCode: false,
-    prizesPerField: 5,
     offeredPrizes: "small",
     smallPrizes: ["Sticker"],
     leadCollection: "MANUAL",
@@ -101,12 +94,11 @@ describe("mergeSettings", () => {
     expect(merged.leadCollection).toBe("QR");
     // Untouched fields keep the default
     expect(merged.wedges).toEqual(defaults.wedges);
-    expect(merged.prizesPerField).toBe(defaults.prizesPerField);
+    expect(merged.maxBetsPerUser).toBe(defaults.maxBetsPerUser);
   });
 
   test("respects an explicit 0 override instead of falling back to a non-zero default", () => {
-    const merged = mergeSettings(defaults, { prizesPerField: 0, maxBetsPerUser: 0 });
-    expect(merged.prizesPerField).toBe(0);
+    const merged = mergeSettings(defaults, { maxBetsPerUser: 0 });
     expect(merged.maxBetsPerUser).toBe(0);
   });
 });

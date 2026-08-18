@@ -46,7 +46,6 @@ export function SettingsForm({ initial }: { initial: Settings }) {
   const [wedgesText, setWedgesText] = useState(initial.wedges.join(", "));
   const [eventName, setEventName] = useState(initial.eventName);
   const [hideQrCode, setHideQrCode] = useState(initial.hideQrCode);
-  const [prizesPerField, setPrizesPerField] = useState(initial.prizesPerField);
   const [offeredPrizes, setOfferedPrizes] = useState<OfferedPrizesUiValue>(
     toUiOfferedPrizes(initial.offeredPrizes),
   );
@@ -70,7 +69,6 @@ export function SettingsForm({ initial }: { initial: Settings }) {
       wedges: wedgesText.split(","),
       eventName,
       hideQrCode,
-      prizesPerField,
       offeredPrizes: fromUiOfferedPrizes(offeredPrizes),
       smallPrizes: smallPrizesText.split(","),
       leadCollection,
@@ -96,7 +94,6 @@ export function SettingsForm({ initial }: { initial: Settings }) {
         setWedgesText(defaults.wedges.join(", "));
         setEventName(defaults.eventName);
         setHideQrCode(defaults.hideQrCode);
-        setPrizesPerField(defaults.prizesPerField);
         setOfferedPrizes(toUiOfferedPrizes(defaults.offeredPrizes));
         setSmallPrizesText(defaults.smallPrizes.join(", "));
         setLeadCollection(defaults.leadCollection);
@@ -176,26 +173,14 @@ export function SettingsForm({ initial }: { initial: Settings }) {
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-6">
-        <div className="flex flex-col gap-2">
-          <label className={fieldLabelClassName()}>Prizes per wedge &middot; 0 = unlimited</label>
-          <Input
-            type="number"
-            min={0}
-            value={prizesPerField}
-            onChange={(e) => setPrizesPerField(parseInt(e.target.value || "0", 10))}
-          />
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <label className={fieldLabelClassName()}>Max bets per user &middot; 0 = unlimited</label>
-          <Input
-            type="number"
-            min={0}
-            value={maxBetsPerUser}
-            onChange={(e) => setMaxBetsPerUser(parseInt(e.target.value || "0", 10))}
-          />
-        </div>
+      <div className="flex flex-col gap-2">
+        <label className={fieldLabelClassName()}>Max bets per user &middot; 0 = unlimited</label>
+        <Input
+          type="number"
+          min={0}
+          value={maxBetsPerUser}
+          onChange={(e) => setMaxBetsPerUser(parseInt(e.target.value || "0", 10))}
+        />
       </div>
 
       <div className="flex flex-col gap-2">
