@@ -40,7 +40,7 @@ async function getBadgeData(ticketCode: string): Promise<BadgeData | null> {
     return null;
   }
   try {
-    const res = await fetch("https://wad-api.wearedevelopers.com/api/partner/v1/events/16/scan", {
+    const res = await fetch("https://wad-api.wearedevelopers.com/api/partner/v1/events/18/scan", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
