@@ -101,7 +101,7 @@ const throttle = throttledQueue({
     .documents("stats");
 
   await completedBetsDoc.update({
-    data: {},
+    data: { clearedAt: Date.now() },
   });
 
   console.log("Completed bets doc cleared");

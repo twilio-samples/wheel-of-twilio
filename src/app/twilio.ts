@@ -130,6 +130,7 @@ export interface StatsSummary {
   distribution: { wedge: string; count: number }[];
   winners: { unclaimed: number; claimed: number; raffle: number };
   history: { timestamp: number; roundBets: number; cumulativeTotal: number }[];
+  clearedAt: number | null;
 }
 
 export async function getStats(): Promise<StatsSummary> {
@@ -177,6 +178,7 @@ export async function getStats(): Promise<StatsSummary> {
     })),
     winners,
     history: statsDoc.data.history || [],
+    clearedAt: statsDoc.data.clearedAt ?? null,
   };
 }
 

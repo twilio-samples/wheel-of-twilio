@@ -7,6 +7,7 @@ import { BetsPieChart } from "./bets-pie-chart";
 import { BetsOverTimeChart } from "./bets-over-time-chart";
 import { displayFont, dataFont } from "../fonts";
 import { ACCENT, SURFACE } from "./palette";
+import { ClearedAgo } from "./cleared-ago";
 
 export default async function StatsPage() {
   const stats = await getStats();
@@ -36,6 +37,11 @@ export default async function StatsPage() {
               </span>
               Live &middot; refreshes every 5s
             </div>
+            {stats.clearedAt && (
+              <div className="mt-1 text-xs text-[#7C89AC]">
+                Stats last cleared <ClearedAgo timestamp={stats.clearedAt} />
+              </div>
+            )}
             <h1
               className={`mt-2 text-3xl sm:text-4xl text-[#FDF7F4] ${displayFont.className}`}
             >
