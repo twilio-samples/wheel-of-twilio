@@ -130,7 +130,9 @@ export interface StatsSummary {
   distribution: { wedge: string; count: number }[];
   winners: { unclaimed: number; claimed: number; raffle: number };
   history: { timestamp: number; roundBets: number; cumulativeTotal: number }[];
+  historyTruncated: boolean;
   clearedAt: number | null;
+  statsWriteError: { at: number; message: string } | null;
 }
 
 export async function getStats(): Promise<StatsSummary> {
@@ -168,17 +170,22 @@ export async function getStats(): Promise<StatsSummary> {
     { unclaimed: 0, claimed: 0, raffle: 0 },
   );
 
+  const history = statsDoc.data.history || [];
+  const roundsRecorded = statsDoc.data.roundsRecorded ?? history.length;
+
   return {
     totalBets: Object.values(distribution).reduce((sum, count) => sum + count, 0),
     uniqueBettors: Object.keys(uniques).length,
-    roundsPlayed: (statsDoc.data.history || []).length,
+    roundsPlayed: roundsRecorded,
     distribution: wedges.map((wedge) => ({
       wedge,
       count: distribution[wedge] || 0,
     })),
     winners,
-    history: statsDoc.data.history || [],
+    history,
+    historyTruncated: roundsRecorded > history.length,
     clearedAt: statsDoc.data.clearedAt ?? null,
+    statsWriteError: betsDoc.data.statsWriteError ?? null,
   };
 }
 
@@ -223,6 +230,7 @@ export async function tempLockGame() {
   completedBets.data.distribution = completedBets.data.distribution || {};
   completedBets.data.uniques = completedBets.data.uniques || {};
   completedBets.data.history = completedBets.data.history || [];
+  completedBets.data.roundsRecorded = completedBets.data.roundsRecorded || 0;
 
   const roundBets = Object.values(actualBets).length;
 
@@ -242,22 +250,40 @@ export async function tempLockGame() {
     roundBets,
     cumulativeTotal,
   });
+  completedBets.data.roundsRecorded += 1;
 
-  await Promise.all([
-    completedBetsDoc.update({
+  // Twilio Sync docs cap data at 16KB. History grows unbounded, so trim to
+  // the most recent HISTORY_CAP entries. `roundsRecorded` keeps the true count
+  // so the UI can surface that history was truncated.
+  if (completedBets.data.history.length > HISTORY_CAP) {
+    completedBets.data.history = completedBets.data.history.slice(-HISTORY_CAP);
+  }
+
+  let statsWriteError: { at: number; message: string } | undefined;
+  try {
+    await completedBetsDoc.update({
       data: {
         ...completedBets.data,
       },
-    }),
+    });
+  } catch (err: any) {
+    console.error("Failed to update stats doc", err);
+    statsWriteError = {
+      at: Date.now(),
+      message: err?.message ?? String(err),
+    };
+  }
 
-    betsDoc.update({
-      data: {
-        ...bets.data,
-        temporaryBlock: true,
-      },
-    }),
-  ]);
+  await betsDoc.update({
+    data: {
+      ...bets.data,
+      temporaryBlock: true,
+      ...(statsWriteError ? { statsWriteError } : {}),
+    },
+  });
 }
+
+const HISTORY_CAP = 200;
 
 export async function getGameState(): Promise<GameState> {
   const syncService = await client.sync.v1.services(SYNC_SERVICE_SID).fetch();

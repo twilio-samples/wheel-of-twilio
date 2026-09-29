@@ -42,6 +42,18 @@ export default async function StatsPage() {
                 Stats last cleared <ClearedAgo timestamp={stats.clearedAt} />
               </div>
             )}
+            {stats.historyTruncated && (
+              <div className="mt-1 text-xs" style={{ color: ACCENT.gold }}>
+                History truncated — showing the most recent {stats.history.length} of{" "}
+                {stats.roundsPlayed} rounds.
+              </div>
+            )}
+            {stats.statsWriteError && (
+              <div className="mt-1 text-xs" style={{ color: ACCENT.red }}>
+                Stats write failed <ClearedAgo timestamp={stats.statsWriteError.at} />:{" "}
+                {stats.statsWriteError.message}
+              </div>
+            )}
             <h1
               className={`mt-2 text-3xl sm:text-4xl text-[#FDF7F4] ${displayFont.className}`}
             >
