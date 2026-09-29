@@ -13,7 +13,9 @@ export function BetsOverTimeChart({ history }: { history: HistoryPoint[] }) {
   const color = wedgeColor(0);
   const data = history.map((point, index) => ({
     round: index + 1,
-    time: new Date(point.timestamp).toLocaleTimeString([], {
+    time: new Date(point.timestamp).toLocaleString([], {
+      month: "short",
+      day: "2-digit",
       hour: "2-digit",
       minute: "2-digit",
     }),
