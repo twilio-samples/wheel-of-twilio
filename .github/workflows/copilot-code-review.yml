@@ -2,7 +2,7 @@ name: Copilot code review
 on:
   workflow_dispatch:
 jobs:
-  review:
+  copilot-code-review:
     runs-on: ubuntu-latest
     steps:
       - run: echo "Copilot injects review steps at dispatch time."
