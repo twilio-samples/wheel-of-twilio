@@ -4,3 +4,5 @@ on:
 jobs:
   review:
     runs-on: ubuntu-latest
+    steps:
+      - run: echo "Copilot injects review steps at dispatch time."
