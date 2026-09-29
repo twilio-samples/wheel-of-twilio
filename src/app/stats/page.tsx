@@ -37,7 +37,7 @@ export default async function StatsPage() {
               </span>
               Live &middot; refreshes every 5s
             </div>
-            {stats.clearedAt && (
+            {stats.clearedAt != null && (
               <div className="mt-1 text-xs text-[#7C89AC]">
                 Stats last cleared <ClearedAgo timestamp={stats.clearedAt} />
               </div>
