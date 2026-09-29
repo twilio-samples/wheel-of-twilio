@@ -1,0 +1,6 @@
+name: Copilot code review
+on:
+  workflow_dispatch:
+jobs:
+  review:
+    runs-on: ubuntu-latest
