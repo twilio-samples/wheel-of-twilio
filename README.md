@@ -8,6 +8,7 @@ This project is Twilio's innovative booth activation designed to motivate people
 
 - Ensure you have [pnpm](https://pnpm.io/) installed.
 - A Twilio account. Sign up [here](https://www.twilio.com/try-twilio) if you don't have one.
+- Node.js 20 or later.
 
 ## Getting Started
 
