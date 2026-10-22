@@ -540,17 +540,32 @@ export async function getTemplate(
   language: string | undefined,
   wedges: string[],
 ) {
-  const templates = await loadTemplates();
+  return (
+    findTemplate(await loadTemplates(), name, language, wedges) ||
+    createTemplate(name, language, wedges)
+  );
+}
+
+function findTemplate(
+  templates: any[],
+  name: string,
+  language: string | undefined,
+  wedges: string[],
+) {
   const find = (lang?: string) =>
     templates.find(
       (t: any) =>
-        t.friendly_name.includes(`_${name}_${lang}`) &&
+        t.friendly_name === `${TEMPLATE_PREFIX}_${name}_${lang}` &&
         templateMatchesWedges(t, wedges),
     );
-  return find(language) || find("en") || createTemplate(name, wedges);
+  return find(language) || find("en");
 }
 
-async function createTemplate(name: string, wedges: string[]) {
+async function createTemplate(
+  name: string,
+  language: string | undefined,
+  wedges: string[],
+) {
   const config = getTemplates(wedges).find(
     (t) => t.friendly_name === `${TEMPLATE_PREFIX}_${name}_en`,
   );
@@ -563,6 +578,14 @@ async function createTemplate(name: string, wedges: string[]) {
   let pending = pendingTemplateCreates.get(key);
   if (!pending) {
     pending = (async () => {
+      // The cache is only loaded once per process, so first check whether
+      // `pnpm setup`, the Console or another replica already created a match.
+      templatesCache = null;
+      const existing = findTemplate(await loadTemplates(), name, language, wedges);
+      if (existing) {
+        return existing;
+      }
+
       const { data } = await axios.post(
         "https://content.twilio.com/v1/Content",
         config,

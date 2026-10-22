@@ -19,7 +19,6 @@ import {
   getTemplates,
   templateMatchesWedges,
 } from "@/scripts/contentTemplates";
-import { getTemplate } from "@/app/twilio";
 
 function existing(name: string, sid: string, wedges: string[]) {
   const config = getTemplates(wedges).find((t) =>
@@ -51,21 +50,29 @@ describe("templateMatchesWedges", () => {
 });
 
 describe("getTemplate", () => {
-  beforeEach(() => {
+  // twilio.ts caches templates at module level; load a fresh copy per test so
+  // tests don't depend on each other's cache state or execution order.
+  let getTemplate: typeof import("@/app/twilio").getTemplate;
+
+  function contentList(...contents: any[]) {
+    return { data: { contents, meta: { next_page_url: null } } };
+  }
+
+  beforeEach(async () => {
+    axiosGet.mockReset();
     axiosPost.mockReset();
+    vi.resetModules();
+    ({ getTemplate } = await import("@/app/twilio"));
   });
 
   test("returns the template matching the current wedges, not just the newest by name", async () => {
-    axiosGet.mockResolvedValueOnce({
-      data: {
-        contents: [
-          // Newest first, as the Content API returns them
-          existing("AskForBets", "HXstale", ["Python", "C Sharp"]),
-          existing("AskForBets", "HXcurrent", ["Webhooks", "Flows"]),
-        ],
-        meta: { next_page_url: null },
-      },
-    });
+    axiosGet.mockResolvedValue(
+      contentList(
+        // Newest first, as the Content API returns them
+        existing("AskForBets", "HXstale", ["Python", "C Sharp"]),
+        existing("AskForBets", "HXcurrent", ["Webhooks", "Flows"]),
+      ),
+    );
 
     const template = await getTemplate("AskForBets", "de", [
       "Webhooks",
@@ -73,10 +80,44 @@ describe("getTemplate", () => {
     ]);
 
     expect(template.sid).toBe("HXcurrent");
+    expect(axiosGet).toHaveBeenCalledTimes(1);
+    expect(axiosPost).not.toHaveBeenCalled();
+  });
+
+  test("only matches the exact template name", async () => {
+    axiosGet.mockResolvedValue(
+      contentList({
+        ...existing("AskForBets", "HXcopy", ["Calling", "OTP"]),
+        friendly_name: "Copy_WheelOfTwilio_AskForBets_en_old",
+      }),
+    );
+    axiosPost.mockImplementation(async (_url: string, config: any) => ({
+      data: { ...config, sid: "HXnew" },
+    }));
+
+    const template = await getTemplate("AskForBets", "en", ["Calling", "OTP"]);
+
+    expect(template.sid).toBe("HXnew");
+  });
+
+  test("refetches before creating, to pick up templates made elsewhere", async () => {
+    axiosGet
+      .mockResolvedValueOnce(contentList())
+      .mockResolvedValueOnce(
+        contentList(existing("InvalidBet", "HXother", ["Calling", "OTP"])),
+      );
+
+    const template = await getTemplate("InvalidBet", "en", ["Calling", "OTP"]);
+
+    expect(template.sid).toBe("HXother");
+    expect(axiosGet).toHaveBeenCalledTimes(2);
     expect(axiosPost).not.toHaveBeenCalled();
   });
 
   test("creates a template once when none matches, then reuses it", async () => {
+    axiosGet.mockResolvedValue(
+      contentList(existing("InvalidBet", "HXstale", ["Python", "C Sharp"])),
+    );
     axiosPost.mockImplementation(async (_url: string, config: any) => ({
       data: { ...config, sid: "HXnew" },
     }));
