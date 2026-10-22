@@ -1,10 +1,6 @@
-import "dotenv/config";
-const { NEXT_PUBLIC_WEDGES = "" } = process.env;
-const wedges = NEXT_PUBLIC_WEDGES.split(",");
-
 export const TEMPLATE_PREFIX = "WheelOfTwilio";
 
-function getOptionsTemplates(): WhatsAppTemplateConfig[] {
+function getOptionsTemplates(wedges: string[]): WhatsAppTemplateConfig[] {
   return [
     {
       friendly_name: `${TEMPLATE_PREFIX}_AskForBets_en`,
@@ -28,7 +24,7 @@ function getOptionsTemplates(): WhatsAppTemplateConfig[] {
   ];
 }
 
-function getInvalidBetsTemplates(): WhatsAppTemplateConfig[] {
+function getInvalidBetsTemplates(wedges: string[]): WhatsAppTemplateConfig[] {
   return [
     {
       friendly_name: `${TEMPLATE_PREFIX}_InvalidBet_en`,
@@ -52,8 +48,22 @@ function getInvalidBetsTemplates(): WhatsAppTemplateConfig[] {
   ];
 }
 
-export function getTemplates(): WhatsAppTemplateConfig[] {
-  return [...getOptionsTemplates(), ...getInvalidBetsTemplates()];
+export function getTemplates(wedges: string[]): WhatsAppTemplateConfig[] {
+  return [...getOptionsTemplates(wedges), ...getInvalidBetsTemplates(wedges)];
+}
+
+// Content templates are immutable snapshots of the wedge list they were built
+// from, so they go stale whenever the wedges change (e.g. via /settings).
+export function templateMatchesWedges(
+  template: Pick<WhatsAppTemplateConfig, "types">,
+  wedges: string[],
+): boolean {
+  const items =
+    template.types?.["twilio/list-picker"]?.items?.map((i) => i.item) ?? [];
+  return (
+    items.length === wedges.length &&
+    items.every((item, i) => item === wedges[i])
+  );
 }
 
 export interface WhatsAppTemplateConfig {

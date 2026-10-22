@@ -7,6 +7,7 @@ import {
   WhatsAppTemplateConfig,
   getTemplates,
 } from "./contentTemplates";
+import { settingsFromEnv } from "../app/settings-defaults";
 import axios from "axios";
 import fs from "fs";
 import * as path from "path";
@@ -112,7 +113,7 @@ const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
   console.log(`Messaging service ${messagingService.sid} has been fetched`);
 
   const existingTemplates: WhatsAppTemplate[] = await getAllWhatsAppTemplates();
-  const neededTemplates = getTemplates();
+  const neededTemplates = getTemplates(settingsFromEnv().wedges);
   neededTemplates.forEach(async (template) => {
     let existingTemplate = existingTemplates.find(
       (existingTemplate) =>

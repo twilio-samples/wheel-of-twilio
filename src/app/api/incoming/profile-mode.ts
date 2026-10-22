@@ -143,7 +143,7 @@ export async function handleProfileMode(
 
         if (verificationCheck.status === "approved") {
           const [contentTemplate, segmentData] = await Promise.all([
-            getTemplate("AskForBets", country?.languages[0]),
+            getTemplate("AskForBets", country?.languages[0], settings.wedges),
             checkSegmentTraits(currentUser.email),
           ]);
           await Promise.all([
@@ -247,7 +247,7 @@ async function handleNoneMode(
 
     await sleep(1000);
 
-    const contentTemplate = await getTemplate("AskForBets", country?.languages[0]);
+    const contentTemplate = await getTemplate("AskForBets", country?.languages[0], settings.wedges);
     await client.messages.create({
       contentSid: contentTemplate.sid,
       from,

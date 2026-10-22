@@ -149,7 +149,7 @@ export async function handleBets(
   }
 
   // Invalid bet — send template
-  const contentTemplate = await getTemplate("InvalidBet", country?.languages[0]);
+  const contentTemplate = await getTemplate("InvalidBet", country?.languages[0], wedges);
   await client.messages.create({
     contentSid: contentTemplate.sid,
     from,
