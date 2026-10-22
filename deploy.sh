@@ -47,6 +47,40 @@ set -a
 source "$ENV_FILE"
 set +a
 
+# Values that still start and end with a quote after `source` were quoted
+# twice (e.g. a GitHub variable saved as "VAxxx", which the Deploy workflow
+# then shell-escapes). Left alone, the quotes become part of the value: a
+# quoted VERIFY_SERVICE_SID makes every Verify request 404. Only identifiers
+# and plain config are normalized; secrets may legitimately contain quotes.
+unquote_keys=(
+  TWILIO_ACCOUNT_SID
+  TWILIO_API_KEY
+  VERIFY_SERVICE_SID
+  SYNC_SERVICE_SID
+  MESSAGING_SERVICE_SID
+  TWILIO_CONVERSATION_CONFIGURATION_ID
+  TWILIO_MEMORY_STORE_ID
+  SEGMENT_SPACE_ID
+  EVENT_NAME
+  NEXT_PUBLIC_WEDGES
+  NEXT_PUBLIC_TWILIO_PHONE_NUMBER
+  NEXT_PUBLIC_HIDE_QR_CODE
+  NEXT_PUBLIC_PRIZES_PER_FIELD
+  MAX_BETS_PER_USER
+  OFFERED_PRIZES
+  LEAD_COLLECTION
+  SMALL_PRIZES
+  SEGMENT_TRAIT_CHECK
+)
+for key in "${unquote_keys[@]}"; do
+  value="${!key:-}"
+  if [[ ${#value} -ge 2 && ( ( "$value" == \"*\" ) || ( "$value" == \'*\' ) ) ]]; then
+    echo "Warning: stripping surrounding quotes from $key; remove them at the source" >&2
+    printf -v "$key" '%s' "${value:1:${#value}-2}"
+    export "$key"
+  fi
+done
+
 AZURE_RESOURCE_GROUP="${AZURE_RESOURCE_GROUP:-$DEFAULT_RESOURCE_GROUP}"
 AZURE_LOCATION="${AZURE_LOCATION:-$DEFAULT_LOCATION}"
 AZURE_ACR_NAME="${AZURE_ACR_NAME:-}"

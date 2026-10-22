@@ -134,7 +134,7 @@ export async function handleQrMode(
   if (profileId) {
     // Has a memory profile but no Sync entry — create it and prompt for bets
     const [contentTemplate, profileTraits] = await Promise.all([
-      getTemplate("AskForBets", country?.languages[0]),
+      getTemplate("AskForBets", country?.languages[0], settings.wedges),
       getProfileTraits(memoryClient, profileId),
     ]);
     const firstName = (profileTraits?.Contact as any)?.firstName as string | undefined;
@@ -230,7 +230,7 @@ export async function handleQrMode(
       },
     });
 
-    const contentTemplate = await getTemplate("AskForBets", country?.languages[0]);
+    const contentTemplate = await getTemplate("AskForBets", country?.languages[0], settings.wedges);
     await client.messages.create({
       body: `Thanks, ${badgeData.firstName}! Your registration is complete. 🎉`,
       from,
