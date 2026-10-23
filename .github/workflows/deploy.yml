@@ -53,6 +53,7 @@ jobs:
           SEGMENT_SPACE_ID: ${{ secrets.SEGMENT_SPACE_ID }}
           SEGMENT_PROFILE_KEY: ${{ secrets.SEGMENT_PROFILE_KEY }}
           SEGMENT_TRAIT_CHECK: ${{ vars.SEGMENT_TRAIT_CHECK }}
+          BASE_URL: ${{ vars.BASE_URL }}
         run: |
           write_var() {
             printf '%s=%q\n' "$1" "${!1}"
@@ -78,6 +79,7 @@ jobs:
             write_var SEGMENT_SPACE_ID
             write_var SEGMENT_PROFILE_KEY
             write_var SEGMENT_TRAIT_CHECK
+            write_var BASE_URL
           } > .env.local
 
       - name: Deploy
