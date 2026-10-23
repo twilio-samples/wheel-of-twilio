@@ -24,6 +24,16 @@ secret_name_for() {
   echo "$1" | tr '[:upper:]_' '[:lower:]-'
 }
 
+# `az --output tsv` prints "None" for a null inside a list query, and some
+# versions print "null"; treat both as no value.
+az_value() {
+  local value="$1"
+  if [[ "$value" == "None" || "$value" == "null" ]]; then
+    value=""
+  fi
+  printf '%s' "$value"
+}
+
 if [[ ! -f "$ENV_FILE" && -f ".env" ]]; then
   ENV_FILE=".env"
 fi
@@ -236,31 +246,25 @@ done
 # custom domain), else default to the Container App's own HTTPS FQDN. A new
 # app has no FQDN until it is created, so that case is handled further down.
 app_exists=false
-if az containerapp show \
+existing_base_url=""
+existing_fqdn=""
+if app_info="$(az containerapp show \
   --name "$AZURE_CONTAINER_APP_NAME" \
-  --resource-group "$AZURE_RESOURCE_GROUP" >/dev/null 2>&1; then
+  --resource-group "$AZURE_RESOURCE_GROUP" \
+  --query "[properties.template.containers[0].env[?name=='BASE_URL'].value | [0], properties.configuration.ingress.fqdn]" \
+  --output tsv 2>/dev/null)"; then
   app_exists=true
+  app_info="${app_info//$'\t'/$'\n'}"
+  { read -r existing_base_url; read -r existing_fqdn; } <<< "$app_info" || true
+  existing_base_url="$(az_value "$existing_base_url")"
+  existing_fqdn="$(az_value "$existing_fqdn")"
 fi
 
-BASE_URL="${BASE_URL:-}"
+BASE_URL="${BASE_URL:-$existing_base_url}"
+if [[ -z "$BASE_URL" && -n "$existing_fqdn" ]]; then
+  BASE_URL="https://$existing_fqdn"
+fi
 BASE_URL="${BASE_URL%/}"
-if [[ -z "$BASE_URL" && "$app_exists" == true ]]; then
-  BASE_URL="$(az containerapp show \
-    --name "$AZURE_CONTAINER_APP_NAME" \
-    --resource-group "$AZURE_RESOURCE_GROUP" \
-    --query "properties.template.containers[0].env[?name=='BASE_URL'].value | [0]" \
-    --output tsv)"
-fi
-if [[ -z "$BASE_URL" && "$app_exists" == true ]]; then
-  existing_fqdn="$(az containerapp show \
-    --name "$AZURE_CONTAINER_APP_NAME" \
-    --resource-group "$AZURE_RESOURCE_GROUP" \
-    --query properties.configuration.ingress.fqdn \
-    --output tsv)"
-  if [[ -n "$existing_fqdn" ]]; then
-    BASE_URL="https://$existing_fqdn"
-  fi
-fi
 if [[ -n "$BASE_URL" ]]; then
   plain_env_vars+=("BASE_URL=$BASE_URL")
 fi
@@ -357,11 +361,11 @@ scale_args=(
 )
 
 if [[ -z "$BASE_URL" ]]; then
-  new_fqdn="$(az containerapp show \
+  new_fqdn="$(az_value "$(az containerapp show \
     --name "$AZURE_CONTAINER_APP_NAME" \
     --resource-group "$AZURE_RESOURCE_GROUP" \
     --query properties.configuration.ingress.fqdn \
-    --output tsv)"
+    --output tsv)")"
   if [[ -n "$new_fqdn" ]]; then
     BASE_URL="https://$new_fqdn"
     scale_args+=(--set-env-vars "BASE_URL=$BASE_URL")
