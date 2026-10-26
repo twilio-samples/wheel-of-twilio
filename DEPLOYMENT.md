@@ -59,6 +59,8 @@ The script creates or updates:
 
 Sensitive values such as `TWILIO_API_SECRET`, `BASIC_AUTH_PASSWORD`, and `SEGMENT_PROFILE_KEY` are configured as Container App secrets. The app is pinned to one replica because event runtime state should not fan out unexpectedly.
 
+Winner phone calls fetch their TwiML from `BASE_URL`. If you don't set it, the script keeps the value already on the Container App, or defaults it to the app's own `https://<your-app-fqdn>`. Set `BASE_URL` in `.env.local` (or as a GitHub variable for the Deploy workflow) only if the app is served from a custom domain.
+
 ## 4. Configure Twilio
 
 When deployment finishes, the script prints:
@@ -156,6 +158,15 @@ If Azure blocks resource creation with `RequestDisallowedByPolicy` and mentions 
 
 ```sh
 export AZURE_USER="your.name@example.com"
+```
+
+If winners get their WhatsApp message but no phone call, or the raffle stops after messaging the winner, and the logs show `BASE_URL environment variable is not set`, redeploy or set it directly:
+
+```sh
+az containerapp update \
+  --resource-group "<your-resource-group>" \
+  --name "<your-container-app-name>" \
+  --set-env-vars "BASE_URL=https://<your-app-fqdn>"
 ```
 
 If the deployed URL shows a Container Apps 404 page, confirm ingress is external and the target port is `3000`. To repair it:

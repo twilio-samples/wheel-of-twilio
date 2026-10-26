@@ -24,6 +24,16 @@ secret_name_for() {
   echo "$1" | tr '[:upper:]_' '[:lower:]-'
 }
 
+# `az --output tsv` prints "None" for a null inside a list query, and some
+# versions print "null"; treat both as no value.
+az_value() {
+  local value="$1"
+  if [[ "$value" == "None" || "$value" == "null" ]]; then
+    value=""
+  fi
+  printf '%s' "$value"
+}
+
 if [[ ! -f "$ENV_FILE" && -f ".env" ]]; then
   ENV_FILE=".env"
 fi
@@ -265,6 +275,34 @@ for key in "${plain_keys[@]}"; do
   fi
 done
 
+# Winner calls fetch TwiML from BASE_URL, so it must be the app's public URL.
+# When it is not set explicitly, keep the value already on the app (e.g. a
+# custom domain), else default to the Container App's own HTTPS FQDN. A new
+# app has no FQDN until it is created, so that case is handled further down.
+app_exists=false
+existing_base_url=""
+existing_fqdn=""
+if app_info="$(az containerapp show \
+  --name "$AZURE_CONTAINER_APP_NAME" \
+  --resource-group "$AZURE_RESOURCE_GROUP" \
+  --query "[properties.template.containers[0].env[?name=='BASE_URL'].value | [0], properties.configuration.ingress.fqdn]" \
+  --output tsv 2>/dev/null)"; then
+  app_exists=true
+  app_info="${app_info//$'\t'/$'\n'}"
+  { read -r existing_base_url; read -r existing_fqdn; } <<< "$app_info" || true
+  existing_base_url="$(az_value "$existing_base_url")"
+  existing_fqdn="$(az_value "$existing_fqdn")"
+fi
+
+BASE_URL="${BASE_URL:-$existing_base_url}"
+if [[ -z "$BASE_URL" && -n "$existing_fqdn" ]]; then
+  BASE_URL="https://$existing_fqdn"
+fi
+BASE_URL="${BASE_URL%/}"
+if [[ -n "$BASE_URL" ]]; then
+  plain_env_vars+=("BASE_URL=$BASE_URL")
+fi
+
 # twilio-agent-connect requires TWILIO_PHONE_NUMBER (no NEXT_PUBLIC_ prefix)
 # — derive it from NEXT_PUBLIC_TWILIO_PHONE_NUMBER so only one var is needed in .env.local
 if [[ -z "${TWILIO_PHONE_NUMBER:-}" && -n "${NEXT_PUBLIC_TWILIO_PHONE_NUMBER:-}" ]]; then
@@ -286,9 +324,7 @@ registry_password="$(az acr credential show \
 
 env_vars=("${plain_env_vars[@]}" "${secret_env_vars[@]}")
 
-if az containerapp show \
-  --name "$AZURE_CONTAINER_APP_NAME" \
-  --resource-group "$AZURE_RESOURCE_GROUP" >/dev/null 2>&1; then
+if [[ "$app_exists" == true ]]; then
   echo "Updating Container App: $AZURE_CONTAINER_APP_NAME"
 
   if [[ ${#secret_args[@]} -gt 0 ]]; then
@@ -351,13 +387,29 @@ else
   az containerapp create "${create_args[@]}" --output none
 fi
 
+scale_args=(
+  --name "$AZURE_CONTAINER_APP_NAME"
+  --resource-group "$AZURE_RESOURCE_GROUP"
+  --min-replicas 1
+  --max-replicas 1
+)
+
+if [[ -z "$BASE_URL" ]]; then
+  new_fqdn="$(az_value "$(az containerapp show \
+    --name "$AZURE_CONTAINER_APP_NAME" \
+    --resource-group "$AZURE_RESOURCE_GROUP" \
+    --query properties.configuration.ingress.fqdn \
+    --output tsv)")"
+  if [[ -n "$new_fqdn" ]]; then
+    BASE_URL="https://$new_fqdn"
+    scale_args+=(--set-env-vars "BASE_URL=$BASE_URL")
+  else
+    echo "Warning: could not determine BASE_URL; winner calls will fail until it is set" >&2
+  fi
+fi
+
 echo "Setting replica scale to 1/1"
-az containerapp update \
-  --name "$AZURE_CONTAINER_APP_NAME" \
-  --resource-group "$AZURE_RESOURCE_GROUP" \
-  --min-replicas 1 \
-  --max-replicas 1 \
-  --output none
+az containerapp update "${scale_args[@]}" --output none
 
 FQDN="$(az containerapp show \
   --name "$AZURE_CONTAINER_APP_NAME" \
