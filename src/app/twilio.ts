@@ -7,7 +7,11 @@ import { getCountry } from "./api/incoming/helper";
 import { GameState, Stages } from "./types";
 import { maskNumber } from "./util";
 import axios from "axios";
-import { TEMPLATE_PREFIX } from "@/scripts/contentTemplates";
+import {
+  TEMPLATE_PREFIX,
+  getTemplates,
+  templateMatchesWedges,
+} from "@/scripts/contentTemplates";
 import { getSettings } from "./settings";
 
 const en = require("../locale/en.json");
@@ -515,16 +519,93 @@ export async function getAllTemplates() {
   return matches;
 }
 
-const templates = await getAllTemplates();
+let templatesCache: Promise<any[]> | null = null;
+const pendingTemplateCreates = new Map<string, Promise<any>>();
 
-export async function getTemplate(name: string, language?: string) {
-  const rightLanguage = templates.find((t: any) =>
-    t.friendly_name.includes(`_${name}_${language}`),
+function loadTemplates() {
+  templatesCache ??= getAllTemplates().catch((err) => {
+    templatesCache = null;
+    throw err;
+  });
+  return templatesCache;
+}
+
+// Wedges live in the Sync settings doc and can change at runtime, but a
+// Content template is a frozen copy of the wedge list it was created with.
+// Only hand out templates whose list matches the current wedges, and create
+// one on demand otherwise. Matching on content rather than "newest by name"
+// also lets several wheels with different wedges share one Twilio account.
+export async function getTemplate(
+  name: string,
+  language: string | undefined,
+  wedges: string[],
+) {
+  return (
+    findTemplate(await loadTemplates(), name, language, wedges) ||
+    createTemplate(name, language, wedges)
   );
-  const englishLanguage = templates.find((t: any) =>
-    t.friendly_name.includes(`_${name}_en`),
+}
+
+function findTemplate(
+  templates: any[],
+  name: string,
+  language: string | undefined,
+  wedges: string[],
+) {
+  const find = (lang?: string) =>
+    templates.find(
+      (t: any) =>
+        t.friendly_name === `${TEMPLATE_PREFIX}_${name}_${lang}` &&
+        templateMatchesWedges(t, wedges),
+    );
+  return find(language) || find("en");
+}
+
+async function createTemplate(
+  name: string,
+  language: string | undefined,
+  wedges: string[],
+) {
+  const config = getTemplates(wedges).find(
+    (t) => t.friendly_name === `${TEMPLATE_PREFIX}_${name}_en`,
   );
-  return rightLanguage || englishLanguage;
+  if (!config) {
+    throw new Error(`Unknown template ${name}`);
+  }
+
+  // Concurrent webhooks right after a wedge change should share one create.
+  const key = JSON.stringify([config.friendly_name, wedges]);
+  let pending = pendingTemplateCreates.get(key);
+  if (!pending) {
+    pending = (async () => {
+      // The cache is only loaded once per process, so first check whether
+      // `pnpm setup`, the Console or another replica already created a match.
+      templatesCache = null;
+      const existing = findTemplate(await loadTemplates(), name, language, wedges);
+      if (existing) {
+        return existing;
+      }
+
+      const { data } = await axios.post(
+        "https://content.twilio.com/v1/Content",
+        config,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          auth: {
+            username: TWILIO_API_KEY,
+            password: TWILIO_API_SECRET,
+          },
+        },
+      );
+      console.log(`Created template ${data.friendly_name} ${data.sid} for current wedges`);
+      (await loadTemplates()).unshift(data);
+      return data;
+    })().finally(() => pendingTemplateCreates.delete(key));
+    pendingTemplateCreates.set(key, pending);
+  }
+  return pending;
 }
 
 export const raffleWinner = async () => {

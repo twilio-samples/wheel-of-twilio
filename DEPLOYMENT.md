@@ -148,6 +148,10 @@ Good region choices:
 
 If the ACR build fails with `Request failed with status code 401` or `Failed to fetch Templates`, check that `.env.local` contains valid Twilio credentials.
 
+If attendees get "Oops! Something went wrong on our end" after sending their email address, and the logs show `The requested resource /v2/Services/"VA..."/Verifications was not found`, `VERIFY_SERVICE_SID` contains literal quotes. Values in GitHub repository variables must be entered without surrounding quotes; the Deploy workflow escapes them itself. `deploy.sh` strips one layer of surrounding quotes and prints a warning, but fix the variable at the source.
+
+The WhatsApp bet list (the `WheelOfTwilio_AskForBets_en` and `WheelOfTwilio_InvalidBet_en` Content templates) follows the wedges saved at `/settings`. When the wedges change, the app creates matching templates on the next bet message, so there is no need to re-run `pnpm run setup`.
+
 If Azure blocks resource creation with `RequestDisallowedByPolicy` and mentions `tags['created_by']`, set `AZURE_USER` before running the script:
 
 ```sh
